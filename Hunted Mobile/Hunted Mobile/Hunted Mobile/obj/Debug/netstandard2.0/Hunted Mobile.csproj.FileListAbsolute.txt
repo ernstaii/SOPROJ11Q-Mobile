@@ -1,0 +1,14 @@
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\bin\Debug\netstandard2.0\Hunted Mobile.deps.json
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\bin\Debug\netstandard2.0\Hunted Mobile.dll
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\bin\Debug\netstandard2.0\ref\Hunted Mobile.dll
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\bin\Debug\netstandard2.0\Hunted Mobile.pdb
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\obj\Debug\netstandard2.0\Hunted Mobile.csprojAssemblyReference.cache
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\obj\Debug\netstandard2.0\App.xaml.g.cs
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\obj\Debug\netstandard2.0\MainPage.xaml.g.cs
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\obj\Debug\netstandard2.0\Hunted Mobile.AssemblyInfoInputs.cache
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\obj\Debug\netstandard2.0\Hunted Mobile.AssemblyInfo.cs
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\obj\Debug\netstandard2.0\Hunted Mobile.csproj.CoreCompileInputs.cache
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\obj\Debug\netstandard2.0\XamlC.stamp
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\obj\Debug\netstandard2.0\Hunted Mobile.dll
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\obj\Debug\netstandard2.0\ref\Hunted Mobile.dll
+C:\Users\Quint\source\repos\SOPROJ11Q-Mobile\Hunted Mobile\Hunted Mobile\Hunted Mobile\obj\Debug\netstandard2.0\Hunted Mobile.pdb
