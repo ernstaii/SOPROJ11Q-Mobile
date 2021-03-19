@@ -1,5 +1,5 @@
 # SOPROJ11Q-Mobile
-Mobile application for the city game Hunted
+Mobile application for the city game Hunted.
 
-## Dependencies:
+**Dependencies**
 - [Mapsui](https://mapsui.com/)
