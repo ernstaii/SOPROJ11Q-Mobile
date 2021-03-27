@@ -7,12 +7,9 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 
-namespace Hunted_Mobile
-{
-    public partial class MainPage : ContentPage
-    {
-        public MainPage()
-        {
+namespace Hunted_Mobile {
+    public partial class MainPage : ContentPage {
+        public MainPage() {
             InitializeComponent();
         }
     }
