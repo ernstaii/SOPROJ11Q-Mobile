@@ -55,7 +55,20 @@ namespace Hunted_Mobile.ViewModel {
                     Longitude = 33.99912
                 }
             };
-
+            _model.AddLoot(new Loot(137) {
+                Name = "Vlijmen",
+                Location = new Location() {
+                    Lattitude = 51.69,
+                    Longitude = 5.22
+                }
+            });
+            _model.AddLoot(new Loot(138) {
+                Name = "Geen Vlijmen",
+                Location = new Location() {
+                    Lattitude = 50.69,
+                    Longitude = 4.22
+                }
+            });
             DisplayPins();
         }
 
@@ -72,6 +85,17 @@ namespace Hunted_Mobile.ViewModel {
                     Color = Xamarin.Forms.Color.Black,
                     Position = new Position(user.Location.Lattitude, user.Location.Longitude),
                     Scale = 0.666f,
+                });
+            }
+
+            // Loot
+            foreach(var loot in _model.GetLoot()) {
+                _view.Pins.Add(new Pin(_view) {
+                    Label = loot.Name,
+                    Color = Xamarin.Forms.Color.Gold,
+                    Position = new Position(loot.Location.Lattitude, loot.Location.Longitude),
+                    Scale = 0.5f,
+                    // TODO change icon of loot
                 });
             }
             
