@@ -10,7 +10,11 @@ using Xamarin.Forms;
 namespace Hunted_Mobile {
     public partial class MainPage : ContentPage {
         public MainPage() {
-            InitializeComponent();
+            this.InitializeComponent();
+        }
+
+        private void Button_Clicked(object sender, EventArgs e) {
+            Console.WriteLine(this.InviteCode.Text);
         }
     }
 }
