@@ -9,12 +9,25 @@ using Xamarin.Forms;
 
 namespace Hunted_Mobile {
     public partial class MainPage : ContentPage {
+        public bool isValid = false;
+
         public MainPage() {
             this.InitializeComponent();
+            BindingContext = this;
         }
 
         private void Button_Clicked(object sender, EventArgs e) {
-            Console.WriteLine(this.InviteCode.Text);
+            this.Validate();
+
+            // TODO: If valid, send to different screen
+        }
+
+        public void Validate() {
+            // TODO: Check if valid
+            isValid = this.InviteCode.Text == "test";
+
+            this.ErrorMessage.Text = isValid ? "" : "De opgegeven code is ongeldig";
+            OnPropertyChanged(nameof(ErrorMessage));
         }
     }
 }
