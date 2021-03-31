@@ -12,5 +12,9 @@ namespace Hunted_Mobile {
         public MainPage() {
             InitializeComponent();
         }
+
+        private void ToMapButtonClicked(object sender, EventArgs e) {
+            Navigation.PushAsync(new MapPage(), true);
+        }
     }
 }

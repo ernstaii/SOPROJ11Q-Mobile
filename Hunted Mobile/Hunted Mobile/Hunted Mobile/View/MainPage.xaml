@@ -19,7 +19,8 @@
                 </FormattedString>
             </Label.FormattedText>
         </Label>
-        <Label Padding="30,24,20,0" Text="How to add a map: https://mapsui.com/documentation/getting-started-xamarin-forms.html#step-3 :)" />
+        <Button Text="To map"
+                    Clicked="ToMapButtonClicked" />
     </StackLayout>
 
 </ContentPage>
