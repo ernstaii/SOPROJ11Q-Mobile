@@ -28,7 +28,9 @@ namespace Hunted_Mobile.View {
 
             if(isValid) {
                 // TODO: Navigate to labby
+                var previousPage = Navigation.NavigationStack.LastOrDefault();
                 Navigation.PushAsync(new Lobby(), true);
+                Navigation.RemovePage(previousPage);
             }
 
             this.JoinGameButton.IsEnabled = true;
