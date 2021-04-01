@@ -7,6 +7,8 @@ namespace Hunted_Mobile.Model.GameModels {
         private readonly int _id;
         public Location Location { get; set; }
         public string Name { get; set; }
+        public string InviteKey { get; set; }
+        public int Role { get; set; }
 
         public User(int id) {
             _id = id;
