@@ -24,7 +24,7 @@ namespace Hunted_Mobile {
 
         public void Validate() {
             // TODO: Check if valid
-            isValid = this.InviteCode.Text == "test";
+            isValid = this.InviteCode.Text != "";
 
             this.ErrorMessage.Text = isValid ? "" : "De opgegeven code is ongeldig";
             OnPropertyChanged(nameof(ErrorMessage));
