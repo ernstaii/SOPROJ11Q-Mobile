@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Hunted_Mobile.Model.Game {
+namespace Hunted_Mobile.Model.GameModels {
     public class User {
         private readonly int _id;
         public Location Location { get; set; }
