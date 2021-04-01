@@ -34,7 +34,8 @@ namespace Hunted_Mobile.View {
 
         // Check if InviteCode is valid
         public void Validate() {
-            this.game = GetGame(this.InviteCodeField.Text);
+            if(this.InviteCodeField.Text != null)
+                this.game = GetGame(this.InviteCodeField.Text);
 
             isValid = this.game != null;
 

@@ -38,7 +38,7 @@ namespace Hunted_Mobile.View {
 
         // Check if InviteCode is valid
         public void Validate() {
-            isValid = this.UserNameField.Text.Length >= 4;
+            isValid = this.UserNameField.Text != null && this.UserNameField.Text.Length >= 4;
 
             // Display ErrorMessage
             this.UserNameMessage.Text = isValid ? "" : "Gebruikersnaam is verplicht en moet minimaal 4 karakters bevatten";
