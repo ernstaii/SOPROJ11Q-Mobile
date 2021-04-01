@@ -1,4 +1,6 @@
 ﻿using Hunted_Mobile.Model;
+using Hunted_Mobile.Model.GameModels;
+using Hunted_Mobile.Repository;
 
 using System;
 using System.Collections.Generic;
@@ -14,6 +16,8 @@ namespace Hunted_Mobile.View {
     public partial class EnterUsername : ContentPage {
         public bool isValid = false;
         public InviteKey inviteKey = null;
+        public User user = null;
+        public UserRepository _userRepository = new UserRepository();
 
         public EnterUsername(InviteKey inviteKey) {
             InitializeComponent();
@@ -22,15 +26,14 @@ namespace Hunted_Mobile.View {
             this.inviteKey = inviteKey;
         }
 
-        private void HandleJoinGame(object sender, EventArgs e) {
+        private async void HandleJoinGame(object sender, EventArgs e) {
             EnableButton(false);
 
-            this.Validate();
+            await this.Validate();
 
             if(isValid) {
-                // TODO: Navigate to labby
                 var previousPage = Navigation.NavigationStack.LastOrDefault();
-                Navigation.PushAsync(new Lobby(), true);
+                await Navigation.PushAsync(new Lobby(this.inviteKey, this.user), true);
                 Navigation.RemovePage(previousPage);
             }
 
@@ -38,8 +41,14 @@ namespace Hunted_Mobile.View {
         }
 
         // Check if InviteCode is valid
-        public void Validate() {
-            isValid = this.UserNameField.Text != null && this.UserNameField.Text.Length >= 4;
+        public async Task Validate() {
+            if(this.UserNameField.Text != null && this.UserNameField.Text.Length >= 4) {
+
+                // Creating a user with the values
+                this.user = await _userRepository.Create(this.inviteKey.Value, this.UserNameField.Text);
+            }
+
+            isValid = this.user != null;
 
             // Display ErrorMessage
             this.UserNameMessage.Text = isValid ? "" : "Gebruikersnaam is verplicht en moet minimaal 4 karakters bevatten";

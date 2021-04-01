@@ -14,7 +14,7 @@
 
         <StackLayout Padding="40" Margin="0, 200">
             <!-- Enter here the InviteCode and submit with button -->
-            <Entry Placeholder="Voer uw code in" x:Name="InviteCodeField" />
+            <Entry Placeholder="Voer uw code in" x:Name="InviteCodeField"/>
             <Label TextColor="Red" x:Name="InviteCodeMessage"/>
             
             <!-- Submit InviteCode to join a game -->

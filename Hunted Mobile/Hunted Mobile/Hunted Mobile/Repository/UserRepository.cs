@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
     public class UserRepository {
-        public async Task<User> Create(InviteKey inviteKey) {
-            string url = $"http://192.168.42.182:8000/users";
+        public async Task<User> Create(string inviteKey, string username) {
+            string url = $"http://192.168.42.182:8000/api/users";
 
             // Prepare parameters inside List
+            // TODO: Should location be submitted as well?
             var content = new FormUrlEncodedContent(
                 new List<KeyValuePair<string, string>>
                 {
-                    new KeyValuePair<string, string>("name", "value"),
-                    new KeyValuePair<string, string>("invite_key", "value"),
-                    new KeyValuePair<string, string>("role", "value"),
+                    new KeyValuePair<string, string>("username", username),
+                    new KeyValuePair<string, string>("invite_key", inviteKey),
                 });
 
             var response = await new HttpClient().PostAsync(url, content);
@@ -31,6 +31,7 @@ namespace Hunted_Mobile.Repository {
             } : null;
         }
 
+        // TODO: This UserStory or next?
         public async Task<User> GetAll(int gameId) {
             string url = $"http://192.168.42.182:8000/game/{gameId}/users";
 
