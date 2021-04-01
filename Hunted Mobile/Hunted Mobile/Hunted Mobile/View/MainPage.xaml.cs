@@ -29,5 +29,9 @@ namespace Hunted_Mobile {
             this.ErrorMessage.Text = isValid ? "" : "De opgegeven code is ongeldig";
             OnPropertyChanged(nameof(ErrorMessage));
         }
+
+        private void ToMapButtonClicked(object sender, EventArgs e) {
+            Navigation.PushAsync(new MapPage(), true);
+        }
     }
 }
