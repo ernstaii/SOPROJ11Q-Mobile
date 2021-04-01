@@ -9,9 +9,9 @@ namespace Hunted_Mobile.Model {
         public double Lattitude { get; set; }
         public double Longitude { get; set; }
 
-        public Location(double _lattitude, double _longitude) {
-            Lattitude = _lattitude;
-            Longitude = _longitude;
+        public Location(double lattitude, double longitude) {
+            Lattitude = lattitude;
+            Longitude = longitude;
         }
 
         public static implicit operator Location (Position p) => new Location(p.Latitude, p.Longitude);

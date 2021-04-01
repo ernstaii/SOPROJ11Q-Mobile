@@ -33,28 +33,11 @@ namespace Hunted_Mobile.ViewModel {
             _view = view;
             _model = new Model.Map();
 
-            // Temporary code. Phone location can be obtained with: _view.MyLocationLayer.MyLocation
-            _model.AddUser(new Thief(345) {
-                Name = "Henk",
-                Location = new Location() {
-                    Lattitude = 25.5,
-                    Longitude = 33.554325
-                }
-            });
-            _model.AddUser(new Police(346) {
-                Name = "Piet",
-                Location = new Location() {
-                    Lattitude = 24.223,
-                    Longitude = 34.0078
-                }
-            });
-            _model.PlayingUser = new Police(123) {
-                Name = "Hans",
-                Location = new Location() {
-                    Lattitude = 26.789,
-                    Longitude = 33.99912
-                }
-            };
+            
+
+            _model.AddUser(new Thief(345, "Henk", new Location(25.5, 33.554325)));
+            _model.AddUser(new Police(346, "Piet", new Location(24.223, 34.0078)));
+            _model.PlayingUser = new Police(123, "Hans", _view.MyLocationLayer.MyLocation);
 
             DisplayPins();
         }
