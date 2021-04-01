@@ -1,5 +1,5 @@
 ﻿using Hunted_Mobile.Model;
-using Hunted_Mobile.Model.Game;
+using Hunted_Mobile.Model.GameModels;
 
 using Mapsui;
 using Mapsui.Projection;
