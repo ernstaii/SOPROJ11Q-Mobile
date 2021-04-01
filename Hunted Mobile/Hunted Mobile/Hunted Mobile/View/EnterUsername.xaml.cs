@@ -13,17 +13,18 @@ namespace Hunted_Mobile.View {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EnterUsername : ContentPage {
         public bool isValid = false;
-        public Game game = null;
+        public InviteKey inviteKey = null;
 
-        public EnterUsername(Game game) {
+        public EnterUsername(InviteKey inviteKey) {
             InitializeComponent();
             BindingContext = this;
 
-            this.game = game;
-        }       
+            this.inviteKey = inviteKey;
+        }
 
         private void HandleJoinGame(object sender, EventArgs e) {
-            this.JoinGameButton.IsEnabled = false;
+            EnableButton(false);
+
             this.Validate();
 
             if(isValid) {
@@ -33,7 +34,7 @@ namespace Hunted_Mobile.View {
                 Navigation.RemovePage(previousPage);
             }
 
-            this.JoinGameButton.IsEnabled = true;
+            EnableButton(true);
         }
 
         // Check if InviteCode is valid
@@ -49,6 +50,13 @@ namespace Hunted_Mobile.View {
         // TODO: Join a Game, maybe create user
         public void JoinGame() {
             //return new Game();
+        }
+
+        // Change the IsEnabled of SubmitButton
+        public void EnableButton(bool enabled = true) {
+            this.JoinGameButton.IsEnabled = enabled;
+
+            OnPropertyChanged(nameof(this.JoinGameButton));
         }
     }
 }
