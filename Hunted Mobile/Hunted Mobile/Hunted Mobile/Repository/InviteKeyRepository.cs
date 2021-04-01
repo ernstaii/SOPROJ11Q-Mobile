@@ -1,14 +1,7 @@
 ﻿using Hunted_Mobile.Model;
+using Hunted_Mobile.Service;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
@@ -20,22 +13,12 @@ namespace Hunted_Mobile.Repository {
 
             var response = await new HttpClient().GetAsync(url);
 
-            // Check if request went successfully
-            if(response.IsSuccessStatusCode) {
+            var result = await ConvertResponseService.Convert(response);
 
-                // Content of responses
-                var contents = await response.Content.ReadAsStringAsync();
-
-                // Convert to JObject
-                var result = (JObject) JsonConvert.DeserializeObject(contents);
-
-                return result != null ? new InviteKey() {
-                    Value = (string) result.GetValue("value"),
-                    GameId = (int) result.GetValue("game_id")
-                } : null;
-            }
-
-            return null;
+            return result != null ? new InviteKey() {
+                Value = (string) result.GetValue("value"),
+                GameId = (int) result.GetValue("game_id")
+            } : null;
         }
     }
 }
