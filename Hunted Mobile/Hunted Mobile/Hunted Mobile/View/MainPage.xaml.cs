@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 
-namespace Hunted_Mobile {
+namespace Hunted_Mobile.View {
     public partial class MainPage : ContentPage {
         public bool isValid = false;
 
@@ -16,7 +16,7 @@ namespace Hunted_Mobile {
             BindingContext = this;
         }
 
-        private void Button_Clicked(object sender, EventArgs e) {
+        private void HandleJoinGame(object sender, EventArgs e) {
             this.Validate();
 
             // TODO: If valid, send to different screen
