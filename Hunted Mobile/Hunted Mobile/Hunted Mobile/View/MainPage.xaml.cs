@@ -48,16 +48,21 @@ namespace Hunted_Mobile.View {
             OnPropertyChanged(nameof(this.InviteCodeMessage));
         }
 
-        // Test button for navigation to MapPage
-        private void ToMapButtonClicked(object sender, EventArgs e) {
-            Navigation.PushAsync(new MapPage(), true);
-        }
-
         // Change the IsEnabled of SubmitButton
         public void EnableButton(bool enabled = true) {
             this.SubmitInviteCodeButton.IsEnabled = enabled;
 
             OnPropertyChanged(nameof(this.SubmitInviteCodeButton));
+        }
+
+        // Test button for opening the Lobby
+        private void ToLobbyButtonClicked(object sender, EventArgs e) {
+            Navigation.PushAsync(new Lobby(null, null, 2), true);
+        }
+
+        // Test button for navigation to MapPage
+        private void ToMapButtonClicked(object sender, EventArgs e) {
+            Navigation.PushAsync(new MapPage(), true);
         }
     }
 }

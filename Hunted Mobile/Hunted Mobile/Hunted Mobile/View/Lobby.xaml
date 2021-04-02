@@ -2,12 +2,63 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Hunted_Mobile.View.Lobby">
-    <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-            <!-- TODO: display all players -->
+    <AbsoluteLayout>
+        <!-- Main layout -->
+        <StackLayout x:Name="mainLayout" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" >
+            <Label Text="HUNTED" 
+                   Padding="5" 
+                   HorizontalTextAlignment="Center" 
+                   TextColor="Black" 
+                   FontAttributes="Bold" 
+                   FontSize="36"/>
+
+            <!-- Layout Team 1 -->
+            <Label Text="Agenten" 
+                   Padding="5" 
+                   HorizontalTextAlignment="Center" 
+                   TextColor="Black" 
+                   FontAttributes="Bold" 
+                   FontSize="20"/>
+            <ListView Grid.Row="1" ItemsSource="{Binding Users}"  x:Name="ListOfCops">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Padding="10">
+                                <Label Text="{Binding Name}"/>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <!-- Layout Team 2 -->
+            <Label Text="Boeven" 
+                   Padding="5" 
+                   HorizontalTextAlignment="Center"
+                   TextColor="Black"
+                   FontAttributes="Bold" 
+                   FontSize="20"/>
+            <ListView Grid.Row="1" ItemsSource="{Binding Users}"  x:Name="ListOfThiefs">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Padding="10">
+                                <Label Text="{Binding Name}"/>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </StackLayout>
-    </ContentPage.Content>
+        
+        <!-- Overlay layout -->
+        <StackLayout x:Name="SpinnerLayout" IsVisible="False" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5">
+            <ActivityIndicator
+            x:Name="Spinner"
+            IsRunning="False"
+            HorizontalOptions="CenterAndExpand"
+            VerticalOptions="CenterAndExpand"
+            Color="Black"/>
+        </StackLayout>
+    </AbsoluteLayout>
 </ContentPage>
