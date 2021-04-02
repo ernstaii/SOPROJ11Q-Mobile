@@ -2,7 +2,10 @@
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Service;
 
+using Newtonsoft.Json.Linq;
+
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -21,32 +24,37 @@ namespace Hunted_Mobile.Repository {
                 });
 
             var response = await new HttpClient().PostAsync(url, content);
-            var result = await ConvertResponseService.Convert(response);
+            var result = await ConvertResponseService.ConvertJObject(response);
 
             return result != null ? new User((int) result.GetValue("id")) {
                 Location = null,
                 Name = (string) result.GetValue("name"),
                 InviteKey = (string) result.GetValue("invite_key"),
-                Role = (int) result.GetValue("role"),
+                Role = (string) result.GetValue("role"),
             } : null;
         }
 
-        // TODO: This UserStory or next?
-        public async Task<User> GetAll(int gameId) {
-            string url = $"http://192.168.236.189:8080/game/{gameId}/users";
+        // Get all users that are linked to a game
+        // TODO: Should location be submitted as well?
+        public async Task<List<User>> GetAll(int gameId) {
+            string url = $"http://192.168.236.189:8080/api/game/{gameId}/users";
 
             var response = await new HttpClient().GetAsync(url);
-            var result = await ConvertResponseService.Convert(response);
+            var result = await ConvertResponseService.ConvertJArray(response);
 
-            // TODO: Read total players inside a game
-            return null;
+            var output = new List<User>();
 
-            return result != null ? new User((int) result.GetValue("id")) {
-                Location = null,
-                Name = (string) result.GetValue("name"),
-                InviteKey = (string) result.GetValue("invite_key"),
-                Role = (int) result.GetValue("role"),
-            } : null;
+            // Looping through the result
+            foreach(JObject item in result) {
+                output.Add(new User((int) item.GetValue("id")) {
+                    Name = item.GetValue("username").ToString(),
+                    Location = null,
+                    InviteKey = item.GetValue("invite_key").ToString(),
+                    Role = item.GetValue("role").ToString(),
+                });
+            }
+
+            return output;
         }
     }
 }

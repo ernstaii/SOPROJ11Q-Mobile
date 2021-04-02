@@ -1,5 +1,6 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
+using Hunted_Mobile.Repository;
 
 using System;
 using System.Collections.Generic;
@@ -14,32 +15,45 @@ using Xamarin.Forms.Xaml;
 namespace Hunted_Mobile.View {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Lobby : ContentPage {
-        public ObservableCollection<User> Users = new ObservableCollection<User>();
+        private List<User> _users = new List<User>();
+        private UserRepository _userRepository = new UserRepository();
+
+        public ObservableCollection<User> Thiefs {
+            get => new ObservableCollection<User>(_users.Where(user => user.Role == "thief").ToList());
+        }
+        public ObservableCollection<User> Cops {
+            get => new ObservableCollection<User>(_users.Where(user => user.Role == "police").ToList());
+        }
+
+        private int gameId;
 
         public Lobby(InviteKey inviteKey, User user, int gameId = 0) {
             InitializeComponent();
             BindingContext = this;
-            this.ListOfThiefs.ItemsSource = Users;
 
-            // Test purposes
-            for(int x = 0; x < 10; x++) {
-                Users.Add(new User(1) { Name = "Martijn Zentjens" });
-            }
-            OnPropertyChanged(nameof(this.ListOfThiefs));
+            // TODO: Only for testing purpose
+            this.gameId = gameId;
+
+            this.GetGameUsers();
         }
 
         // Load all users inside a game
         public async Task GetGameUsers() {
-            // TODO: Load users
+            this.Loading();
+            this._users = await _userRepository.GetAll(gameId);
+
+            this.ListOfCops.ItemsSource = Cops;
+            this.ListOfThiefs.ItemsSource = Thiefs;
+
+            OnPropertyChanged(nameof(this.ListOfCops));
+            OnPropertyChanged(nameof(this.ListOfThiefs));
+
+            this.Loading(false);
         }
 
-        private async void Button_Clicked(object sender, EventArgs e) {
-            Spinner.IsRunning = true;
-            SpinnerLayout.IsVisible = true;
-
-            await Task.Delay(2000);
-            SpinnerLayout.IsVisible = false;
-            Spinner.IsRunning = false;
+        private void Loading(bool isLoading = true) {
+            Spinner.IsRunning = isLoading;
+            SpinnerLayout.IsVisible = isLoading;
         }
     }
 }

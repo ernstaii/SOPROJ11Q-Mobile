@@ -7,13 +7,40 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Service {
     public class ConvertResponseService {
-        public async static Task<JObject> Convert(HttpResponseMessage response) {
+        public async static Task<JObject> ConvertJObject(HttpResponseMessage response) {
             // Check if request went successfully
             if(response.IsSuccessStatusCode) {
                 var contents = await response.Content.ReadAsStringAsync();
 
-                // Convert to JObject
-                return (JObject) JsonConvert.DeserializeObject(contents);
+                JObject output = null;
+
+                try {
+                    output = (JObject) JsonConvert.DeserializeObject(contents);
+                }
+                catch(Exception e) {
+                    Console.WriteLine(e);
+                }
+
+                return output;
+            }
+
+            return null;
+        }
+        public async static Task<JArray> ConvertJArray(HttpResponseMessage response) {
+            // Check if request went successfully
+            if(response.IsSuccessStatusCode) {
+                var contents = await response.Content.ReadAsStringAsync();
+
+                JArray output = null;
+
+                try {
+                    output = JArray.Parse(contents);
+                }
+                catch(Exception e) {
+                    Console.WriteLine(e);
+                }
+
+                return output;
             }
 
             return null;

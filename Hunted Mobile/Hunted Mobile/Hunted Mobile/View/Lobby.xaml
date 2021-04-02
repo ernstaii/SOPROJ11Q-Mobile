@@ -19,7 +19,7 @@
                    TextColor="Black" 
                    FontAttributes="Bold" 
                    FontSize="20"/>
-            <ListView Grid.Row="1" ItemsSource="{Binding Users}"  x:Name="ListOfCops">
+            <ListView Grid.Row="1" ItemsSource="{Binding Cops}"  x:Name="ListOfCops">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
@@ -38,7 +38,7 @@
                    TextColor="Black"
                    FontAttributes="Bold" 
                    FontSize="20"/>
-            <ListView Grid.Row="1" ItemsSource="{Binding Users}"  x:Name="ListOfThiefs">
+            <ListView Grid.Row="1" ItemsSource="{Binding Thiefs}"  x:Name="ListOfThiefs">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>

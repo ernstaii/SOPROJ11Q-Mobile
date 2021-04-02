@@ -14,7 +14,7 @@ namespace Hunted_Mobile.Repository {
 
             var response = await new HttpClient().GetAsync(url);
 
-            var result = await ConvertResponseService.Convert(response);
+            var result = await ConvertResponseService.ConvertJObject(response);
 
             return result != null ? new InviteKey() {
                 Value = (string) result.GetValue("value"),
