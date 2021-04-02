@@ -55,11 +55,6 @@ namespace Hunted_Mobile.View {
             OnPropertyChanged(nameof(this.SubmitInviteCodeButton));
         }
 
-        // Test button for opening the Lobby
-        private void ToLobbyButtonClicked(object sender, EventArgs e) {
-            Navigation.PushAsync(new Lobby(null, null, 2), true);
-        }
-
         // Test button for navigation to MapPage
         private void ToMapButtonClicked(object sender, EventArgs e) {
             Navigation.PushAsync(new MapPage(), true);

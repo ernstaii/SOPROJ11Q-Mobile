@@ -18,6 +18,7 @@ namespace Hunted_Mobile.Service {
                     output = (JObject) JsonConvert.DeserializeObject(contents);
                 }
                 catch(Exception e) {
+                    // Validation of Laravel is also ending up here, maybe something for later to be resolved
                     Console.WriteLine(e);
                 }
 

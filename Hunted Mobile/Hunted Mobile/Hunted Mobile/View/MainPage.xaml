@@ -26,9 +26,6 @@
                     Margin="0, 20" 
                     Clicked="SubmitInviteCode"/>
 
-            <!-- This button will redirect the user to the Game lobby of gameId 2 -->
-            <Button Text="To lobby" Clicked="ToLobbyButtonClicked"/>
-
             <!-- This button will redirect the user to the Map -->
             <Button Text="To map" Clicked="ToMapButtonClicked"/>
         </StackLayout>
