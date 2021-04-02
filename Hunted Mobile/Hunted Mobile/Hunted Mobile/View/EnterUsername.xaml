@@ -12,7 +12,9 @@
                FontAttributes="Bold" 
                FontSize="36"/>
 
-        <StackLayout Padding="40" Margin="0, 200">
+        <BoxView VerticalOptions="FillAndExpand" />
+
+        <StackLayout Padding="40">
             <!-- Enter here the UserName and submit with button -->
             <Entry Placeholder="Voer uw gebruikersnaam in" x:Name="UserNameField" />
             <Label TextColor="Red" x:Name="UserNameMessage"/>
@@ -20,7 +22,6 @@
             <!-- Submit UserName to join a game -->
             <Button Text="Bevestig" 
                     x:Name="JoinGameButton"
-                    HorizontalOptions="FillAndExpand" 
                     CornerRadius="30" 
                     Margin="0, 20" 
                     Clicked="HandleJoinGame"/>

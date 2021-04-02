@@ -55,12 +55,6 @@ namespace Hunted_Mobile.View {
             OnPropertyChanged(nameof(this.UserNameMessage));
         }
 
-        // Get game based on InviteCode
-        // TODO: Join a Game, maybe create user
-        public void JoinGame() {
-            //return new Game();
-        }
-
         // Change the IsEnabled of SubmitButton
         public void EnableButton(bool enabled = true) {
             this.JoinGameButton.IsEnabled = enabled;

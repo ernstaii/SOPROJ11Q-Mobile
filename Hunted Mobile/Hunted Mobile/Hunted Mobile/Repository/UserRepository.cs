@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Hunted_Mobile.Repository {
     public class UserRepository {
         public async Task<User> Create(string inviteKey, string username) {
-            string url = $"http://192.168.42.182:8000/api/users";
+            string url = $"http://192.168.236.189:8080/api/users";
 
             // Prepare parameters inside List
             // TODO: Should location be submitted as well?
@@ -33,7 +33,7 @@ namespace Hunted_Mobile.Repository {
 
         // TODO: This UserStory or next?
         public async Task<User> GetAll(int gameId) {
-            string url = $"http://192.168.42.182:8000/game/{gameId}/users";
+            string url = $"http://192.168.236.189:8080/game/{gameId}/users";
 
             var response = await new HttpClient().GetAsync(url);
             var result = await ConvertResponseService.Convert(response);

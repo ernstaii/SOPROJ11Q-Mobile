@@ -9,7 +9,8 @@ namespace Hunted_Mobile.Repository {
         public async Task<InviteKey> Get(string inviteCode) {
             // TODO: For test purposes only
             // inviteCode = "156M"; 
-            string url = $"http://192.168.42.182:8000/api/invite-key/{inviteCode}";
+            // inviteCode = "BF3V";
+            string url = $"http://192.168.236.189:8080/api/invite-key/{inviteCode}";
 
             var response = await new HttpClient().GetAsync(url);
 

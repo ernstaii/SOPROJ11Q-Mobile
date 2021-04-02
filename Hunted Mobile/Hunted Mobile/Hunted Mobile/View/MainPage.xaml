@@ -12,7 +12,9 @@
                FontAttributes="Bold" 
                FontSize="36"/>
 
-        <StackLayout Padding="40" Margin="0, 200">
+        <BoxView VerticalOptions="FillAndExpand" />
+
+        <StackLayout Padding="40">
             <!-- Enter here the InviteCode and submit with button -->
             <Entry Placeholder="Voer uw code in" x:Name="InviteCodeField"/>
             <Label TextColor="Red" x:Name="InviteCodeMessage"/>
@@ -20,13 +22,12 @@
             <!-- Submit InviteCode to join a game -->
             <Button Text="Spel deelnemen" 
                     x:Name="SubmitInviteCodeButton"
-                    HorizontalOptions="FillAndExpand" 
                     CornerRadius="30" 
                     Margin="0, 20" 
                     Clicked="SubmitInviteCode"/>
 
             <!-- This button will redirect the user to the Map -->
-            <Button Text="To map" Clicked="ToMapButtonClicked" />
+            <Button Text="To map" Clicked="ToMapButtonClicked"/>
         </StackLayout>
     </StackLayout>
 </ContentPage>
