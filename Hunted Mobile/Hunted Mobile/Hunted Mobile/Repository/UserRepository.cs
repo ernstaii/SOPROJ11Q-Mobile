@@ -12,10 +12,7 @@ using System.Threading.Tasks;
 namespace Hunted_Mobile.Repository {
     public class UserRepository {
         public async Task<User> Create(string inviteKey, string username) {
-            string url = $"http://192.168.236.189:8080/api/users";
-
             // Prepare parameters inside List
-            // TODO: Should location be submitted as well?
             var content = new FormUrlEncodedContent(
                 new List<KeyValuePair<string, string>>
                 {
@@ -23,7 +20,7 @@ namespace Hunted_Mobile.Repository {
                     new KeyValuePair<string, string>("invite_key", inviteKey),
                 });
 
-            var response = await new HttpClient().PostAsync(url, content);
+            var response = await new HttpClient().PostAsync(HttpClientService.GetUrl("users"), content);
             var result = await ConvertResponseService.ConvertJObject(response);
 
             return result != null ? new User((int) result.GetValue("id")) {
@@ -35,11 +32,8 @@ namespace Hunted_Mobile.Repository {
         }
 
         // Get all users that are linked to a game
-        // TODO: Should location be submitted as well?
         public async Task<List<User>> GetAll(int gameId) {
-            string url = $"http://192.168.236.189:8080/api/game/{gameId}/users";
-
-            var response = await new HttpClient().GetAsync(url);
+            var response = await new HttpClient().GetAsync(HttpClientService.GetUrl($"game/{gameId}/users"));
             var result = await ConvertResponseService.ConvertJArray(response);
 
             var output = new List<User>();

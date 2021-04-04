@@ -27,6 +27,7 @@ namespace Hunted_Mobile.Service {
 
             return null;
         }
+
         public async static Task<JArray> ConvertJArray(HttpResponseMessage response) {
             // Check if request went successfully
             if(response.IsSuccessStatusCode) {
