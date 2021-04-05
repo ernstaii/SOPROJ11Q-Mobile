@@ -77,7 +77,7 @@ namespace Hunted_Mobile.ViewModel {
                 }
             });
 
-            GetLoot(13);
+            GetLoot(1);
 
             _model.SetCircleBoundary(new Position(51.7, 5.2), new Distance(20000));
 
