@@ -1,5 +1,6 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
+using Hunted_Mobile.Repository;
 
 using Mapsui;
 using Mapsui.Geometries;
@@ -14,11 +15,13 @@ using Mapsui.Widgets;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel {
         private readonly MapView _view;
         private readonly Model.Map _model;
+        public LootRepository _lootRepository = new LootRepository();
 
         public MapViewModel(MapView view) {
             var map = new Mapsui.Map {
@@ -73,6 +76,9 @@ namespace Hunted_Mobile.ViewModel {
                     Longitude = 4.22
                 }
             });
+
+            GetLoot(13);
+
             _model.SetCircleBoundary(new Position(51.7, 5.2), new Distance(20000));
 
             List<Point> pointList = new List<Point>();
@@ -140,6 +146,15 @@ namespace Hunted_Mobile.ViewModel {
                     }
                 }
             };
+        }
+
+        // Gets all the loot from the database and adds it to the _model
+        private async void GetLoot(int gameId) {
+            var lootList = await _lootRepository.GetAll(gameId);
+
+            foreach(var loot in lootList) {
+                _model.AddLoot(loot);
+            }
         }
     }
 }
