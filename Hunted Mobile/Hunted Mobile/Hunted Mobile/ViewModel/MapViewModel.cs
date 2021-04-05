@@ -67,8 +67,8 @@ namespace Hunted_Mobile.ViewModel {
             };
             #endregion
 
-            LimitMapViewport(_model.PlayingUser.Location, 20000);
-            CenterMapOnLocation(_model.PlayingUser.Location, 45);
+            LimitMapViewport(_model.PlayingUser.Location, 5000);
+            CenterMapOnLocation(_model.PlayingUser.Location, 10);
 
             if(!CrossGeolocator.Current.IsListening) {
                 StartGPS();
@@ -147,17 +147,6 @@ namespace Hunted_Mobile.ViewModel {
                     Scale = 0.666f,
                 });
             }
-
-            // Loot
-            foreach(var loot in _model.GetLoot()) {
-                _view.Pins.Add(new Pin(_view) {
-                    Label = loot.Name,
-                    Color = Xamarin.Forms.Color.Gold,
-                    Position = new Mapsui.UI.Forms.Position(loot.Location.Lattitude, loot.Location.Longitude),
-                    Scale = 0.5f,
-                    // TODO change icon of loot
-                });
-            }
             
             // Playing player
             _view.Pins.Add(new Pin(_view) {
@@ -171,6 +160,17 @@ namespace Hunted_Mobile.ViewModel {
 
             // Boundary as a polygon
             _view.Map.Layers.Add(CreateLayer());
+
+            // Loot
+            foreach(var loot in _model.GetLoot()) {
+                _view.Pins.Add(new Pin(_view) {
+                    Label = loot.Name,
+                    Color = Xamarin.Forms.Color.Gold,
+                    Position = new Mapsui.UI.Forms.Position(loot.Location.Lattitude, loot.Location.Longitude),
+                    Scale = 0.5f,
+                    // TODO change icon of loot
+                });
+            }
         }
 
         private Mapsui.Layers.ILayer CreateLayer() {
