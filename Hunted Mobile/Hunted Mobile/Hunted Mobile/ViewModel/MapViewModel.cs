@@ -47,22 +47,22 @@ namespace Hunted_Mobile.ViewModel {
             _model.AddUser(new Thief(345) {
                 Name = "Henk",
                 Location = new Location() {
-                    Lattitude = 51.7,
-                    Longitude = 5.55
+                    Lattitude = 51.769043,
+                    Longitude = 5.516003
                 }
             });
             _model.AddUser(new Police(346) {
                 Name = "Piet",
                 Location = new Location() {
-                    Lattitude = 51.8,
-                    Longitude = 5.5
+                    Lattitude = 51.757423,
+                    Longitude = 5.523745
                 }
             });
             _model.PlayingUser = new Police(123) {
                 Name = "Hans",
                 Location = new Location() {
-                    Lattitude = 51.7612,
-                    Longitude = 5.5140
+                    Lattitude = 51.770031,
+                    Longitude = 5.534014
                 }
             };
             #endregion
