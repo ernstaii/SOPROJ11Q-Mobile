@@ -1,10 +1,15 @@
 ﻿using Hunted_Mobile.Model;
-using Hunted_Mobile.Model.Game;
+using Hunted_Mobile.Model.GameModels;
+using Hunted_Mobile.Repository;
 
 using Mapsui;
 using Mapsui.Geometries;
 using Mapsui.Projection;
 using Mapsui.UI;
+using Mapsui.Layers;
+using Mapsui.Projection;
+using Mapsui.Providers;
+using Mapsui.Styles;
 using Mapsui.UI.Forms;
 using Mapsui.Utilities;
 using Mapsui.Widgets;
@@ -15,11 +20,13 @@ using Plugin.Geolocator.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel {
         private readonly MapView _view;
         private readonly Model.Map _model;
+        public LootRepository _lootRepository = new LootRepository();
 
         public MapViewModel(MapView view) {
             var map = new Mapsui.Map {
@@ -79,7 +86,18 @@ namespace Hunted_Mobile.ViewModel {
             _view.MyLocationLayer.UpdateMyLocation(mapsuiPosition, true);
             _view.MyLocationLayer.UpdateMySpeed(e.Position.Speed);
 
-            DisplayPins();
+            GetLoot(1);
+
+            _model.SetCircleBoundary(new Position(51.7, 5.2), new Distance(20000));
+
+            List<Point> pointList = new List<Point>();
+            pointList.Add(new Position(51.779043, 5.506003).ToMapsui());
+            pointList.Add(new Position(51.761559, 5.491387).ToMapsui());
+            pointList.Add(new Position(51.743866, 5.506616).ToMapsui());
+            pointList.Add(new Position(51.755662, 5.553818).ToMapsui());
+            pointList.Add(new Position(51.772993, 5.546168).ToMapsui());
+
+            _model.SetPolygonBoundary(pointList);
         }
 
         private async void StartGPS() {
@@ -134,6 +152,17 @@ namespace Hunted_Mobile.ViewModel {
                     Scale = 0.666f,
                 });
             }
+
+            // Loot
+            foreach(var loot in _model.GetLoot()) {
+                _view.Pins.Add(new Pin(_view) {
+                    Label = loot.Name,
+                    Color = Xamarin.Forms.Color.Gold,
+                    Position = new Position(loot.Location.Lattitude, loot.Location.Longitude),
+                    Scale = 0.5f,
+                    // TODO change icon of loot
+                });
+            }
             
             // Playing player
             _view.Pins.Add(new Pin(_view) {
@@ -141,6 +170,38 @@ namespace Hunted_Mobile.ViewModel {
                 Color = Xamarin.Forms.Color.FromRgb(39, 96, 203),
                 Position = new Mapsui.UI.Forms.Position(_model.PlayingUser.Location.Lattitude, _model.PlayingUser.Location.Longitude),
             });
+
+            // Boundary as a circle
+            _view.Drawables.Add(_model.GameBoundary);
+
+            // Boundary as a polygon
+            _view.Map.Layers.Add(CreateLayer());
+        }
+
+        private Mapsui.Layers.ILayer CreateLayer() {
+            return new Layer("Polygon") {
+                DataSource = new MemoryProvider(_model.PolygonBoundary),
+                Style = new VectorStyle {
+                    Fill = new Brush(new Color(0, 0, 0, 0)),
+                    Outline = new Pen {
+                        Color = Color.Red,
+                        Width = 2,
+                        PenStyle = PenStyle.DashDotDot,
+                        PenStrokeCap = PenStrokeCap.Round
+                    }
+                }
+            };
+        }
+
+        // Gets all the loot from the database and adds it to the _model
+        private async Task GetLoot(int gameId) {
+            var lootList = await _lootRepository.GetAll(gameId);
+
+            foreach(var loot in lootList) {
+                _model.AddLoot(loot);
+            }
+
+            await Task.Run(() => DisplayPins());
         }
     }
 }
