@@ -70,8 +70,6 @@ namespace Hunted_Mobile.ViewModel {
             LimitMapViewport(_model.PlayingUser.Location, 20000);
             CenterMapOnLocation(_model.PlayingUser.Location, 45);
 
-            DisplayPins();
-
             if(!CrossGeolocator.Current.IsListening) {
                 StartGPS();
             }
@@ -84,8 +82,6 @@ namespace Hunted_Mobile.ViewModel {
             _view.MyLocationLayer.UpdateMyLocation(mapsuiPosition, true);
             _view.MyLocationLayer.UpdateMySpeed(e.Position.Speed);
 
-            GetLoot(1);
-
             _model.SetCircleBoundary(new Mapsui.UI.Forms.Position(51.7, 5.2), new Distance(20000));
 
             List<Point> pointList = new List<Point>();
@@ -96,6 +92,7 @@ namespace Hunted_Mobile.ViewModel {
             pointList.Add(new Mapsui.UI.Forms.Position(51.772993, 5.546168).ToMapsui());
 
             _model.SetPolygonBoundary(pointList);
+            GetLoot(1);
         }
 
         private async void StartGPS() {
@@ -177,8 +174,9 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private Mapsui.Layers.ILayer CreateLayer() {
+            MemoryProvider test = new MemoryProvider(_model.PolygonBoundary);
             return new Layer("Polygon") {
-                DataSource = new MemoryProvider(_model.PolygonBoundary),
+                DataSource = test,
                 Style = new VectorStyle {
                     Fill = new Brush(new Color(0, 0, 0, 0)),
                     Outline = new Pen {
