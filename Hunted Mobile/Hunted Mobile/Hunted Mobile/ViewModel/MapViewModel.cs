@@ -2,7 +2,11 @@
 using Hunted_Mobile.Model.Game;
 
 using Mapsui;
+using Mapsui.Geometries;
+using Mapsui.Layers;
 using Mapsui.Projection;
+using Mapsui.Providers;
+using Mapsui.Styles;
 using Mapsui.UI.Forms;
 using Mapsui.Utilities;
 using Mapsui.Widgets;
@@ -69,6 +73,16 @@ namespace Hunted_Mobile.ViewModel {
                     Longitude = 4.22
                 }
             });
+            _model.SetCircleBoundary(new Position(51.7, 5.2), new Distance(20000));
+
+            List<Point> pointList = new List<Point>();
+            pointList.Add(new Position(51.779043, 5.506003).ToMapsui());
+            pointList.Add(new Position(51.761559, 5.491387).ToMapsui());
+            pointList.Add(new Position(51.743866, 5.506616).ToMapsui());
+            pointList.Add(new Position(51.755662, 5.553818).ToMapsui());
+            pointList.Add(new Position(51.772993, 5.546168).ToMapsui());
+
+            _model.SetPolygonBoundary(pointList);
             DisplayPins();
         }
 
@@ -105,6 +119,27 @@ namespace Hunted_Mobile.ViewModel {
                 Color = Xamarin.Forms.Color.FromRgb(39, 96, 203),
                 Position = new Position(_model.PlayingUser.Location.Lattitude, _model.PlayingUser.Location.Longitude),
             });
+
+            // Boundary as a circle
+            _view.Drawables.Add(_model.GameBoundary);
+
+            // Boundary as a polygon
+            _view.Map.Layers.Add(CreateLayer());
+        }
+
+        private Mapsui.Layers.ILayer CreateLayer() {
+            return new Layer("Polygon") {
+                DataSource = new MemoryProvider(_model.PolygonBoundary),
+                Style = new VectorStyle {
+                    Fill = new Brush(new Color(0, 0, 0, 0)),
+                    Outline = new Pen {
+                        Color = Color.Red,
+                        Width = 2,
+                        PenStyle = PenStyle.DashDotDot,
+                        PenStrokeCap = PenStrokeCap.Round
+                    }
+                }
+            };
         }
     }
 }
