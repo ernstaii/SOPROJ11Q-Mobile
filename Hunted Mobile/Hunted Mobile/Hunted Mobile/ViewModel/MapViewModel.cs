@@ -7,7 +7,6 @@ using Mapsui.Geometries;
 using Mapsui.Projection;
 using Mapsui.UI;
 using Mapsui.Layers;
-using Mapsui.Projection;
 using Mapsui.Providers;
 using Mapsui.Styles;
 using Mapsui.UI.Forms;
@@ -19,7 +18,6 @@ using Plugin.Geolocator.Abstractions;
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.ViewModel {
@@ -88,14 +86,14 @@ namespace Hunted_Mobile.ViewModel {
 
             GetLoot(1);
 
-            _model.SetCircleBoundary(new Position(51.7, 5.2), new Distance(20000));
+            _model.SetCircleBoundary(new Mapsui.UI.Forms.Position(51.7, 5.2), new Distance(20000));
 
             List<Point> pointList = new List<Point>();
-            pointList.Add(new Position(51.779043, 5.506003).ToMapsui());
-            pointList.Add(new Position(51.761559, 5.491387).ToMapsui());
-            pointList.Add(new Position(51.743866, 5.506616).ToMapsui());
-            pointList.Add(new Position(51.755662, 5.553818).ToMapsui());
-            pointList.Add(new Position(51.772993, 5.546168).ToMapsui());
+            pointList.Add(new Mapsui.UI.Forms.Position(51.779043, 5.506003).ToMapsui());
+            pointList.Add(new Mapsui.UI.Forms.Position(51.761559, 5.491387).ToMapsui());
+            pointList.Add(new Mapsui.UI.Forms.Position(51.743866, 5.506616).ToMapsui());
+            pointList.Add(new Mapsui.UI.Forms.Position(51.755662, 5.553818).ToMapsui());
+            pointList.Add(new Mapsui.UI.Forms.Position(51.772993, 5.546168).ToMapsui());
 
             _model.SetPolygonBoundary(pointList);
         }
@@ -158,7 +156,7 @@ namespace Hunted_Mobile.ViewModel {
                 _view.Pins.Add(new Pin(_view) {
                     Label = loot.Name,
                     Color = Xamarin.Forms.Color.Gold,
-                    Position = new Position(loot.Location.Lattitude, loot.Location.Longitude),
+                    Position = new Mapsui.UI.Forms.Position(loot.Location.Lattitude, loot.Location.Longitude),
                     Scale = 0.5f,
                     // TODO change icon of loot
                 });
