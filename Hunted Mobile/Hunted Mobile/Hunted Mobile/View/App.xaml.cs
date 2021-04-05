@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Hunted_Mobile.View;
+
+using System;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
