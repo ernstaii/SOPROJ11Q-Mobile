@@ -1,5 +1,4 @@
 ﻿using Hunted_Mobile.Model.Game;
-using Hunted_Mobile.Model.GameModels;
 
 using Mapsui.Geometries;
 using Mapsui.UI.Forms;
