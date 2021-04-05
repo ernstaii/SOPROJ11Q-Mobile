@@ -1,11 +1,11 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Service;
-
 using Newtonsoft.Json.Linq;
 
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -15,6 +15,7 @@ namespace Hunted_Mobile.Repository {
         // Get all loot that is linked to a game
         public async Task<List<Loot>> GetAll(int gameId) {
             var response = await new HttpClient().GetAsync(HttpClientService.GetUrl($"game/{gameId}/loot"));
+            Console.WriteLine(response + "HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
             var result = await ConvertResponseService.ConvertJArray(response);
 
             var output = new List<Loot>();

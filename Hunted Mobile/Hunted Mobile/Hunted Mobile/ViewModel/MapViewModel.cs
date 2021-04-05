@@ -77,7 +77,7 @@ namespace Hunted_Mobile.ViewModel {
                 }
             });
 
-            GetLoot(13);
+            GetLoot(1);
 
             _model.SetCircleBoundary(new Position(51.7, 5.2), new Distance(20000));
 
@@ -89,7 +89,6 @@ namespace Hunted_Mobile.ViewModel {
             pointList.Add(new Position(51.772993, 5.546168).ToMapsui());
 
             _model.SetPolygonBoundary(pointList);
-            DisplayPins();
         }
 
         /**
@@ -149,12 +148,14 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         // Gets all the loot from the database and adds it to the _model
-        private async void GetLoot(int gameId) {
+        private async Task GetLoot(int gameId) {
             var lootList = await _lootRepository.GetAll(gameId);
 
             foreach(var loot in lootList) {
                 _model.AddLoot(loot);
             }
+
+            await Task.Run(() => DisplayPins());
         }
     }
 }
