@@ -5,8 +5,18 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Hunted_Mobile.Model {
+    /// <summary>
+    /// A general map location model
+    /// Use this within our models and wherever else it is suitable
+    /// </summary>
     public class Location {
+        /// <summary>
+        /// Horizontal map coordinate
+        /// </summary>
         public double Latitude { get; set; }
+        /// <summary>
+        /// Vertical map coordinate
+        /// </summary>
         public double Longitude { get; set; }
 
         public Location() {

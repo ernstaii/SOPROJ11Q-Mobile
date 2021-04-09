@@ -69,7 +69,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         /// <summary>
-        /// Action to execute when the device's location has updated
+        /// Action to execute when the device location has updated
         /// </summary>
         private async void MyLocationUpdated(Location newLocation) {
             await Task.Run(async () => {
@@ -105,6 +105,9 @@ namespace Hunted_Mobile.ViewModel {
             _mapView.Navigator.ZoomTo(resolution);
         }
 
+        /// <summary>
+        /// Adds the required OpenStreetMap layer to the mapView
+        /// </summary>
         private void AddOsmLayerToMapView() {
             var map = new Mapsui.Map {
                 CRS = "EPSG:3857",
@@ -129,7 +132,7 @@ namespace Hunted_Mobile.ViewModel {
             boundary.Points.Add(new Location(51.755662, 5.553818));
             boundary.Points.Add(new Location(51.772993, 5.546168));
 
-            _mapModel.SetPolygonBoundary(boundary);
+            _mapModel.GameBoundary = boundary;
 
             _mapView.Map.Layers.Add(CreateBoundaryLayer());
         }
@@ -189,14 +192,12 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         /// <summary>
-        /// Gets all the loot from the database and adds it to the _model
+        /// Gets all the loot from the database and updates the _model
         /// </summary>
         private async Task UpdateLoot(int gameId) {
             var lootList = await _lootRepository.GetAll(gameId);
 
-            foreach(var loot in lootList) {
-                _mapModel.AddLoot(loot);
-            }
+            _mapModel.SetLoot(lootList);
         }
     }
 }
