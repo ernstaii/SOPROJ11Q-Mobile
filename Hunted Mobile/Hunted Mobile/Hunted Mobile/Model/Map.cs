@@ -13,8 +13,7 @@ namespace Hunted_Mobile.Model {
         private readonly List<Loot> _loot = new List<Loot>();
         public User PlayingUser { get; set; }
 
-        public Drawable GameBoundary { get; set; }
-        public Mapsui.Geometries.Polygon PolygonBoundary { get; set;}
+        public Boundary GameBoundary { get; set; }
 
         public Map() { }
 
@@ -37,7 +36,7 @@ namespace Hunted_Mobile.Model {
             return _loot.AsReadOnly();
         }
         
-        public void SetCircleBoundary(Position center, Distance radius) {
+        /*public void SetCircleBoundary(Position center, Distance radius) {
             GameBoundary = new Circle() {
                 Center = center,
                 StrokeColor = Xamarin.Forms.Color.Red,
@@ -45,14 +44,9 @@ namespace Hunted_Mobile.Model {
                 Radius = radius,
                 Quality = 360.0
             };
-        }
-        public void SetPolygonBoundary(List<Point> points) {
-            var polygon = new Mapsui.Geometries.Polygon();
-            foreach (var item in points)
-	        {
-                polygon.ExteriorRing.Vertices.Add(item);
-	        }
-            PolygonBoundary = polygon;
+        }*/
+        public void SetPolygonBoundary(Boundary boundary) {
+            GameBoundary = boundary;
         }
     }
 }

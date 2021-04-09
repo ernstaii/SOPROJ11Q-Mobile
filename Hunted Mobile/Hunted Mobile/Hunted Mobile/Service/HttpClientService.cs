@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Hunted_Mobile.Service {
     public class HttpClientService {
-        private const String IPAdress = "http://192.168.178.17:8000";
+        private const string IPAdress = "http://soproj11q.herokuapp.com";
 
-        public static String GetUrl(string path) {
+        public static string GetUrl(string path) {
             return $"{IPAdress}/api/{path}";
         }
     }

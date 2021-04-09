@@ -1,4 +1,4 @@
-﻿using Mapsui.UI.Forms;
+﻿using Mapsui.Geometries;
 
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace Hunted_Mobile.Model {
             this.Longitude = Longitude;
         }
 
-        public Location(Position position) {
+        public Location(Mapsui.UI.Forms.Position position) {
             Latitude = position.Latitude;
             Longitude = position.Longitude;
         }
@@ -26,6 +26,18 @@ namespace Hunted_Mobile.Model {
         public Location(Plugin.Geolocator.Abstractions.Position position) {
             Latitude = position.Latitude;
             Longitude = position.Longitude;
+        }
+
+        public Mapsui.Geometries.Point ToMapsuiPoint() {
+            return AsMapsuiPosition().ToMapsui();
+        }
+
+        public Mapsui.UI.Forms.Position AsMapsuiPosition() {
+            return new Mapsui.UI.Forms.Position(Latitude, Longitude);
+        }
+
+        public Plugin.Geolocator.Abstractions.Position AsGeolocatorPosition() {
+            return new Plugin.Geolocator.Abstractions.Position(Latitude, Longitude);
         }
     }
 }

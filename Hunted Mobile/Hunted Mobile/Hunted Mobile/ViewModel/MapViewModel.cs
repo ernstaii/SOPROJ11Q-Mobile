@@ -27,20 +27,11 @@ namespace Hunted_Mobile.ViewModel {
         public LootRepository _lootRepository = new LootRepository();
 
         public MapViewModel(MapView view) {
-            var map = new Mapsui.Map {
-                CRS = "EPSG:3857",
-                Transformation = new MinimalTransformation()
-            };
-
-            map.Layers.Add(OpenStreetMap.CreateTileLayer());
-            map.Widgets.Add(new Mapsui.Widgets.ScaleBar.ScaleBarWidget(map) { TextAlignment = Alignment.Center, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Bottom });
-
-            view.Map = map;
-            view.MyLocationLayer.Enabled = false;
-
             _mapView = view;
             _mapModel = new Model.Map();
             _gpsService = new GpsService();
+
+            AddOsmLayerToMapView();
 
             #region Temporary code (test data)
             _mapModel.AddUser(new Thief(345) {
@@ -73,25 +64,26 @@ namespace Hunted_Mobile.ViewModel {
                 _gpsService.StartGps();
             }
             _gpsService.LocationChanged += MyLocationUpdated;
+
+            AddGameBoundary();
         }
 
-        private void MyLocationUpdated(Location location) {
-            _mapModel.PlayingUser.Location = location;
+        /// <summary>
+        /// Action to execute when the device's location has updated
+        /// </summary>
+        private async void MyLocationUpdated(Location newLocation) {
+            await Task.Run(async () => {
+                _mapModel.PlayingUser.Location = newLocation;
 
-            Mapsui.UI.Forms.Position mapsuiPosition = new Mapsui.UI.Forms.Position(location.Latitude, location.Longitude);
-            _mapView.MyLocationLayer.UpdateMyLocation(mapsuiPosition, true);
+                // Send update to the map view
+                Mapsui.UI.Forms.Position mapsuiPosition = new Mapsui.UI.Forms.Position(newLocation.Latitude, newLocation.Longitude);
+                _mapView.MyLocationLayer.UpdateMyLocation(mapsuiPosition, true);
 
-            _mapModel.SetCircleBoundary(new Mapsui.UI.Forms.Position(51.7, 5.2), new Distance(20000));
+                // todo: this call should later move to an update interval
+                await UpdateLoot(1);
 
-            List<Point> pointList = new List<Point>();
-            pointList.Add(new Mapsui.UI.Forms.Position(51.779043, 5.506003).ToMapsui());
-            pointList.Add(new Mapsui.UI.Forms.Position(51.761559, 5.491387).ToMapsui());
-            pointList.Add(new Mapsui.UI.Forms.Position(51.743866, 5.506616).ToMapsui());
-            pointList.Add(new Mapsui.UI.Forms.Position(51.755662, 5.553818).ToMapsui());
-            pointList.Add(new Mapsui.UI.Forms.Position(51.772993, 5.546168).ToMapsui());
-
-            _mapModel.SetPolygonBoundary(pointList);
-            GetLoot(1);
+                DisplayPins();
+            });
         }
 
         private void CenterMapOnLocation(Location center, double zoomResolution) {
@@ -113,7 +105,57 @@ namespace Hunted_Mobile.ViewModel {
             _mapView.Navigator.ZoomTo(resolution);
         }
 
+        private void AddOsmLayerToMapView() {
+            var map = new Mapsui.Map {
+                CRS = "EPSG:3857",
+                Transformation = new MinimalTransformation()
+            };
+
+            map.Layers.Add(OpenStreetMap.CreateTileLayer());
+            map.Widgets.Add(new Mapsui.Widgets.ScaleBar.ScaleBarWidget(map) { TextAlignment = Alignment.Center, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Bottom });
+
+            _mapView.Map = map;
+            _mapView.MyLocationLayer.Enabled = false;
+        }
+
+        /// <summary>
+        /// Adds the visual game boundary as a polygon
+        /// </summary>
+        private void AddGameBoundary() {
+            Boundary boundary = new Boundary();
+            boundary.Points.Add(new Location(51.779043, 5.506003));
+            boundary.Points.Add(new Location(51.761559, 5.491387));
+            boundary.Points.Add(new Location(51.743866, 5.506616));
+            boundary.Points.Add(new Location(51.755662, 5.553818));
+            boundary.Points.Add(new Location(51.772993, 5.546168));
+
+            _mapModel.SetPolygonBoundary(boundary);
+
+            _mapView.Map.Layers.Add(CreateBoundaryLayer());
+        }
+
+        /// <summary>
+        /// Creates a layer to display the game boundary
+        /// </summary>
+        private ILayer CreateBoundaryLayer() {
+            MemoryProvider memoryProvider = new MemoryProvider(_mapModel.GameBoundary.ToPolygon());
+            return new Layer("Polygon") {
+                DataSource = memoryProvider,
+                Style = new VectorStyle {
+                    Fill = new Brush(new Color(0, 0, 0, 0)),
+                    Outline = new Pen {
+                        Color = Color.Red,
+                        Width = 2,
+                        PenStyle = PenStyle.DashDotDot,
+                        PenStrokeCap = PenStrokeCap.Round
+                    }
+                }
+            };
+        }
+
+        /// <summary>
         /// Displays pins for all game objects with a location
+        /// </summary>
         private void DisplayPins() {
             _mapView.Pins.Clear();
 
@@ -134,12 +176,6 @@ namespace Hunted_Mobile.ViewModel {
                 Position = new Mapsui.UI.Forms.Position(_mapModel.PlayingUser.Location.Latitude, _mapModel.PlayingUser.Location.Longitude),
             });
 
-            // Boundary as a circle
-            _mapView.Drawables.Add(_mapModel.GameBoundary);
-
-            // Boundary as a polygon
-            _mapView.Map.Layers.Add(CreateLayer());
-
             // Loot
             foreach(var loot in _mapModel.GetLoot()) {
                 _mapView.Pins.Add(new Pin(_mapView) {
@@ -152,31 +188,15 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private Mapsui.Layers.ILayer CreateLayer() {
-            MemoryProvider test = new MemoryProvider(_mapModel.PolygonBoundary);
-            return new Layer("Polygon") {
-                DataSource = test,
-                Style = new VectorStyle {
-                    Fill = new Brush(new Color(0, 0, 0, 0)),
-                    Outline = new Pen {
-                        Color = Color.Red,
-                        Width = 2,
-                        PenStyle = PenStyle.DashDotDot,
-                        PenStrokeCap = PenStrokeCap.Round
-                    }
-                }
-            };
-        }
-
-        // Gets all the loot from the database and adds it to the _model
-        private async Task GetLoot(int gameId) {
+        /// <summary>
+        /// Gets all the loot from the database and adds it to the _model
+        /// </summary>
+        private async Task UpdateLoot(int gameId) {
             var lootList = await _lootRepository.GetAll(gameId);
 
             foreach(var loot in lootList) {
                 _mapModel.AddLoot(loot);
             }
-
-            await Task.Run(() => DisplayPins());
         }
     }
 }
