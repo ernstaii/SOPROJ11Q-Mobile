@@ -27,7 +27,7 @@ namespace Hunted_Mobile.Repository {
                 output.Add(new Loot((int) item.GetValue("id")) {
                     Name = item.GetValue("name").ToString(),
                     Location = new Location() {
-                        Lattitude = double.Parse(location[0]),
+                        Latitude = double.Parse(location[0]),
                         Longitude = double.Parse(location[1])
                     }
                 });
