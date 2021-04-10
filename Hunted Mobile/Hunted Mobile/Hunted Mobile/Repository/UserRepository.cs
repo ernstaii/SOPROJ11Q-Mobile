@@ -17,7 +17,8 @@ namespace Hunted_Mobile.Repository {
                 new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("username", username),
-                    new KeyValuePair<string, string>("invite_key", inviteKey.Role),
+                    new KeyValuePair<string, string>("invite_key", inviteKey.Value),
+                    new KeyValuePair<string, string>("role", inviteKey.Role)
                 });
 
             var response = await new HttpClient().PostAsync(HttpClientService.GetUrl("users"), content);
