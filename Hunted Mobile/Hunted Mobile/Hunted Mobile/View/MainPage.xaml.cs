@@ -34,7 +34,7 @@ namespace Hunted_Mobile.View {
                 await Navigation.PushAsync(new EnterUsername(InviteKeyViewModel), true);
             }
 
-            EnableButton(true);
+            EnableButton();
         }
 
         // Display or hide an errorMessage
@@ -46,7 +46,6 @@ namespace Hunted_Mobile.View {
         // Change the IsEnabled of SubmitButton
         public void EnableButton(bool enabled = true) {
             this.SubmitInviteCodeButton.IsEnabled = enabled;
-
             OnPropertyChanged(nameof(this.SubmitInviteCodeButton));
         }
 

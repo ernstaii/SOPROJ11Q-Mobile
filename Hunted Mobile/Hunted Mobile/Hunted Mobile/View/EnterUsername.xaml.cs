@@ -1,12 +1,7 @@
-﻿using Hunted_Mobile.Model;
-using Hunted_Mobile.Model.GameModels;
-using Hunted_Mobile.Repository;
-using Hunted_Mobile.ViewModel;
+﻿using Hunted_Mobile.ViewModel;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -29,7 +24,6 @@ namespace Hunted_Mobile.View {
             ToggleButtonEnableState(false);
 
             this.UserViewModel.UserName = this.UserNameField.Text;
-
             HandleErrorMessage();
 
             if(this.UserViewModel.IsValid) {

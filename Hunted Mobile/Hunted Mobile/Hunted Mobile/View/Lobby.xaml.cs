@@ -1,6 +1,4 @@
-﻿using Hunted_Mobile.Model;
-using Hunted_Mobile.Model.GameModels;
-using Hunted_Mobile.ViewModel;
+﻿using Hunted_Mobile.ViewModel;
 
 using System.Threading.Tasks;
 
@@ -25,7 +23,7 @@ namespace Hunted_Mobile.View {
 
         // Load all users inside a game
         public async Task LoadUsers() {
-            this.Loading();
+            this.DisplayLoadingScreen();
             await this.gameViewModel.GetUsers();
 
             this.ListOfCops.ItemsSource = this.gameViewModel.Police;
@@ -34,10 +32,10 @@ namespace Hunted_Mobile.View {
             OnPropertyChanged(nameof(this.ListOfCops));
             OnPropertyChanged(nameof(this.ListOfThiefs));
 
-            this.Loading(false);
+            this.DisplayLoadingScreen(false);
         }
 
-        private void Loading(bool isLoading = true) {
+        private void DisplayLoadingScreen(bool isLoading = true) {
             Spinner.IsRunning = isLoading;
             SpinnerLayout.IsVisible = isLoading;
         }
