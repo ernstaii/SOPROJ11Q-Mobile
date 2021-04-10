@@ -13,9 +13,15 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public async Task Get(string inviteKey) {
-            model = await inviteKeyRepository.Get(inviteKey);
+            if(inviteKey != null && inviteKey.Length >= 2) {
+                var result = await inviteKeyRepository.Get(inviteKey);
+
+                // TODO: Here you would like to do result.IsValid
+                if(result != null)
+                    model = result;
+            }
         }
 
-        public bool IsValid => model.GameId != null;
+        public bool IsValid => model.Role != null && model.Role.Length > 0 && model.GameId > 0;
     }
 }
