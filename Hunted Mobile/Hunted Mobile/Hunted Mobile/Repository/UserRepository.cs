@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
     public class UserRepository {
-        public async Task<User> Create(string inviteKey, string username) {
+        public async Task<User> Create(InviteKey inviteKey, string username) {
             // Prepare parameters inside List
             var content = new FormUrlEncodedContent(
                 new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("username", username),
-                    new KeyValuePair<string, string>("invite_key", inviteKey),
+                    new KeyValuePair<string, string>("invite_key", inviteKey.Role),
                 });
 
             var response = await new HttpClient().PostAsync(HttpClientService.GetUrl("users"), content);
@@ -26,7 +26,7 @@ namespace Hunted_Mobile.Repository {
             return result != null ? new User((int) result.GetValue("id")) {
                 Location = null,
                 Name = (string) result.GetValue("name"),
-                InviteKey = (string) result.GetValue("invite_key"),
+                InviteKey = inviteKey,
                 Role = (string) result.GetValue("role"),
             } : null;
         }
@@ -40,11 +40,17 @@ namespace Hunted_Mobile.Repository {
 
             // Looping through the result
             foreach(JObject item in result) {
+                string role = item.GetValue("role").ToString();
+
                 output.Add(new User((int) item.GetValue("id")) {
                     Name = item.GetValue("username").ToString(),
                     Location = null,
-                    InviteKey = item.GetValue("invite_key").ToString(),
-                    Role = item.GetValue("role").ToString(),
+                    InviteKey = new InviteKey() {
+                        GameId = gameId,
+                        Role = role,
+                        Value = item.GetValue("invite_key").ToString()
+                    },
+                    Role = role,
                 });
             }
 

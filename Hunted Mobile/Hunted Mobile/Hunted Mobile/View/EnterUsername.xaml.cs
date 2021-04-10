@@ -33,7 +33,7 @@ namespace Hunted_Mobile.View {
 
             if(isValid) {
                 var previousPage = Navigation.NavigationStack.LastOrDefault();
-                await Navigation.PushAsync(new Lobby(this.inviteKey, this.user), true);
+                await Navigation.PushAsync(new Lobby(his.user), true);
                 Navigation.RemovePage(previousPage);
             }
 
@@ -45,7 +45,7 @@ namespace Hunted_Mobile.View {
             if(this.UserNameField.Text != null && this.UserNameField.Text.Length >= 4) {
 
                 // Creating a user with the values
-                this.user = await _userRepository.Create(this.inviteKey.Value, this.UserNameField.Text);
+                this.user = await _userRepository.Create(this.inviteKey, this.UserNameField.Text);
             }
 
             isValid = this.user != null;

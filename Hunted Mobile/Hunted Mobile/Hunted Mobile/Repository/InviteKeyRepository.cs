@@ -12,7 +12,8 @@ namespace Hunted_Mobile.Repository {
 
             return result != null ? new InviteKey() {
                 Value = (string) result.GetValue("value"),
-                GameId = (int) result.GetValue("game_id")
+                GameId = (int) result.GetValue("game_id"),
+                Role = (string) result.GetValue("role")
             } : null;
         }
     }

@@ -26,14 +26,12 @@ namespace Hunted_Mobile.View {
         }
 
         private User CurrentPlayer;
-        private InviteKey CurrentInviteKey;
 
-        public Lobby(InviteKey inviteKey, User user, int gameId = 0) {
+        public Lobby(User user) {
             InitializeComponent();
             BindingContext = this;
 
             this.CurrentPlayer = user;
-            this.CurrentInviteKey = inviteKey;
 
             this.GetGameUsers();
         }
@@ -41,7 +39,7 @@ namespace Hunted_Mobile.View {
         // Load all users inside a game
         public async Task GetGameUsers() {
             this.Loading();
-            this._users = await _userRepository.GetAll(this.CurrentInviteKey.GameId);
+            this._users = await _userRepository.GetAll(this.CurrentPlayer.InviteKey.GameId);
 
             this.ListOfCops.ItemsSource = Cops;
             this.ListOfThiefs.ItemsSource = Thiefs;
