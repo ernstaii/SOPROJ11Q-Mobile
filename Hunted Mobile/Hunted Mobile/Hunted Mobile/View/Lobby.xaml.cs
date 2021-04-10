@@ -1,4 +1,5 @@
-﻿using Hunted_Mobile.ViewModel;
+﻿using Hunted_Mobile.Model;
+using Hunted_Mobile.ViewModel;
 
 using System.Threading.Tasks;
 
