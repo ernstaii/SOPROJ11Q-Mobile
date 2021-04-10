@@ -1,12 +1,7 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
-using Hunted_Mobile.Repository;
+using Hunted_Mobile.ViewModel;
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -15,16 +10,7 @@ using Xamarin.Forms.Xaml;
 namespace Hunted_Mobile.View {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Lobby : ContentPage {
-        private List<User> _users = new List<User>();
-        private UserRepository _userRepository = new UserRepository();
-
-        public ObservableCollection<User> Thiefs {
-            get => new ObservableCollection<User>(_users.Where(user => user.Role == "thief").ToList());
-        }
-        public ObservableCollection<User> Cops {
-            get => new ObservableCollection<User>(_users.Where(user => user.Role == "police").ToList());
-        }
-
+        private readonly GameViewModel gameViewModel;
         private User CurrentPlayer;
 
         public Lobby(User user) {
@@ -33,16 +19,20 @@ namespace Hunted_Mobile.View {
 
             this.CurrentPlayer = user;
 
-            this.GetGameUsers();
+            gameViewModel = new GameViewModel(new Game() {
+                GameId = user.InviteKey.GameId
+            });
+
+            this.LoadUsers();
         }
 
         // Load all users inside a game
-        public async Task GetGameUsers() {
+        public async Task LoadUsers() {
             this.Loading();
-            this._users = await _userRepository.GetAll(this.CurrentPlayer.InviteKey.GameId);
+            await this.gameViewModel.GetUsers();
 
-            this.ListOfCops.ItemsSource = Cops;
-            this.ListOfThiefs.ItemsSource = Thiefs;
+            this.ListOfCops.ItemsSource = this.gameViewModel.Police;
+            this.ListOfThiefs.ItemsSource = this.gameViewModel.Thiefs;
 
             OnPropertyChanged(nameof(this.ListOfCops));
             OnPropertyChanged(nameof(this.ListOfThiefs));
