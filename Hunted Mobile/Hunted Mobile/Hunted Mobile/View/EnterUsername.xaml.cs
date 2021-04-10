@@ -33,7 +33,7 @@ namespace Hunted_Mobile.View {
 
             if(isValid) {
                 var previousPage = Navigation.NavigationStack.LastOrDefault();
-                await Navigation.PushAsync(new Lobby(his.user), true);
+                await Navigation.PushAsync(new Lobby(this.user), true);
                 Navigation.RemovePage(previousPage);
             }
 
