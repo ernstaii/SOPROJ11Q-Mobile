@@ -1,6 +1,7 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Repository;
+using Hunted_Mobile.ViewModel;
 
 using System;
 using System.Collections.Generic;
@@ -14,49 +15,42 @@ using Xamarin.Forms.Xaml;
 namespace Hunted_Mobile.View {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EnterUsername : ContentPage {
-        public bool isValid = false;
-        public InviteKey inviteKey = null;
-        public User user = null;
-        public UserRepository _userRepository = new UserRepository();
+        private readonly UserViewModel UserViewModel;
 
-        public EnterUsername(InviteKey inviteKey) {
+        public EnterUsername(InviteKeyViewModel inviteKeyViewModel) {
             InitializeComponent();
             BindingContext = this;
 
-            this.inviteKey = inviteKey;
+            UserViewModel = new UserViewModel();
+            UserViewModel.InviteKey = inviteKeyViewModel.model;
         }
 
         private async void HandleJoinGame(object sender, EventArgs e) {
-            EnableButton(false);
+            ToggleButtonEnableState(false);
 
-            await this.Validate();
+            this.UserViewModel.UserName = this.UserNameField.Text;
 
-            if(isValid) {
+            HandleErrorMessage();
+
+            if(this.UserViewModel.IsValid) {
+                await this.UserViewModel.CreateUser();
+
                 var previousPage = Navigation.NavigationStack.LastOrDefault();
-                await Navigation.PushAsync(new Lobby(this.user), true);
+                await Navigation.PushAsync(new Lobby(this.UserViewModel), true);
                 Navigation.RemovePage(previousPage);
             }
 
-            EnableButton(true);
+            ToggleButtonEnableState();
         }
 
-        // Check if InviteCode is valid
-        public async Task Validate() {
-            if(this.UserNameField.Text != null && this.UserNameField.Text.Length >= 4) {
-
-                // Creating a user with the values
-                this.user = await _userRepository.Create(this.inviteKey, this.UserNameField.Text);
-            }
-
-            isValid = this.user != null;
-
-            // Display ErrorMessage
-            this.UserNameMessage.Text = isValid ? "" : "Gebruikersnaam is verplicht en moet minimaal 4 karakters bevatten";
+        // Display or hide an errorMessage
+        public void HandleErrorMessage() {
+            this.UserNameMessage.Text = this.UserViewModel.IsValid ? "" : "Gebruikersnaam is verplicht en moet minimaal 4 karakters bevatten";
             OnPropertyChanged(nameof(this.UserNameMessage));
         }
 
         // Change the IsEnabled of SubmitButton
-        public void EnableButton(bool enabled = true) {
+        public void ToggleButtonEnableState(bool enabled = true) {
             this.JoinGameButton.IsEnabled = enabled;
 
             OnPropertyChanged(nameof(this.JoinGameButton));

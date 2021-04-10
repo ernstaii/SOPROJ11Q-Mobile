@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 namespace Hunted_Mobile.ViewModel {
     public class GameViewModel {
         private readonly Game _model;
+        public UserViewModel CurrentUser;
         private List<User> _users = new List<User>();
         public UserRepository userRepository = new UserRepository();
 
@@ -23,12 +24,12 @@ namespace Hunted_Mobile.ViewModel {
             get => new ObservableCollection<User>(_users.Where(user => user.Role == "police").ToList());
         }
 
-        public GameViewModel(Game game) {
+        public GameViewModel(Game game, UserViewModel currentUser) {
             _model = game ?? new Game();
-
-            //
+            CurrentUser = currentUser;
         }
 
+        // Get all users within a game
         public async Task GetUsers() {
             _users = await userRepository.GetAll(_model.GameId);
         }

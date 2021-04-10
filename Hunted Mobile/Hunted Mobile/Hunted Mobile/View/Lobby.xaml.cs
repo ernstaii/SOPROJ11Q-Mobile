@@ -11,17 +11,14 @@ namespace Hunted_Mobile.View {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Lobby : ContentPage {
         private readonly GameViewModel gameViewModel;
-        private User CurrentPlayer;
 
-        public Lobby(User user) {
+        public Lobby(UserViewModel user) {
             InitializeComponent();
             BindingContext = this;
 
-            this.CurrentPlayer = user;
-
             gameViewModel = new GameViewModel(new Game() {
-                GameId = user.InviteKey.GameId
-            });
+                GameId = user.InviteKey.GameId,
+            }, user);
 
             this.LoadUsers();
         }

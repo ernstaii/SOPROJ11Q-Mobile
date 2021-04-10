@@ -28,6 +28,7 @@
 
             <!-- This button will redirect the user to the Map -->
             <Button Text="To map" Clicked="ToMapButtonClicked"/>
+            <Button Text="To lobby" Clicked="ToLobbyButtonClicked"/>
         </StackLayout>
     </StackLayout>
 </ContentPage>

@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 using Hunted_Mobile.Repository;
 
 using Xamarin.Forms;
+using Hunted_Mobile.ViewModel;
 
 namespace Hunted_Mobile.View {
     public partial class MainPage : ContentPage {
-        public bool isValid = false;
-        public InviteKey inviteKey = null;
-
-        private InviteKeyRepository _inviteKeyRepository = new InviteKeyRepository();
+        public InviteKeyViewModel InviteKeyViewModel;
 
         public MainPage() {
             this.InitializeComponent();
             BindingContext = this;
+
+            InviteKeyViewModel = new InviteKeyViewModel();
         }
 
         // If InviteCode is valid, then user will be redirected to screen for entering an username
@@ -27,24 +27,19 @@ namespace Hunted_Mobile.View {
             // Disable the button, so user doesn't click the button twice for loading the game
             EnableButton(false);
 
-            await this.Validate();
+            await InviteKeyViewModel.Get(this.InviteCodeField.Text);
+            HandleErrorMessage();
 
-            if(isValid) {
-                await Navigation.PushAsync(new EnterUsername(this.inviteKey), true);
+            if(InviteKeyViewModel.IsValid) {
+                await Navigation.PushAsync(new EnterUsername(InviteKeyViewModel), true);
             }
 
             EnableButton(true);
         }
 
-        // Check if InviteCode is valid
-        public async Task Validate() {
-            if(this.InviteCodeField.Text != null)
-                this.inviteKey = await _inviteKeyRepository.Get(this.InviteCodeField.Text);
-
-            isValid = this.inviteKey != null;
-
-            // Display ErrorMessage
-            this.InviteCodeMessage.Text = isValid ? "" : "De opgegeven code is ongeldig";
+        // Display or hide an errorMessage
+        public void HandleErrorMessage() {
+            this.InviteCodeMessage.Text = InviteKeyViewModel.IsValid ? "" : "De opgegeven code is ongeldig";
             OnPropertyChanged(nameof(this.InviteCodeMessage));
         }
 
@@ -53,6 +48,14 @@ namespace Hunted_Mobile.View {
             this.SubmitInviteCodeButton.IsEnabled = enabled;
 
             OnPropertyChanged(nameof(this.SubmitInviteCodeButton));
+        }
+
+        private void ToLobbyButtonClicked(object sender, EventArgs e) {
+            Navigation.PushAsync(new Lobby(new UserViewModel() {
+                InviteKey = new InviteKey() {
+                    GameId = 2
+                }
+            }), true);
         }
 
         // Test button for navigation to MapPage
