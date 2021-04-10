@@ -30,15 +30,19 @@ namespace Hunted_Mobile.ViewModel {
 
         // Add new user to a game
         public async Task CreateUser() {
-            if(this.IsValid) {
+            if(this.HasValidUserName) {
+                var result = await userRepository.Create(_model.InviteKey, this.UserName);
 
-                // Creating a user with the values
-                _model = await userRepository.Create(_model.InviteKey, this.UserName);
+                CreatingUserSucceeded = result != null;
+
+                if(CreatingUserSucceeded)
+                    _model = result;
             }
         }
 
         // TODO: Create a globa abstract or interface for implementing validation in every models
         // Idea: https://docs.microsoft.com/en-us/xamarin/xamarin-forms/enterprise-application-patterns/validation
-        public bool IsValid => _model.Name != null && _model.Name.Length >= 3 && _model.Name.Length <= 30;
+        public bool HasValidUserName => _model != null && _model.Name != null && _model.Name.Length >= 3 && _model.Name.Length <= 30;
+        public bool CreatingUserSucceeded { get; set; }
     }
 }

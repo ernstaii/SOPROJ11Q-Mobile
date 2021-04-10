@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Hunted_Mobile.Model.GameModels {
     public class User {
-        private int _id;
+        public readonly int Id;
         private string _userName;
         public Location Location { get; set; }
         public InviteKey InviteKey { get; set; }
@@ -12,7 +12,7 @@ namespace Hunted_Mobile.Model.GameModels {
         public string Role { get; set; }
 
         public User(int id) {
-            _id = id;
+            Id = id;
         }
 
         public User() {

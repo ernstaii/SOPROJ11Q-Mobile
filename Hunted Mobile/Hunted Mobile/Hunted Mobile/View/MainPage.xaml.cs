@@ -18,8 +18,12 @@ namespace Hunted_Mobile.View {
         public MainPage() {
             this.InitializeComponent();
             BindingContext = this;
+        }
 
+        // This method is called when rendering this page
+        protected override void OnAppearing() {
             InviteKeyViewModel = new InviteKeyViewModel();
+            base.OnAppearing();
         }
 
         // If InviteCode is valid, then user will be redirected to screen for entering an username
@@ -49,13 +53,13 @@ namespace Hunted_Mobile.View {
             OnPropertyChanged(nameof(this.SubmitInviteCodeButton));
         }
 
-        private void ToLobbyButtonClicked(object sender, EventArgs e) {
+        /*private void ToLobbyButtonClicked(object sender, EventArgs e) {
             Navigation.PushAsync(new Lobby(new UserViewModel() {
                 InviteKey = new InviteKey() {
                     GameId = 2
                 }
             }), true);
-        }
+        }*/
 
         // Test button for navigation to MapPage
         private void ToMapButtonClicked(object sender, EventArgs e) {

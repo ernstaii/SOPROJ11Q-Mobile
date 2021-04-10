@@ -26,9 +26,11 @@ namespace Hunted_Mobile.View {
             this.UserViewModel.UserName = this.UserNameField.Text;
             HandleErrorMessage();
 
-            if(this.UserViewModel.IsValid) {
+            if(this.UserViewModel.HasValidUserName) {
                 await this.UserViewModel.CreateUser();
+            }
 
+            if(this.UserViewModel.CreatingUserSucceeded) {
                 var previousPage = Navigation.NavigationStack.LastOrDefault();
                 await Navigation.PushAsync(new Lobby(this.UserViewModel), true);
                 Navigation.RemovePage(previousPage);
@@ -39,7 +41,7 @@ namespace Hunted_Mobile.View {
 
         // Display or hide an errorMessage
         public void HandleErrorMessage() {
-            this.UserNameMessage.Text = this.UserViewModel.IsValid ? "" : "Gebruikersnaam is verplicht en moet minimaal 4 karakters bevatten";
+            this.UserNameMessage.Text = this.UserViewModel.HasValidUserName ? "" : "Gebruikersnaam is verplicht en moet minimaal 4 karakters bevatten";
             OnPropertyChanged(nameof(this.UserNameMessage));
         }
 
