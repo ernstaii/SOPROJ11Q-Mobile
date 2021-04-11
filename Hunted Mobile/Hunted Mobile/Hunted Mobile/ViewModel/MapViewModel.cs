@@ -19,6 +19,7 @@ using Plugin.Geolocator.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hunted_Mobile.Service;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel {
@@ -73,6 +74,16 @@ namespace Hunted_Mobile.ViewModel {
             if(!CrossGeolocator.Current.IsListening) {
                 StartGPS();
             }
+
+            if(!SocketConnectionService.Connected) {
+                SocketConnectionService socket = new SocketConnectionService();
+                socket.Connect();
+                socket.StartGame += StartGame;
+            }
+        }
+
+        private void StartGame() {
+            Console.WriteLine("Game start event was received! OMG");
         }
 
         private void MyLocationUpdated(object sender, PositionEventArgs e) {

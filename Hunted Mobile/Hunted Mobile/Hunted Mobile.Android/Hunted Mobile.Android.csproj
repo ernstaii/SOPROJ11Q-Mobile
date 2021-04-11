@@ -62,6 +62,9 @@
     <PackageReference Include="Mapsui.Forms">
       <Version>2.0.3</Version>
     </PackageReference>
+    <PackageReference Include="PusherClient">
+      <Version>2.0.1</Version>
+    </PackageReference>
     <PackageReference Include="Xam.Plugin.Geolocator">
       <Version>4.5.0.6</Version>
     </PackageReference>
