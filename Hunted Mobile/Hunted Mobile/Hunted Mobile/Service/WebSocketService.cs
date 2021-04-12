@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Service {
     /// <summary>
-    /// Represents a single socket connection to our api that will be reused during the runtime of the application
+    /// Represents a single socket connection to our API that will be reused during the runtime of the application
     /// The static initialization should enforce a single connection per running app
     /// </summary>
     public class WebSocketService {
@@ -20,8 +20,12 @@ namespace Hunted_Mobile.Service {
             }
         );
 
+        /// <summary>
+        /// Whether or not the socket connection to the API is currently connected
+        /// </summary>
         public static bool Connected { get; private set; }
 
+        // Static initializer, executed once during the first usage of the class
         static WebSocketService() {
             _pusher.ConnectionStateChanged += ConnectionStateChanged;
             _pusher.Error += ErrorOccured;
@@ -31,18 +35,12 @@ namespace Hunted_Mobile.Service {
             throw error;
         }
 
+        /// <summary>
+        /// Updates the Connected property when the connection state changes
+        /// </summary>
         private static void ConnectionStateChanged(object sender, ConnectionState state) {
-            switch(state) {
-                case ConnectionState.Connected:
-                    Connected = true;
-                    break;
-                case ConnectionState.Disconnecting:
-                    Connected = true;
-                    break;
-                default:
-                    Connected = false;
-                    break;
-            }
+            Connected = state == ConnectionState.Connected
+                || state == ConnectionState.Disconnecting;
         }
         #endregion
 
