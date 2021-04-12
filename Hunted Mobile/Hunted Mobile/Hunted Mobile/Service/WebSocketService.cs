@@ -49,33 +49,17 @@ namespace Hunted_Mobile.Service {
         public delegate void SocketEvent();
         public event SocketEvent StartGame;
 
-        private readonly Dictionary<string, Action<dynamic>> _eventActionMap = new Dictionary<string, Action<dynamic>>();
-
         public WebSocketService(int gameId) {
             _pusher.SubscribeAsync("game." + gameId);
 
-            _eventActionMap.Add("startGame", (obj) => StartGame());
-        }
-
-        private void BindAllEvents() {
-            foreach(var eventActionPair in _eventActionMap) {
-                _pusher.Bind(eventActionPair.Key, eventActionPair.Value);
-            }
-        }
-
-        private void UnbindAllEvents() {
-            foreach(string eventName in _eventActionMap.Keys) {
-                _pusher.Unbind(eventName);
-            }
+            _pusher.Bind("startGame", (obj) => StartGame());
         }
 
         public async Task Connect() {
-            BindAllEvents();
             await _pusher.ConnectAsync();
         }
 
         public async Task Disconnect() {
-            UnbindAllEvents();
             await _pusher.DisconnectAsync();
         }
     }
