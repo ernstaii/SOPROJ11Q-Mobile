@@ -47,53 +47,5 @@ namespace Hunted_Mobile.Model {
             }
             return diameter;
         }
-
-        public Location GetPointFurthestNorth() {
-            Location furthestNorth = null;
-
-            foreach(Location location in Points) {
-                if(furthestNorth == null || location.Longitude > furthestNorth.Longitude) {
-                    furthestNorth = location;
-                }
-            }
-
-            return furthestNorth;
-        }
-
-        public Location GetPointFurthestSouth() {
-            Location furthestSouth = null;
-
-            foreach(Location location in Points) {
-                if(furthestSouth == null || location.Longitude < furthestSouth.Longitude) {
-                    furthestSouth = location;
-                }
-            }
-
-            return furthestSouth;
-        }
-
-        public Location GetPointFurthestEast() {
-            Location furthestEast = null;
-
-            foreach(Location location in Points) {
-                if(furthestEast == null || location.Latitude > furthestEast.Latitude) {
-                    furthestEast = location;
-                }
-            }
-
-            return furthestEast;
-        }
-
-        public Location GetPointFurthestWest() {
-            Location furthestWest = null;
-
-            foreach(Location location in Points) {
-                if(furthestWest == null || location.Latitude < furthestWest.Latitude) {
-                    furthestWest = location;
-                }
-            }
-
-            return furthestWest;
-        }
     }
 }
