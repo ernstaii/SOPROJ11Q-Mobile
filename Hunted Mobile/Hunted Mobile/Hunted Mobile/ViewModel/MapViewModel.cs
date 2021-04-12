@@ -57,15 +57,13 @@ namespace Hunted_Mobile.ViewModel {
             };
             #endregion
 
-            LimitMapViewport(_mapModel.PlayingUser.Location, 5000);
-            CenterMapOnLocation(_mapModel.PlayingUser.Location, 10);
+            AddGameBoundary();
+            LimitViewportToGame();
 
             if(!_gpsService.GpsHasStarted()) {
                 _gpsService.StartGps();
             }
             _gpsService.LocationChanged += MyLocationUpdated;
-
-            AddGameBoundary();
         }
 
         /// <summary>
@@ -99,6 +97,13 @@ namespace Hunted_Mobile.ViewModel {
             Point min = new Point(centerPoint.X - limit, centerPoint.Y - limit);
             Point max = new Point(centerPoint.X + limit, centerPoint.Y + limit);
             _mapView.Map.Limiter.PanLimits = new BoundingBox(min, max);
+        }
+
+        private void LimitViewportToGame() {
+            Location center = _mapModel.GameBoundary.GetCenter();
+            double diameter = _mapModel.GameBoundary.GetDiameter();
+            LimitMapViewport(center, (int) (diameter * 70000));
+            CenterMapOnLocation(center, diameter * 166);
         }
 
         private void ZoomMap(double resolution) {

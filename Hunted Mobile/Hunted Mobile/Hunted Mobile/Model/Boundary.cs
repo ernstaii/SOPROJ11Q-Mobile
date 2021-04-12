@@ -35,6 +35,19 @@ namespace Hunted_Mobile.Model {
             else return null;
         }
 
+        public double GetDiameter() {
+            double diameter = 0;
+            foreach(Location firstLocation in Points) {
+                foreach(Location secondLocation in Points) {
+                    var distance = firstLocation.DistanceToOther(secondLocation);
+                    if(distance > diameter) {
+                        diameter = distance;
+                    }
+                }
+            }
+            return diameter;
+        }
+
         public Location GetPointFurthestNorth() {
             Location furthestNorth = null;
 
