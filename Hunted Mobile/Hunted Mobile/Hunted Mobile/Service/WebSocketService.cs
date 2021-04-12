@@ -10,7 +10,7 @@ namespace Hunted_Mobile.Service {
     /// Represents a single socket connection to our api that will be reused during the runtime of the application
     /// The static initialization should enforce a single connection per running app
     /// </summary>
-    public class SocketConnectionService {
+    public class WebSocketService {
         #region Static
         private static readonly Pusher _pusher = new Pusher(
             "27357622ad22f596bba2",
@@ -22,9 +22,7 @@ namespace Hunted_Mobile.Service {
 
         public static bool Connected { get; private set; }
 
-        static SocketConnectionService() {
-            _pusher.SubscribeAsync("main");
-
+        static WebSocketService() {
             _pusher.ConnectionStateChanged += ConnectionStateChanged;
             _pusher.Error += ErrorOccured;
         }
@@ -51,15 +49,33 @@ namespace Hunted_Mobile.Service {
         public delegate void SocketEvent();
         public event SocketEvent StartGame;
 
-        public SocketConnectionService() {
-            _pusher.Bind("startGame", (obj) => StartGame());
+        private readonly Dictionary<string, Action<dynamic>> _eventActionMap = new Dictionary<string, Action<dynamic>>();
+
+        public WebSocketService(int gameId) {
+            _pusher.SubscribeAsync("game." + gameId);
+
+            _eventActionMap.Add("startGame", (obj) => StartGame());
+        }
+
+        private void BindAllEvents() {
+            foreach(var eventActionPair in _eventActionMap) {
+                _pusher.Bind(eventActionPair.Key, eventActionPair.Value);
+            }
+        }
+
+        private void UnbindAllEvents() {
+            foreach(string eventName in _eventActionMap.Keys) {
+                _pusher.Unbind(eventName);
+            }
         }
 
         public async Task Connect() {
+            BindAllEvents();
             await _pusher.ConnectAsync();
         }
 
         public async Task Disconnect() {
+            UnbindAllEvents();
             await _pusher.DisconnectAsync();
         }
     }

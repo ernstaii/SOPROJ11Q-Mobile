@@ -75,8 +75,9 @@ namespace Hunted_Mobile.ViewModel {
                 StartGPS();
             }
 
-            if(!SocketConnectionService.Connected) {
-                SocketConnectionService socket = new SocketConnectionService();
+            #region Test code
+            if(!WebSocketService.Connected) {
+                WebSocketService socket = new WebSocketService(1);
                 socket.Connect();
                 socket.StartGame += StartGame;
             }
@@ -85,6 +86,7 @@ namespace Hunted_Mobile.ViewModel {
         private void StartGame() {
             Console.WriteLine("Game start event was received! OMG");
         }
+        #endregion
 
         private void MyLocationUpdated(object sender, PositionEventArgs e) {
             _model.PlayingUser.Location = new Location(e.Position);
