@@ -49,5 +49,11 @@ namespace Hunted_Mobile.Model {
         public Plugin.Geolocator.Abstractions.Position AsGeolocatorPosition() {
             return new Plugin.Geolocator.Abstractions.Position(Latitude, Longitude);
         }
+
+        public double DistanceToOther(Location location) {
+            return Math.Sqrt(
+                Math.Pow(location.Latitude - Latitude, 2) + Math.Pow(location.Longitude - Longitude, 2)
+            );
+        }
     }
 }

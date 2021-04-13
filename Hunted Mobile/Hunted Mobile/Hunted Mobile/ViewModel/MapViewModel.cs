@@ -57,15 +57,13 @@ namespace Hunted_Mobile.ViewModel {
             };
             #endregion
 
-            LimitMapViewport(_mapModel.PlayingUser.Location, 5000);
-            CenterMapOnLocation(_mapModel.PlayingUser.Location, 10);
+            AddGameBoundary();
+            LimitViewportToGame();
 
             if(!_gpsService.GpsHasStarted()) {
                 _gpsService.StartGps();
             }
             _gpsService.LocationChanged += MyLocationUpdated;
-
-            AddGameBoundary();
         }
 
         /// <summary>
@@ -93,12 +91,34 @@ namespace Hunted_Mobile.ViewModel {
             _mapView.Navigator.NavigateTo(centerPoint, zoomResolution);
         }
 
+        /// <summary>
+        /// Ensures the map panning is limited to given number around a given center location
+        /// </summary>
         private void LimitMapViewport(Location center, int limit = 100000) {
             _mapView.Map.Limiter = new ViewportLimiterKeepWithin();
             Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
             Point min = new Point(centerPoint.X - limit, centerPoint.Y - limit);
             Point max = new Point(centerPoint.X + limit, centerPoint.Y + limit);
             _mapView.Map.Limiter.PanLimits = new BoundingBox(min, max);
+        }
+
+        /// <summary>
+        /// Ensures the map panning is limited to the game's boundary
+        /// </summary>
+        private void LimitViewportToGame() {
+            Location center = _mapModel.GameBoundary.GetCenter();
+            double diameter = _mapModel.GameBoundary.GetDiameter();
+            int viewPortSizeMultiplier = 70000;
+            LimitMapViewport(center, (int) (diameter * viewPortSizeMultiplier));
+
+            BoundingBox gameArea = new BoundingBox(new List<Geometry>() { _mapModel.GameBoundary.ToPolygon() });
+
+            while(!_mapView.Map.Limiter.PanLimits.Contains(gameArea)) {
+                viewPortSizeMultiplier += 5000;
+                LimitMapViewport(center, (int) (diameter * viewPortSizeMultiplier));
+            }
+
+            CenterMapOnLocation(center, diameter * 175);
         }
 
         private void ZoomMap(double resolution) {
