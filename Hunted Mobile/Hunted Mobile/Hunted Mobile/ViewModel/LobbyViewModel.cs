@@ -10,11 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.ViewModel {
-    public class GameViewModel {
+    public class LobbyViewModel {
         private readonly Game _model;
-        public UserViewModel CurrentUser;
         private List<User> _users = new List<User>();
-        public UserRepository userRepository = new UserRepository();
+        private UserRepository _userRepository = new UserRepository();
+        public EnterUsernameViewModel CurrentUser;
 
         public ObservableCollection<User> Thiefs {
             get => new ObservableCollection<User>(_users.Where(user => user.Role == "thief").ToList());
@@ -24,14 +24,14 @@ namespace Hunted_Mobile.ViewModel {
             get => new ObservableCollection<User>(_users.Where(user => user.Role == "police").ToList());
         }
 
-        public GameViewModel(Game game, UserViewModel currentUser) {
+        public LobbyViewModel(Game game, EnterUsernameViewModel currentUser) {
             _model = game ?? new Game();
             CurrentUser = currentUser;
         }
 
         // Get all users within a game
         public async Task GetUsers() {
-            _users = await userRepository.GetAll(_model.GameId);
+            _users = await _userRepository.GetAll(_model.GameId);
         }
     }
 }

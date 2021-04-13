@@ -10,29 +10,29 @@ using Xamarin.Forms.Xaml;
 namespace Hunted_Mobile.View {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EnterUsername : ContentPage {
-        private readonly UserViewModel UserViewModel;
+        private readonly EnterUsernameViewModel EnterUsernameViewModel;
 
-        public EnterUsername(InviteKeyViewModel inviteKeyViewModel) {
+        public EnterUsername(MainPageViewModel inviteKeyViewModel) {
             InitializeComponent();
             BindingContext = this;
 
-            UserViewModel = new UserViewModel();
-            UserViewModel.InviteKey = inviteKeyViewModel.model;
+            EnterUsernameViewModel = new EnterUsernameViewModel();
+            EnterUsernameViewModel.InviteKey = inviteKeyViewModel.Model;
         }
 
         private async void HandleJoinGame(object sender, EventArgs e) {
             ToggleButtonEnableState(false);
 
-            this.UserViewModel.UserName = this.UserNameField.Text;
+            EnterUsernameViewModel.UserName = this.UserNameField.Text;
             HandleErrorMessage();
 
-            if(this.UserViewModel.HasValidUserName) {
-                await this.UserViewModel.CreateUser();
+            if(EnterUsernameViewModel.HasValidUserName) {
+                await EnterUsernameViewModel.CreateUser();
             }
 
-            if(this.UserViewModel.CreatingUserSucceeded) {
+            if(EnterUsernameViewModel.CreatingUserSucceeded) {
                 var previousPage = Navigation.NavigationStack.LastOrDefault();
-                await Navigation.PushAsync(new Lobby(this.UserViewModel), true);
+                await Navigation.PushAsync(new Lobby(EnterUsernameViewModel), true);
                 Navigation.RemovePage(previousPage);
             }
 
@@ -41,7 +41,7 @@ namespace Hunted_Mobile.View {
 
         // Display or hide an errorMessage
         public void HandleErrorMessage() {
-            this.UserNameMessage.Text = this.UserViewModel.HasValidUserName ? "" : "Gebruikersnaam is verplicht en moet minimaal 4 karakters bevatten";
+            this.UserNameMessage.Text = EnterUsernameViewModel.HasValidUserName ? "" : "Gebruikersnaam is verplicht en moet minimaal 4 karakters bevatten";
             OnPropertyChanged(nameof(this.UserNameMessage));
         }
 

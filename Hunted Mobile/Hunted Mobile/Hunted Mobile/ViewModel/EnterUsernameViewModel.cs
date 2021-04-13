@@ -6,9 +6,9 @@ using System;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.ViewModel {
-    public class UserViewModel {
+    public class EnterUsernameViewModel {
         private User _model { get; set; }
-        public UserRepository userRepository = new UserRepository();
+        private UserRepository _userRepository = new UserRepository();
 
         public string UserName {
             get => _model.Name;
@@ -24,14 +24,14 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public UserViewModel(User user = null) {
+        public EnterUsernameViewModel(User user = null) {
             _model = user ?? new User();
         }
 
         // Add new user to a game
         public async Task CreateUser() {
             if(this.HasValidUserName) {
-                var result = await userRepository.Create(_model.InviteKey, this.UserName);
+                var result = await _userRepository.Create(_model.InviteKey, this.UserName);
 
                 CreatingUserSucceeded = result != null;
 

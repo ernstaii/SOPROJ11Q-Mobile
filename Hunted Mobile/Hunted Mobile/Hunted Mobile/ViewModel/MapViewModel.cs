@@ -24,7 +24,7 @@ namespace Hunted_Mobile.ViewModel {
     public class MapViewModel {
         private readonly MapView _view;
         private readonly Model.Map _model;
-        public LootRepository _lootRepository = new LootRepository();
+        private LootRepository _lootRepository = new LootRepository();
 
         public MapViewModel(MapView view) {
             var map = new Mapsui.Map {

@@ -13,7 +13,7 @@ using Hunted_Mobile.ViewModel;
 
 namespace Hunted_Mobile.View {
     public partial class MainPage : ContentPage {
-        public InviteKeyViewModel InviteKeyViewModel;
+        public MainPageViewModel MainPageViewModel;
 
         public MainPage() {
             this.InitializeComponent();
@@ -22,7 +22,7 @@ namespace Hunted_Mobile.View {
 
         // This method is called when rendering this page
         protected override void OnAppearing() {
-            InviteKeyViewModel = new InviteKeyViewModel();
+            MainPageViewModel = new MainPageViewModel();
             base.OnAppearing();
         }
 
@@ -31,11 +31,11 @@ namespace Hunted_Mobile.View {
             // Disable the button, so user doesn't click the button twice for loading the game
             EnableButton(false);
 
-            await InviteKeyViewModel.Get(this.InviteCodeField.Text);
+            await MainPageViewModel.Get(this.InviteCodeField.Text);
             HandleErrorMessage();
 
-            if(InviteKeyViewModel.IsValid) {
-                await Navigation.PushAsync(new EnterUsername(InviteKeyViewModel), true);
+            if(MainPageViewModel.IsValid) {
+                await Navigation.PushAsync(new EnterUsername(MainPageViewModel), true);
             }
 
             EnableButton();
@@ -43,7 +43,7 @@ namespace Hunted_Mobile.View {
 
         // Display or hide an errorMessage
         public void HandleErrorMessage() {
-            this.InviteCodeMessage.Text = InviteKeyViewModel.IsValid ? "" : "De opgegeven code is ongeldig";
+            this.InviteCodeMessage.Text = MainPageViewModel.IsValid ? "" : "De opgegeven code is ongeldig";
             OnPropertyChanged(nameof(this.InviteCodeMessage));
         }
 
@@ -53,13 +53,13 @@ namespace Hunted_Mobile.View {
             OnPropertyChanged(nameof(this.SubmitInviteCodeButton));
         }
 
-        /*private void ToLobbyButtonClicked(object sender, EventArgs e) {
-            Navigation.PushAsync(new Lobby(new UserViewModel() {
+        private void ToLobbyButtonClicked(object sender, EventArgs e) {
+            Navigation.PushAsync(new Lobby(new EnterUsernameViewModel() {
                 InviteKey = new InviteKey() {
                     GameId = 2
                 }
             }), true);
-        }*/
+        }
 
         // Test button for navigation to MapPage
         private void ToMapButtonClicked(object sender, EventArgs e) {

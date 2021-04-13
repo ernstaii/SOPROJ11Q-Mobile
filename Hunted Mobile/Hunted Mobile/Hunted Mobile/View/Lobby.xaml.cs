@@ -9,13 +9,13 @@ using Xamarin.Forms.Xaml;
 namespace Hunted_Mobile.View {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Lobby : ContentPage {
-        private readonly GameViewModel gameViewModel;
+        private readonly LobbyViewModel LobbyViewModel;
 
-        public Lobby(UserViewModel user) {
+        public Lobby(EnterUsernameViewModel user) {
             InitializeComponent();
             BindingContext = this;
 
-            gameViewModel = new GameViewModel(new Game() {
+            LobbyViewModel = new LobbyViewModel(new Game() {
                 GameId = user.InviteKey.GameId,
             }, user);
 
@@ -25,10 +25,10 @@ namespace Hunted_Mobile.View {
         // Load all users inside a game
         public async Task LoadUsers() {
             this.DisplayLoadingScreen();
-            await this.gameViewModel.GetUsers();
+            await LobbyViewModel.GetUsers();
 
-            this.ListOfCops.ItemsSource = this.gameViewModel.Police;
-            this.ListOfThiefs.ItemsSource = this.gameViewModel.Thiefs;
+            this.ListOfCops.ItemsSource = LobbyViewModel.Police;
+            this.ListOfThiefs.ItemsSource = LobbyViewModel.Thiefs;
 
             OnPropertyChanged(nameof(this.ListOfCops));
             OnPropertyChanged(nameof(this.ListOfThiefs));
