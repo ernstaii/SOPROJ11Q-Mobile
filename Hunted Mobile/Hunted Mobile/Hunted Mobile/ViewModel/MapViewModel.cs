@@ -26,6 +26,8 @@ namespace Hunted_Mobile.ViewModel {
         private readonly GpsService _gpsService;
         public LootRepository _lootRepository = new LootRepository();
 
+        private ILayer _boundaryLayer = null;
+
         public MapViewModel(MapView view) {
             _mapView = view;
             _mapModel = new Model.Map();
@@ -59,11 +61,33 @@ namespace Hunted_Mobile.ViewModel {
 
             AddGameBoundary();
             LimitViewportToGame();
+            test();
 
             if(!_gpsService.GpsHasStarted()) {
                 _gpsService.StartGps();
             }
             _gpsService.LocationChanged += MyLocationUpdated;
+        }
+
+        private void test() {
+            Task.Factory.StartNew(async () => {
+                await Task.Delay(5000);
+
+                foreach(Location location in _mapModel.GameBoundary.Points) {
+                    Random r = new Random();
+                    location.Latitude -= 0.01;
+                    location.Latitude += r.NextDouble() * 0.02;
+                    location.Longitude -= 0.01;
+                    location.Longitude += r.NextDouble() * 0.02;
+                }
+
+                _mapView.Map.Layers.Remove(_boundaryLayer);
+                _boundaryLayer = CreateBoundaryLayer();
+                _mapView.Map.Layers.Add(_boundaryLayer);
+                LimitViewportToGame();
+
+                test();
+            });
         }
 
         /// <summary>
@@ -102,8 +126,17 @@ namespace Hunted_Mobile.ViewModel {
         private void LimitViewportToGame() {
             Location center = _mapModel.GameBoundary.GetCenter();
             double diameter = _mapModel.GameBoundary.GetDiameter();
-            LimitMapViewport(center, (int) (diameter * 70000));
-            CenterMapOnLocation(center, diameter * 166);
+            int viewPortSizeMultiplier = 70000;
+            LimitMapViewport(center, (int) (diameter * viewPortSizeMultiplier));
+
+            BoundingBox gameArea = new BoundingBox(new List<Geometry>() { _mapModel.GameBoundary.ToPolygon() });
+
+            while(!_mapView.Map.Limiter.PanLimits.Contains(gameArea)) {
+                viewPortSizeMultiplier += 5000;
+                LimitMapViewport(center, (int) (diameter * viewPortSizeMultiplier));
+            }
+
+            CenterMapOnLocation(center, diameter * 175);
         }
 
         private void ZoomMap(double resolution) {
@@ -139,7 +172,8 @@ namespace Hunted_Mobile.ViewModel {
 
             _mapModel.GameBoundary = boundary;
 
-            _mapView.Map.Layers.Add(CreateBoundaryLayer());
+            _boundaryLayer = CreateBoundaryLayer();
+            _mapView.Map.Layers.Add(_boundaryLayer);
         }
 
         /// <summary>
