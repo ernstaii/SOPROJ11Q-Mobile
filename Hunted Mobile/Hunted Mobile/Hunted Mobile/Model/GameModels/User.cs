@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Hunted_Mobile.Model.GameModels {
@@ -8,6 +9,8 @@ namespace Hunted_Mobile.Model.GameModels {
         private string _userName;
         public Location Location { get; set; }
         public InviteKey InviteKey { get; set; }
+        [Required(ErrorMessage = "De code is verplicht")]
+        [MinLength(3, ErrorMessage = "De gebruikersnaam heeft een minimale lengte van 3 karaktes")]
         public string Name { get; set; }
         public string Role { get; set; }
 

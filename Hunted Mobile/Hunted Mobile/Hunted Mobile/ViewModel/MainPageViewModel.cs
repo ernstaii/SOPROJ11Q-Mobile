@@ -57,21 +57,17 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public ICommand ButtonSelectedCommand {
-            get {
-                return new Command(async (e) =>
-                {
-                    SubmitButtonIsEnable = false;
-                    await Get();
+        public ICommand ButtonSelectedCommand => new Command(async (e) => {
+            SubmitButtonIsEnable = false;
+            await Get();
 
-                    if(IsValid) {
-                        await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new EnterUsername(this));
-                    }
-
-                    SubmitButtonIsEnable = true;
-                });
+            // Navigate when InviteKey is valid
+            if(IsValid) {
+                await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new EnterUsername(this));
             }
-        }
+
+            SubmitButtonIsEnable = true;
+        });
 
         // Change the IsEnabled of SubmitButton
         /*public void EnableButton(bool enabled = true) {

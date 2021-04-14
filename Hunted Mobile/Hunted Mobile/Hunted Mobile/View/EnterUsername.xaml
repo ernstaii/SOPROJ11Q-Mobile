@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Hunted_Mobile.ViewModel"
              x:Class="Hunted_Mobile.View.EnterUsername">
-    
+
     <StackLayout Padding="24">
         <Label Text="HUNTED" 
                Padding="24" 
@@ -16,15 +17,15 @@
 
         <StackLayout Padding="40">
             <!-- Enter here the UserName and submit with button -->
-            <Entry Placeholder="Voer uw gebruikersnaam in" x:Name="UserNameField" />
-            <Label TextColor="Red" x:Name="UserNameMessage"/>
+            <Entry Placeholder="Voer uw gebruikersnaam in"  Text="{Binding UserModel.Name}" />
+            <Label TextColor="Red" x:Name="User_NameError"/>
 
             <!-- Submit UserName to join a game -->
-            <Button Text="Bevestig" 
-                    x:Name="JoinGameButton"
+            <Button Text="Bevestig"
                     CornerRadius="30" 
                     Margin="0, 20" 
-                    Clicked="HandleJoinGame"/>
+                    IsEnabled="{Binding SubmitButtonIsEnable}"
+                    Command="{Binding ButtonSelectedCommand}"/>
         </StackLayout>
     </StackLayout>
 </ContentPage>

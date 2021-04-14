@@ -19,10 +19,9 @@
             <!-- Enter here the InviteCode and submit with button -->
             <Entry Placeholder="Voer uw code in" Text="{Binding InviteKeyModel.Value}"/>
             <Label TextColor="Red" x:Name="InviteKey_ValueError"/>
-            
+
             <!-- Submit InviteCode to join a game -->
-            <Button Text="Spel deelnemen" 
-                    x:Name="SubmitInviteCodeButton"
+            <Button Text="Spel deelnemen"
                     CornerRadius="30" 
                     IsEnabled="{Binding SubmitButtonIsEnable}"
                     Command="{Binding ButtonSelectedCommand}"
@@ -30,7 +29,6 @@
 
             <!-- This button will redirect the user to the Map -->
             <Button Text="To map" Clicked="ToMapButtonClicked"/>
-            <Button Text="To lobby" Clicked="ToLobbyButtonClicked"/>
         </StackLayout>
     </StackLayout>
 </ContentPage>

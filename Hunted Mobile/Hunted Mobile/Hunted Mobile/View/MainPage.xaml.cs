@@ -13,25 +13,15 @@ using Hunted_Mobile.ViewModel;
 
 namespace Hunted_Mobile.View {
     public partial class MainPage : ContentPage {
-        public MainPageViewModel MainPageViewModel;
         public MainPage() {
             this.InitializeComponent();
-            MainPageViewModel = new MainPageViewModel(this);
-            BindingContext = MainPageViewModel; //new MainPageViewModel(this);
+            BindingContext = new MainPageViewModel(this);
         }
 
         // This method is called when rendering this page
         protected override void OnAppearing() {
-            //MainPageViewModel = new MainPageViewModel();
+            //BindingContext = new MainPageViewModel();
             base.OnAppearing();
-        }
-
-        private void ToLobbyButtonClicked(object sender, EventArgs e) {
-            Navigation.PushAsync(new Lobby(new EnterUsernameViewModel() {
-                InviteKey = new InviteKey() {
-                    GameId = 2
-                }
-            }), true);
         }
 
         // Test button for navigation to MapPage
