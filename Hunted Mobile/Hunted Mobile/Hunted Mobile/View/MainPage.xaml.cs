@@ -30,13 +30,5 @@ namespace Hunted_Mobile.View {
         private void ToMapButtonClicked(object sender, EventArgs e) {
             Navigation.PushAsync(new MapPage(), true);
         }
-        private void TLobbyButtonClicked(object sender, EventArgs e) {
-            Navigation.PushAsync(new Lobby(new User() {
-                Name = "Martijn",
-                InviteKey = new InviteKey() {
-                    GameId = 2,
-                }
-            }));
-        }
     }
 }
