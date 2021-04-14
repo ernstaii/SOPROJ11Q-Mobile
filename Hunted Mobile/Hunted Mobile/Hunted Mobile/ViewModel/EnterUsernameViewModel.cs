@@ -4,8 +4,6 @@ using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
 using Hunted_Mobile.View;
 
-using System;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -13,7 +11,7 @@ using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
-    public class EnterUsernameViewModel {
+    public class EnterUsernameViewModel : BaseViewModel {
         private User _userModel = new User();
         private bool _isloading = false;
         private bool _creatingUserSucceeded { get; set; }
@@ -23,9 +21,7 @@ namespace Hunted_Mobile.ViewModel {
             get => _userModel;
             set {
                 _userModel = value;
-
-                if(PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("UserModel"));
+                OnPropertyChanged("UserModel");
             }
         }
 
@@ -33,16 +29,12 @@ namespace Hunted_Mobile.ViewModel {
             get => _isloading;
             set {
                 _isloading = value;
-
-                if(PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("SubmitButtonIsEnable"));
+                OnPropertyChanged("SubmitButtonIsEnable");
             }
         }
 
         private UserRepository _userRepository = new UserRepository();
         private EnterUsername _page;
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public EnterUsernameViewModel(EnterUsername page, InviteKey key) {
             _page = page;

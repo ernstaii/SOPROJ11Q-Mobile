@@ -3,23 +3,20 @@ using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
 using Hunted_Mobile.View;
 
-using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
-    public class MainPageViewModel : INotifyPropertyChanged {
+    public class MainPageViewModel : BaseViewModel {
         private InviteKey _inviteKeyModel = new InviteKey();
         private bool _isloading = false;
         public InviteKey InviteKeyModel {
             get => _inviteKeyModel;
             set {
                 _inviteKeyModel = value;
-
-                if(PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("InviteKeyModel"));
+                OnPropertyChanged("InviteKeyModel");
             }
         }
 
@@ -27,16 +24,12 @@ namespace Hunted_Mobile.ViewModel {
             get => _isloading;
             set {
                 _isloading = value;
-
-                if(PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("SubmitButtonIsEnable"));
+                OnPropertyChanged("SubmitButtonIsEnable");
             }
         }
 
         private InviteKeyRepository _inviteKeyRepository = new InviteKeyRepository();
         private MainPage _page;
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public bool IsValid { get; set; }
 
@@ -44,6 +37,7 @@ namespace Hunted_Mobile.ViewModel {
             _page = page;
         }
 
+        // Getting InviteKey based on the Value
         public async Task Get() {
             IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page);
 
@@ -57,6 +51,7 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
+        // When user tries to validate his InviteKey
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
             SubmitButtonIsEnable = false;
             await Get();
@@ -68,11 +63,5 @@ namespace Hunted_Mobile.ViewModel {
 
             SubmitButtonIsEnable = true;
         });
-
-        // Change the IsEnabled of SubmitButton
-        /*public void EnableButton(bool enabled = true) {
-            this._page.SubmitInviteCodeButton.IsEnabled = enabled;
-            OnPropertyChanged(nameof(this.SubmitInviteCodeButton));
-        }*/
     }
 }

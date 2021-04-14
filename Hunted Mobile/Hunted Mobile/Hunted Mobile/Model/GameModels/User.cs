@@ -11,6 +11,7 @@ namespace Hunted_Mobile.Model.GameModels {
         public InviteKey InviteKey { get; set; }
         [Required(ErrorMessage = "De code is verplicht")]
         [MinLength(3, ErrorMessage = "De gebruikersnaam heeft een minimale lengte van 3 karaktes")]
+        [MaxLength(50, ErrorMessage = "De gebruikersnam geeft een maximale lengte van 50 karaktes")]
         public string Name { get; set; }
         public string Role { get; set; }
 
