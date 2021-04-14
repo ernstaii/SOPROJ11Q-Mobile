@@ -12,33 +12,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.ViewModel {
-    public class LobbyViewModel {
+    public class LobbyViewModel : BaseViewModel {
         private List<User> _users = new List<User>();
         private Game _gameModel = new Game();
         private User _currentUser;
+        private readonly UserRepository _userRepository = new UserRepository();
+        private Lobby _page;
         private bool _isloading { get; set; }
+
         public Game GameModel {
             get => _gameModel;
             set {
                 _gameModel = value;
-
-                if(PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("GameModel"));
-            }
-        }
-
-        public List<User> Users {
-            get => _users;
-            set {
-                _users = value;
-
-                if(PropertyChanged != null) {
-                    IsLoading = false;
-                    PropertyChanged(this, new PropertyChangedEventArgs("Police"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("Thiefs"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("Users"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("IsLoading"));
-                }
+                OnPropertyChanged("GameModel");
             }
         }
 
@@ -46,16 +32,18 @@ namespace Hunted_Mobile.ViewModel {
             get => _isloading;
             set {
                 _isloading = value;
-
-                if(PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("IsLoading"));
+                OnPropertyChanged("IsLoading");
             }
         }
 
-        private readonly UserRepository _userRepository = new UserRepository();
-        private Lobby _page;
-        public event PropertyChangedEventHandler PropertyChanged;
-        public bool IsValid { get; set; }
+        public List<User> Users {
+            get => _users;
+            set {
+                _users = value;
+                OnPropertyChanged("Thiefs");
+                OnPropertyChanged("Police");
+            }
+        }
 
         public ObservableCollection<User> Thiefs {
             get => new ObservableCollection<User>(Users.Where(user => user.Role == "thief").ToList());
@@ -70,18 +58,13 @@ namespace Hunted_Mobile.ViewModel {
             _currentUser = currentUser;
             _gameModel.Id = _currentUser.InviteKey.GameId;
 
-            this.LoadUsers();
+            Task.Run(async () => await LoadUsers());
         }
 
-        public void LoadUsers() {
+        public async Task LoadUsers() {
             IsLoading = true;
-
-            GetAll().ContinueWith(t => IsLoading = false);
-        }
-
-        // Get all users within a game
-        public async Task GetAll() {
             Users = await _userRepository.GetAll(GameModel.Id);
+            IsLoading = false;
         }
     }
 }
