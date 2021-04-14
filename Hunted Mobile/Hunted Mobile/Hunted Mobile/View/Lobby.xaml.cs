@@ -16,7 +16,7 @@ namespace Hunted_Mobile.View {
             BindingContext = this;
 
             LobbyViewModel = new LobbyViewModel(new Game() {
-                GameId = user.InviteKey.GameId,
+                Id = user.InviteKey.GameId,
             }, user);
 
             this.LoadUsers();

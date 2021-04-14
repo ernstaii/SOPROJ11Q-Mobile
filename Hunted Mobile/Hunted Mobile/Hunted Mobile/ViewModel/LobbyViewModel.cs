@@ -31,7 +31,7 @@ namespace Hunted_Mobile.ViewModel {
 
         // Get all users within a game
         public async Task GetUsers() {
-            _users = await _userRepository.GetAll(_model.GameId);
+            _users = await _userRepository.GetAll(_model.Id);
         }
     }
 }

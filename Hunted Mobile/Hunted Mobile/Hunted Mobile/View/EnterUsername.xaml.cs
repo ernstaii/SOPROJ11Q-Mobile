@@ -17,7 +17,7 @@ namespace Hunted_Mobile.View {
             BindingContext = this;
 
             EnterUsernameViewModel = new EnterUsernameViewModel();
-            EnterUsernameViewModel.InviteKey = inviteKeyViewModel.Model;
+            EnterUsernameViewModel.InviteKey = inviteKeyViewModel.InviteKeyModel;
         }
 
         private async void HandleJoinGame(object sender, EventArgs e) {
