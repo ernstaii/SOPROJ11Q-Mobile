@@ -1,8 +1,8 @@
-﻿using PusherClient;
+﻿using Newtonsoft.Json;
+
+using PusherClient;
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Service {
@@ -50,7 +50,17 @@ namespace Hunted_Mobile.Service {
         public WebSocketService(int gameId) {
             _pusher.SubscribeAsync("game." + gameId);
 
-            _pusher.Bind("startGame", (obj) => StartGame());
+            Bind("startGame", ()=> StartGame(), gameId);
+        }
+
+        private void Bind(string eventName, Action action, int gameId) {
+            string gameIdStr = gameId.ToString();
+            _pusher.Bind(eventName, (PusherEvent eventData) => {
+                object data = JsonConvert.DeserializeObject<object>(eventData.Data);
+                if(eventData.ChannelName.EndsWith(gameIdStr)) {
+                    action();
+                }
+            });
         }
 
         public async Task Connect() {
