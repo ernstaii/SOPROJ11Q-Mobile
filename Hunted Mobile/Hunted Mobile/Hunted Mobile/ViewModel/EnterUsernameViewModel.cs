@@ -70,7 +70,7 @@ namespace Hunted_Mobile.ViewModel {
                 var Navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
 
                 var previousPage = Navigation.NavigationStack.LastOrDefault();
-                await Navigation.PushAsync(new Lobby(this), true);
+                await Navigation.PushAsync(new Lobby(UserModel), true);
                 Navigation.RemovePage(previousPage);
             }
 

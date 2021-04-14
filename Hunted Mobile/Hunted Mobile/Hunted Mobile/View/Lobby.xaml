@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Hunted_Mobile.ViewModel"
              x:Class="Hunted_Mobile.View.Lobby">
     <AbsoluteLayout>
         <!-- Main layout -->
@@ -19,7 +20,7 @@
                    TextColor="Black" 
                    FontAttributes="Bold" 
                    FontSize="20"/>
-            <ListView Grid.Row="1" ItemsSource="{Binding Cops}"  x:Name="ListOfCops">
+            <ListView Grid.Row="1" ItemsSource="{Binding Police}"  x:Name="ListOfCops">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
@@ -50,12 +51,11 @@
                 </ListView.ItemTemplate>
             </ListView>
         </StackLayout>
-        
+
         <!-- Overlay layout -->
-        <StackLayout x:Name="SpinnerLayout" IsVisible="False" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5">
+        <StackLayout IsVisible="{Binding IsLoading}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5">
             <ActivityIndicator
-            x:Name="Spinner"
-            IsRunning="False"
+            IsRunning="{Binding IsLoading}"
             HorizontalOptions="CenterAndExpand"
             VerticalOptions="CenterAndExpand"
             Color="Black"/>

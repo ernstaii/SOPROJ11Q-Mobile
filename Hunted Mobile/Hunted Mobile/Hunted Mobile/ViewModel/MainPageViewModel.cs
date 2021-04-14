@@ -63,7 +63,7 @@ namespace Hunted_Mobile.ViewModel {
 
             // Navigate when InviteKey is valid
             if(IsValid) {
-                await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new EnterUsername(this));
+                await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new EnterUsername(InviteKeyModel));
             }
 
             SubmitButtonIsEnable = true;

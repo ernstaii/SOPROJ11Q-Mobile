@@ -10,23 +10,33 @@ using Hunted_Mobile.Repository;
 
 using Xamarin.Forms;
 using Hunted_Mobile.ViewModel;
+using Hunted_Mobile.Model.GameModels;
 
 namespace Hunted_Mobile.View {
     public partial class MainPage : ContentPage {
+        private MainPageViewModel _mainPageViewModel;
         public MainPage() {
             this.InitializeComponent();
-            BindingContext = new MainPageViewModel(this);
+            BindingContext = _mainPageViewModel = new MainPageViewModel(this);
         }
 
-        // This method is called when rendering this page
+        // This method is called when rendering this page, because the InviteKey should be reset
         protected override void OnAppearing() {
-            //BindingContext = new MainPageViewModel();
+            _mainPageViewModel.InviteKeyModel = new InviteKey();
             base.OnAppearing();
         }
 
         // Test button for navigation to MapPage
         private void ToMapButtonClicked(object sender, EventArgs e) {
             Navigation.PushAsync(new MapPage(), true);
+        }
+        private void TLobbyButtonClicked(object sender, EventArgs e) {
+            Navigation.PushAsync(new Lobby(new User() {
+                Name = "Martijn",
+                InviteKey = new InviteKey() {
+                    GameId = 2,
+                }
+            }));
         }
     }
 }
