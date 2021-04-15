@@ -23,8 +23,8 @@ namespace Hunted_Mobile.ViewModel {
     public class MapViewModel {
         private readonly MapView _mapView;
         private readonly Model.Map _mapModel;
+        private LootRepository _lootRepository = new LootRepository();
         private readonly GpsService _gpsService;
-        public LootRepository _lootRepository = new LootRepository();
 
         public MapViewModel(MapView view) {
             _mapView = view;
