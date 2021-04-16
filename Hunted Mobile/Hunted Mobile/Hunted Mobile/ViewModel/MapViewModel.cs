@@ -12,7 +12,6 @@ using Mapsui.Styles;
 using Mapsui.UI.Forms;
 using Mapsui.Utilities;
 using Mapsui.Widgets;
-using Plugin.Geolocator.Abstractions;
 
 using System;
 using System.Collections.Generic;
@@ -24,13 +23,14 @@ namespace Hunted_Mobile.ViewModel {
     public class MapViewModel {
         private readonly MapView _mapView;
         private readonly Model.Map _mapModel;
-        private LootRepository _lootRepository = new LootRepository();
+        private readonly LootRepository _lootRepository;
         private readonly GpsService _gpsService;
 
         public MapViewModel(MapView view) {
             _mapView = view;
             _mapModel = new Model.Map();
             _gpsService = new GpsService();
+            _lootRepository = new LootRepository();
 
             AddOsmLayerToMapView();
 
