@@ -50,11 +50,11 @@ namespace Hunted_Mobile.Service {
         public WebSocketService(int gameId) {
             _pusher.SubscribeAsync("game." + gameId);
 
-            Bind("startGame", ()=> StartGame(), gameId);
+            string gameIdStr = gameId.ToString();
+            Bind("startGame", ()=> StartGame(), gameIdStr);
         }
 
-        private void Bind(string eventName, Action action, int gameId) {
-            string gameIdStr = gameId.ToString();
+        private void Bind(string eventName, Action action, string gameIdStr) {
             _pusher.Bind(eventName, (PusherEvent eventData) => {
                 object data = JsonConvert.DeserializeObject<object>(eventData.Data);
                 if(eventData.ChannelName.EndsWith(gameIdStr)) {
