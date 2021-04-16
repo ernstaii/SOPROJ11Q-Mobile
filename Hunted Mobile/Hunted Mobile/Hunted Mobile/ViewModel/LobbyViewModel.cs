@@ -1,6 +1,7 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Repository;
+using Hunted_Mobile.Service;
 using Hunted_Mobile.View;
 
 using System;
@@ -10,6 +11,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class LobbyViewModel : BaseViewModel {
@@ -59,6 +62,27 @@ namespace Hunted_Mobile.ViewModel {
             _gameModel.Id = _currentUser.InviteKey.GameId;
 
             Task.Run(async () => await LoadUsers());
+
+            if(!WebSocketService.Connected) {
+                WebSocketService socket = new WebSocketService(_gameModel.Id);
+                socket.Connect();
+                socket.StartGame += StartGame;
+            }
+        }
+
+        private void StartGame() {
+            Task.Run(async () => await NavigateToMapPage());
+        }
+
+        // To manually navigate to a different page, the mainthread need to be approached
+        public async Task NavigateToMapPage() {
+            try {
+                Device.BeginInvokeOnMainThread(() => {
+                    Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MapPage(), true);
+                }); 
+            }
+            catch(Exception e) {
+            }
         }
 
         public async Task LoadUsers() {
