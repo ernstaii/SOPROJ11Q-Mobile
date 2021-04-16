@@ -25,10 +25,5 @@ namespace Hunted_Mobile.View {
             _mainPageViewModel.InviteKeyModel = new InviteKey();
             base.OnAppearing();
         }
-
-        // Test button for navigation to MapPage
-        private void ToMapButtonClicked(object sender, EventArgs e) {
-            Navigation.PushAsync(new MapPage(), true);
-        }
     }
 }
