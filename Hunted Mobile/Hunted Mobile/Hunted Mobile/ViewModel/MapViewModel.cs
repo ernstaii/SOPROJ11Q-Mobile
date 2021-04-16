@@ -20,11 +20,26 @@ using Hunted_Mobile.Service;
 using Hunted_Mobile.Service.Gps;
 
 namespace Hunted_Mobile.ViewModel {
-    public class MapViewModel {
+    public class MapViewModel : BaseViewModel {
         private readonly MapView _mapView;
         private readonly Model.Map _mapModel;
         private readonly LootRepository _lootRepository;
         private readonly GpsService _gpsService;
+
+        private bool _isEnabled { get; set; }
+        /// <summary>
+        /// This property will disable the touch of the user with the mapView
+        /// </summary>
+        public bool IsEnabled {
+            get => _isEnabled;
+            set {
+                _isEnabled = value;
+                if(_mapView != null && _mapView.Content != null)
+                    _mapView.Content.IsEnabled = _isEnabled;
+                
+                OnPropertyChanged("IsEnabled");
+            }
+        }
 
         public MapViewModel(MapView view) {
             _mapView = view;
