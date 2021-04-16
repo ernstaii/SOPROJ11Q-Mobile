@@ -37,7 +37,10 @@ namespace Hunted_Mobile.ViewModel {
             _page = page;
         }
 
-        // Getting InviteKey based on the Value
+        /// <summary>
+        /// Getting InviteKey based on the Value
+        /// </summary>
+        /// <returns></returns>
         public async Task Get() {
             IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page);
 
@@ -51,7 +54,9 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        // When user tries to validate his InviteKey
+        /// <summary>
+        /// Navigate to the EnterUsernamePage with a valid InviteKey
+        /// </summary>
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
             SubmitButtonIsEnable = false;
             await Get();
