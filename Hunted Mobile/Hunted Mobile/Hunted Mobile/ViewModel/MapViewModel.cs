@@ -65,19 +65,7 @@ namespace Hunted_Mobile.ViewModel {
                 _gpsService.StartGps();
             }
             _gpsService.LocationChanged += MyLocationUpdated;
-
-            #region Test code
-            if(!WebSocketService.Connected) {
-                WebSocketService socket = new WebSocketService(1);
-                socket.Connect();
-                socket.StartGame += StartGame;
-            }
         }
-
-        private void StartGame() {
-            Console.WriteLine("Game start event was received! OMG");
-        }
-        #endregion
 
         /// <summary>
         /// Action to execute when the device location has updated
@@ -204,7 +192,7 @@ namespace Hunted_Mobile.ViewModel {
                     Scale = 0.666f,
                 });
             }
-            
+
             // Playing player
             _mapView.Pins.Add(new Pin(_mapView) {
                 Label = _mapModel.PlayingUser.Name,
