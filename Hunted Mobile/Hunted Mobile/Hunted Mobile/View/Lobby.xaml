@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Hunted_Mobile.ViewModel"
              x:Class="Hunted_Mobile.View.Lobby">
     <AbsoluteLayout>
         <!-- Main layout -->
@@ -31,7 +32,7 @@
                    TextColor="Black" 
                    FontAttributes="Bold" 
                    FontSize="20"/>
-            <ListView Grid.Row="2" ItemsSource="{Binding Cops}"  x:Name="ListOfCops">
+            <ListView Grid.Row="2" ItemsSource="{Binding Police}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
@@ -52,7 +53,7 @@
                    FontSize="20"
                    Grid.Column="1"
                    Grid.Row="1"/>
-            <ListView Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Thiefs}"  x:Name="ListOfThiefs">
+            <ListView Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Thiefs}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
@@ -66,10 +67,9 @@
         </Grid>
         
         <!-- Overlay layout -->
-        <StackLayout x:Name="SpinnerLayout" IsVisible="False" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5">
+        <StackLayout IsVisible="{Binding IsLoading}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5">
             <ActivityIndicator
-            x:Name="Spinner"
-            IsRunning="False"
+            IsRunning="{Binding IsLoading}"
             HorizontalOptions="CenterAndExpand"
             VerticalOptions="CenterAndExpand"
             Color="Black"/>
