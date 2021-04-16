@@ -12,24 +12,25 @@ using Mapsui.Styles;
 using Mapsui.UI.Forms;
 using Mapsui.Utilities;
 using Mapsui.Widgets;
-using Plugin.Geolocator.Abstractions;
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hunted_Mobile.Service;
 using Hunted_Mobile.Service.Gps;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel {
         private readonly MapView _mapView;
         private readonly Model.Map _mapModel;
-        private LootRepository _lootRepository = new LootRepository();
+        private readonly LootRepository _lootRepository;
         private readonly GpsService _gpsService;
 
         public MapViewModel(MapView view) {
             _mapView = view;
             _mapModel = new Model.Map();
             _gpsService = new GpsService();
+            _lootRepository = new LootRepository();
 
             AddOsmLayerToMapView();
 
@@ -64,7 +65,19 @@ namespace Hunted_Mobile.ViewModel {
                 _gpsService.StartGps();
             }
             _gpsService.LocationChanged += MyLocationUpdated;
+
+            #region Test code
+            if(!WebSocketService.Connected) {
+                WebSocketService socket = new WebSocketService(1);
+                socket.Connect();
+                socket.StartGame += StartGame;
+            }
         }
+
+        private void StartGame() {
+            Console.WriteLine("Game start event was received! OMG");
+        }
+        #endregion
 
         /// <summary>
         /// Action to execute when the device location has updated
