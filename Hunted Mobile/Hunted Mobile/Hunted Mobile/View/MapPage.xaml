@@ -9,6 +9,11 @@
                 VerticalOptions="FillAndExpand"
                 HorizontalOptions="Fill"
                 BackgroundColor="Gray" />
+            <!-- Submit InviteCode to join a game -->
+                <Button Text="Messages"
+                    CornerRadius="30"
+                    Margin="10, 10"
+                    HeightRequest="20"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
