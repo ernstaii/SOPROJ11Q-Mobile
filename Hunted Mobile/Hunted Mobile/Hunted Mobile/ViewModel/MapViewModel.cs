@@ -26,7 +26,8 @@ namespace Hunted_Mobile.ViewModel {
         private readonly LootRepository _lootRepository;
         private readonly GpsService _gpsService;
 
-        private bool _isEnabled { get; set; }
+        private bool _isEnabled = true;
+
         /// <summary>
         /// This property will disable the touch of the user with the mapView
         /// </summary>
@@ -38,8 +39,14 @@ namespace Hunted_Mobile.ViewModel {
                     _mapView.Content.IsEnabled = _isEnabled;
                 
                 OnPropertyChanged("IsEnabled");
+                OnPropertyChanged("VisibleOverlay");
             }
         }
+
+        /// <summary>
+        /// The oposite of the enable-state
+        /// </summary>
+        public bool VisibleOverlay => !IsEnabled;
 
         public MapViewModel(MapView view) {
             _mapView = view;
