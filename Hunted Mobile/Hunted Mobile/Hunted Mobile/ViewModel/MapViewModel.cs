@@ -89,15 +89,27 @@ namespace Hunted_Mobile.ViewModel {
             _gpsService.LocationChanged += MyLocationUpdated;
 
             #region Test code
+            // This if statement and its content can be safely deleted
             if(!WebSocketService.Connected) {
                 WebSocketService socket = new WebSocketService(1);
                 socket.Connect();
-                socket.StartGame += StartGame;
+                socket.ResumeGame += Socket_ResumeGame;
+                socket.PauseGame += Socket_PauseGame;
+                socket.EndGame += Socket_EndGame;
             }
         }
 
-        private void StartGame() {
-            Console.WriteLine("Game start event was received! OMG");
+        // These methods can be safely deleted
+        private void Socket_EndGame() {
+            Console.WriteLine("Game end event received!");
+        }
+
+        private void Socket_PauseGame() {
+            Console.WriteLine("Game pause event received!");
+        }
+
+        private void Socket_ResumeGame() {
+            Console.WriteLine("Game resume event received!");
         }
         #endregion
 
@@ -226,7 +238,7 @@ namespace Hunted_Mobile.ViewModel {
                     Scale = 0.666f,
                 });
             }
-            
+
             // Playing player
             _mapView.Pins.Add(new Pin(_mapView) {
                 Label = _mapModel.PlayingUser.Name,
