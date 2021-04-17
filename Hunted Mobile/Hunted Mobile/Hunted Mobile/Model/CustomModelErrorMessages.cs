@@ -21,6 +21,8 @@ namespace Hunted_Mobile.Model {
 
                     // Check if error-messages contains key and if key has value
                     if(ErrorMessages.ContainsKey(propertyLowercase) && ErrorMessages.TryGetValue(propertyLowercase, out string value)) {
+                        ErrorMessages.Remove(propertyLowercase);
+
                         yield return new ValidationResult(value, new string[1] { property.Name });
                     }
                 }

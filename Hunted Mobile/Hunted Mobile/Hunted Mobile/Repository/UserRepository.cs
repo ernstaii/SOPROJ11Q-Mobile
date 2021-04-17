@@ -19,7 +19,7 @@ namespace Hunted_Mobile.Repository {
 
             return new User((int) response.GetNumberValue("id")) {
                 Location = null,
-                Name = response.GetStringValue("name"),
+                Name = username,
                 InviteKey = inviteKey,
                 Role = response.GetStringValue("role"),
                 ErrorMessages = response.ErrorMessages,
