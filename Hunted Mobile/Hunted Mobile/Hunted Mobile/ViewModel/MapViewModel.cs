@@ -25,6 +25,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Model.Map _mapModel;
         private readonly LootRepository _lootRepository;
         private readonly GpsService _gpsService;
+        private readonly WebSocketService _webSocketService;
 
         private bool _isEnabled = true;
 
@@ -48,7 +49,7 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         public bool VisibleOverlay => !IsEnabled;
 
-        public MapViewModel(MapView view) {
+        public MapViewModel(MapView view, Game gameModel) {
             _mapView = view;
             _mapModel = new Model.Map();
             _gpsService = new GpsService();
@@ -86,32 +87,38 @@ namespace Hunted_Mobile.ViewModel {
             if(!_gpsService.GpsHasStarted()) {
                 _gpsService.StartGps();
             }
+
             _gpsService.LocationChanged += MyLocationUpdated;
 
-            #region Test code
-            // This if statement and its content can be safely deleted
-            if(!WebSocketService.Connected) {
-                WebSocketService socket = new WebSocketService(1);
-                socket.Connect();
-                socket.ResumeGame += Socket_ResumeGame;
-                socket.PauseGame += Socket_PauseGame;
-                socket.EndGame += Socket_EndGame;
+            _webSocketService = new WebSocketService(gameModel.Id);
+            Task.Run(async () => await StartSocket());
+        }
+
+        private async Task StartSocket() {
+            try {
+                if(!WebSocketService.Connected) {
+                   await _webSocketService.Connect();
+                }
+
+                _webSocketService.ResumeGame += ResumeGame;
+                _webSocketService.PauseGame += PauseGame;
+                _webSocketService.EndGame += EndGame;
+            }
+            catch {
             }
         }
 
-        // These methods can be safely deleted
-        private void Socket_EndGame() {
+        private void EndGame() {
             Console.WriteLine("Game end event received!");
         }
 
-        private void Socket_PauseGame() {
-            Console.WriteLine("Game pause event received!");
+        private void PauseGame() {
+            IsEnabled = false;
         }
 
-        private void Socket_ResumeGame() {
-            Console.WriteLine("Game resume event received!");
+        private void ResumeGame() {
+            IsEnabled = true;
         }
-        #endregion
 
         /// <summary>
         /// Action to execute when the device location has updated
