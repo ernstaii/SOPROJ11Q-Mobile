@@ -29,6 +29,11 @@ namespace Hunted_Mobile.Service {
             return await GetHttpClient().DeleteAsync(GetUrl(path));
         }
 
+        /// <summary>
+        /// Always prepare url with the IPAdress and api path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         protected static string GetUrl(string path) {
             return $"{IPAdress}/api/{path}";
         }
