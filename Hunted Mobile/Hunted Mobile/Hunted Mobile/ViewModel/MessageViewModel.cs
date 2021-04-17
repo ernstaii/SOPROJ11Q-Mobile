@@ -14,9 +14,13 @@ namespace Hunted_Mobile.ViewModel {
         public MessageViewModel(Messages page){
             _page = page;
 
-            Messages.Add("[" + DateTime.Now.ToString("HH:mm") + "] Groepsleider: " + "Pauze!");
-            Messages.Add("[" + DateTime.Now.ToString("HH:mm") + "] Groepsleider: " + "Hervat!");
-            Messages.Add("[" + DateTime.Now.ToString("HH:mm") + "] Groepsleider: " + "Einde");
+            AddMessage("Pauze");
+            AddMessage("Hervat");
+            AddMessage("We stoppen");
+        }
+
+        public void AddMessage(String message) {
+            Messages.Add("[" + DateTime.Now.ToString("HH:mm") + "] Groepsleider: " + message);
         }
     }
 }
