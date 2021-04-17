@@ -23,6 +23,17 @@ namespace Hunted_Mobile.Model {
 
         }
 
+        public Location(string commaSeparatedLatitudeLongitude) {
+            string[] split = commaSeparatedLatitudeLongitude.Split(',');
+            try {
+                Latitude = double.Parse(split[0]);
+                Longitude = double.Parse(split[1]);
+            }
+            catch(Exception) {
+
+            }
+        }
+
         public Location(double Latitude, double Longitude) {
             this.Latitude = Latitude;
             this.Longitude = Longitude;
@@ -54,6 +65,10 @@ namespace Hunted_Mobile.Model {
             return Math.Sqrt(
                 Math.Pow(location.Latitude - Latitude, 2) + Math.Pow(location.Longitude - Longitude, 2)
             );
+        }
+
+        public string ToCsvString() {
+            return $"{Latitude},{Longitude}";
         }
     }
 }

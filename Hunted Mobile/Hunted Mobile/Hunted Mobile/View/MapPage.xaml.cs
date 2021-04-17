@@ -17,10 +17,12 @@ using Xamarin.Forms.Xaml;
 namespace Hunted_Mobile {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MapPage : ContentPage {
-        public MapPage() {
+        public MapPage(MapViewModel viewModel) {
             InitializeComponent();
 
-            BindingContext = new MapViewModel(mapView);
+            viewModel.SetMapView(mapView);
+
+            BindingContext = viewModel;
         }
     }
 }

@@ -5,8 +5,7 @@ using System.Text;
 
 namespace Hunted_Mobile.Model.GameModels {
     public class User {
-        public readonly int Id;
-        private string _userName;
+        public int Id { get; set; }
         public Location Location { get; set; }
         public InviteKey InviteKey { get; set; }
         [Required(ErrorMessage = "De code is verplicht")]

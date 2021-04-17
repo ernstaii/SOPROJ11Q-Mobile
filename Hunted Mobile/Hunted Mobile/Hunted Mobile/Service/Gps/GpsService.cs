@@ -27,17 +27,16 @@ namespace Hunted_Mobile.Service.Gps {
         }
 
         public async void StartGps() {
-            //TODO settings may need to change
             await CrossGeolocator.Current.StartListeningAsync(
-                TimeSpan.FromSeconds(1),
-                1,
+                TimeSpan.FromSeconds(14),
+                8,
                 false,
                 new ListenerSettings {
                     ActivityType = ActivityType.Fitness,
                     AllowBackgroundUpdates = false,
                     DeferLocationUpdates = true,
-                    DeferralDistanceMeters = 1,
-                    DeferralTime = TimeSpan.FromSeconds(5),
+                    DeferralDistanceMeters = 10,
+                    DeferralTime = TimeSpan.FromSeconds(14),
                     ListenForSignificantChanges = false,
                     PauseLocationUpdatesAutomatically = true
                 }

@@ -71,7 +71,12 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private void StartGame() {
+        private async void StartGame() {
+            if(GameModel.Interval < 30) {
+                var gameRepo = new GameRepository();
+                GameModel.Interval = await gameRepo.GetInterval(_gameModel.Id) ?? 0;
+            }
+
             NavigateToMapPage();
             _webSocketService.StartGame -= StartGame;
         }
@@ -79,8 +84,13 @@ namespace Hunted_Mobile.ViewModel {
         // To manually navigate to a different page, the mainthread need to be approached
         public void NavigateToMapPage() {
             try {
+                Map mapModel = new Map() {
+                    PlayingUser = _currentUser
+                };
+                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel));
+
                 Device.BeginInvokeOnMainThread(() => {
-                    Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MapPage(), true);
+                    Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
                 }); 
             }
             catch(Exception e) {

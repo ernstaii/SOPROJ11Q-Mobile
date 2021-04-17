@@ -57,5 +57,19 @@ namespace Hunted_Mobile.Repository {
 
             return output;
         }
+
+        public async Task<bool> Update(int userId, Location location) {
+            // Prepare parameters inside List
+            var content = new FormUrlEncodedContent(
+                new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("location", location.ToCsvString()),
+                }
+            );
+
+            var response = await new HttpClient().PutAsync(HttpClientService.GetUrl($"users/{userId}"), content);
+            var result = await ConvertResponseService.ConvertRaw(response);
+
+            return result != null;
+        }
     }
 }

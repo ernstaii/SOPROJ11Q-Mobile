@@ -47,5 +47,15 @@ namespace Hunted_Mobile.Service {
 
             return null;
         }
+
+        public async static Task<string>ConvertRaw(HttpResponseMessage response){
+            // Check if request went successfully
+            if(response.IsSuccessStatusCode) {
+                var contents = await response.Content.ReadAsStringAsync();
+
+                return contents;
+            }
+            else return null;
+        }
     }
 }
