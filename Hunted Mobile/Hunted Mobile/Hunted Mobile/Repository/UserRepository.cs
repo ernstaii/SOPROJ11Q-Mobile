@@ -19,9 +19,9 @@ namespace Hunted_Mobile.Repository {
 
             return response.IsSuccessful ? new User((int) response.GetValue("id")) {
                 Location = null,
-                Name = (string) response.GetValue("name"),
+                Name = response.GetStringValue("name"),
                 InviteKey = inviteKey,
-                Role = (string) response.GetValue("role"),
+                Role = response.GetStringValue("role"),
             } : null;
         }
 

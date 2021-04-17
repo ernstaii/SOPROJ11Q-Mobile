@@ -14,7 +14,6 @@ namespace Hunted_Mobile.Service {
         public bool HasMultipleResults { get; set; }
         public HttpResponseMessage ResponseMessage { get; set; }
 
-        // TODO:
         private string _responseContent { get; set; }
         public JObject Item { get; set; }
         public JArray Items { get; set; }
@@ -31,19 +30,19 @@ namespace Hunted_Mobile.Service {
 
             if(!HasErrors) {
                 await ReadingRequestContent();
+                ConvertResponseContent();
 
                 // Check if request went successfully
-                if(IsSuccessful)
-                    ConvertResponseContent();
-                else {
-                    ConvertResponseErrorsContent();
-                }
+                if(!IsSuccessful)
+                    GetErrors();
             }
         }
 
         protected async Task ExecuteRequest(Task<HttpResponseMessage> request) {
             try {
                 ErrorMessages.Clear();
+                MainErrorMessage = null;
+
                 ResponseMessage = await request;
             }
             catch(Exception e) {
@@ -62,7 +61,6 @@ namespace Hunted_Mobile.Service {
 
         protected void ConvertResponseContent() {
             try {
-                // Parse
                 if(HasMultipleResults)
                     Items = JArray.Parse(_responseContent);
                 else
@@ -73,10 +71,17 @@ namespace Hunted_Mobile.Service {
             }
         }
 
-        // TODO errors
-        protected void ConvertResponseErrorsContent() {
+        protected void GetErrors() {
             try {
-                var test = (JObject) JsonConvert.DeserializeObject(_responseContent);
+                MainErrorMessage = GetStringValue("message");
+
+                // Loop through every error
+                foreach(JToken child in GetValue("errors").Children()) {
+                    var property = child as JProperty;
+                    if(property != null) {
+                        ErrorMessages.Add(property.Name, property.Value.First.ToString());
+                    }
+                }
             }
             catch(Exception e) {
                 MainErrorMessage = "Er is iets misgegaan bij het omzetten van de errors van de response";
@@ -85,6 +90,10 @@ namespace Hunted_Mobile.Service {
 
         public JToken GetValue(string key) {
             return Item.GetValue(key);
+        }
+
+        public string GetStringValue(string key) {
+            return Item.GetValue(key).ToString();
         }
     }
 }
