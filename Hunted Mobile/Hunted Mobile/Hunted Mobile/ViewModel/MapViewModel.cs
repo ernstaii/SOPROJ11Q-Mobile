@@ -21,7 +21,7 @@ using Hunted_Mobile.Service.Gps;
 using System.Timers;
 
 namespace Hunted_Mobile.ViewModel {
-    public class MapViewModel {
+    public class MapViewModel : BaseViewModel {
         private MapView _mapView;
         private readonly Model.Map _mapModel;
         private readonly Game _gameModel;
@@ -31,6 +31,21 @@ namespace Hunted_Mobile.ViewModel {
         private readonly WebSocketService _socketService;
         private Timer _intervalUpdateTimer;
         private Pin _playerPin;
+
+        private bool _isEnabled { get; set; }
+        /// <summary>
+        /// This property will disable the touch of the user with the mapView
+        /// </summary>
+        public bool IsEnabled {
+            get => _isEnabled;
+            set {
+                _isEnabled = value;
+                if(_mapView != null && _mapView.Content != null)
+                    _mapView.Content.IsEnabled = _isEnabled;
+                
+                OnPropertyChanged("IsEnabled");
+            }
+        }
 
         public MapViewModel(Game gameModel, Model.Map mapModel) {
             _mapModel = mapModel;
