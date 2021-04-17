@@ -1,4 +1,5 @@
-﻿using Hunted_Mobile.View;
+﻿using Hunted_Mobile.Service;
+using Hunted_Mobile.View;
 
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,16 @@ namespace Hunted_Mobile.ViewModel {
             AddMessage("Pauze");
             AddMessage("Hervat");
             AddMessage("We stoppen");
+
+            WebSocketService socket = new WebSocketService(1);
+            socket.StartGame += AddMessage("Het spel gaat beginnen!");
+            socket.StartGame += AddMessage("Het spel gaat beginnen!");
+            socket.StartGame += AddMessage("Het spel gaat beginnen!");
+            socket.StartGame += AddMessage("Het spel gaat beginnen!");
+
+            if(!WebSocketService.Connected) {
+                socket.Connect();
+            }
         }
 
         public void AddMessage(String message) {
