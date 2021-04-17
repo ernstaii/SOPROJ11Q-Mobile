@@ -13,7 +13,8 @@
                 <Button Text="Messages"
                     CornerRadius="30"
                     Margin="10, 10"
-                    HeightRequest="20"/>
+                    HeightRequest="20"
+                    Command="{Binding ButtonSelectedCommand}"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

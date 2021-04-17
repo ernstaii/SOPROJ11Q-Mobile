@@ -18,10 +18,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hunted_Mobile.Service.Gps;
+using System.Windows.Input;
+using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel {
         private readonly MapView _mapView;
+        private View.Messages _messagesView;
         private readonly Model.Map _mapModel;
         private LootRepository _lootRepository = new LootRepository();
         private readonly GpsService _gpsService;
@@ -30,6 +33,7 @@ namespace Hunted_Mobile.ViewModel {
             _mapView = view;
             _mapModel = new Model.Map();
             _gpsService = new GpsService();
+            _messagesView = new View.Messages();
 
             AddOsmLayerToMapView();
 
@@ -85,7 +89,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void CenterMapOnLocation(Location center, double zoomResolution) {
-            Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
+            Mapsui.Geometries.Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
             _mapView.Navigator.CenterOn(centerPoint);
 
             _mapView.Navigator.NavigateTo(centerPoint, zoomResolution);
@@ -96,9 +100,9 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         private void LimitMapViewport(Location center, int limit = 100000) {
             _mapView.Map.Limiter = new ViewportLimiterKeepWithin();
-            Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
-            Point min = new Point(centerPoint.X - limit, centerPoint.Y - limit);
-            Point max = new Point(centerPoint.X + limit, centerPoint.Y + limit);
+            Mapsui.Geometries.Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
+            Mapsui.Geometries.Point min = new Mapsui.Geometries.Point(centerPoint.X - limit, centerPoint.Y - limit);
+            Mapsui.Geometries.Point max = new Mapsui.Geometries.Point(centerPoint.X + limit, centerPoint.Y + limit);
             _mapView.Map.Limiter.PanLimits = new BoundingBox(min, max);
         }
 
@@ -165,9 +169,9 @@ namespace Hunted_Mobile.ViewModel {
             return new Layer("Polygon") {
                 DataSource = memoryProvider,
                 Style = new VectorStyle {
-                    Fill = new Brush(new Color(0, 0, 0, 0)),
+                    Fill = new Mapsui.Styles.Brush(new Mapsui.Styles.Color(0, 0, 0, 0)),
                     Outline = new Pen {
-                        Color = Color.Red,
+                        Color = Mapsui.Styles.Color.Red,
                         Width = 2,
                         PenStyle = PenStyle.DashDotDot,
                         PenStrokeCap = PenStrokeCap.Round
@@ -219,5 +223,9 @@ namespace Hunted_Mobile.ViewModel {
 
             _mapModel.SetLoot(lootList);
         }
+
+        public ICommand ButtonSelectedCommand => new Command(async (e) => {      
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(_messagesView);      
+        });
     }
 }
