@@ -18,7 +18,7 @@
             <!-- For round corners, then a frame is neccessary -->
             <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
                 <StackLayout>
-                    <Label Text="Gepauzeerd"
+                    <Label Text="{Binding TitleOverlay}"
                            Padding="5"
                            Margin="0,25,0,0" 
                            HorizontalTextAlignment="Center" 
@@ -28,13 +28,21 @@
 
                     <BoxView VerticalOptions="FillAndExpand" />
 
-                    <Label Text="Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij, dan wordt het spel weer hervat."
+                    <Label Text="{Binding DescriptionOverlay}"
                            Margin="0,0,0,15"
                            HorizontalTextAlignment="Center" 
                            TextColor="Black" 
                            FontSize="16"/>
-                    
+
                     <BoxView VerticalOptions="FillAndExpand" />
+
+                    <Button Text="Terug naar hoofdscherm"
+                            BackgroundColor="Blue"
+                            TextColor="White"
+                            CornerRadius="30" 
+                            IsVisible="{Binding GameHasEnded}"
+                            Command="{Binding ExitGameCommand}"
+                            Margin="0, 20"/>
                 </StackLayout>
             </Frame>
         </AbsoluteLayout>
