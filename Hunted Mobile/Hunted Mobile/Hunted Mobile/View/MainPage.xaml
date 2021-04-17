@@ -26,9 +26,6 @@
                     IsEnabled="{Binding SubmitButtonIsEnable}"
                     Command="{Binding ButtonSelectedCommand}"
                     Margin="0, 20"/>
-
-            <!-- This button will redirect the user to the Map -->
-            <Button Text="To map" Clicked="ToMapButtonClicked"/>
         </StackLayout>
     </StackLayout>
 </ContentPage>
