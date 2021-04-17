@@ -17,11 +17,11 @@ namespace Hunted_Mobile.Repository {
                 role = inviteKey.Role
             }));
 
-            return response.IsSuccessful ? new User((int) response.Item.GetValue("id")) {
+            return response.IsSuccessful ? new User((int) response.GetValue("id")) {
                 Location = null,
-                Name = (string) response.Item.GetValue("name"),
+                Name = (string) response.GetValue("name"),
                 InviteKey = inviteKey,
-                Role = (string) response.Item.GetValue("role"),
+                Role = (string) response.GetValue("role"),
             } : null;
         }
 

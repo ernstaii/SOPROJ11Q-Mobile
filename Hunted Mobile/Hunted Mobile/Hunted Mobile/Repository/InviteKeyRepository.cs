@@ -10,9 +10,9 @@ namespace Hunted_Mobile.Repository {
             await response.Convert(HttpClientRequestService.Get($"invite-key/{inviteCode}"));
 
             return response.IsSuccessful ? new InviteKey() {
-                Value = (string) response.Item.GetValue("value"),
-                GameId = (int) response.Item.GetValue("game_id"),
-                Role = (string) response.Item.GetValue("role")
+                Value = (string) response.GetValue("value"),
+                GameId = (int) response.GetValue("game_id"),
+                Role = (string) response.GetValue("role")
             } : null;
         }
     }

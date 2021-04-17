@@ -79,8 +79,12 @@ namespace Hunted_Mobile.Service {
                 var test = (JObject) JsonConvert.DeserializeObject(_responseContent);
             }
             catch(Exception e) {
-                MainErrorMessage = "Er is iets misgegaan bij het omzetten van de inhoud van de response";
+                MainErrorMessage = "Er is iets misgegaan bij het omzetten van de errors van de response";
             }
+        }
+
+        public JToken GetValue(string key) {
+            return Item.GetValue(key);
         }
     }
 }
