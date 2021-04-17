@@ -10,32 +10,32 @@ using System.Threading.Tasks;
 namespace Hunted_Mobile.Repository {
     public class UserRepository {
         public async Task<User> Create(InviteKey inviteKey, string username) {
-            // Prepare parameters inside List
-            var response = await HttpClientService.Create("users", new {
+            var response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Create("users", new {
                 username = username,
                 invite_key = inviteKey.Value,
                 role = inviteKey.Role
-            });
+            }));
 
-            var result = await ConvertResponseService.ConvertJObject(response);
-
-            return result != null ? new User((int) result.GetValue("id")) {
+            return response.IsSuccessful ? new User((int) response.Item.GetValue("id")) {
                 Location = null,
-                Name = (string) result.GetValue("name"),
+                Name = (string) response.Item.GetValue("name"),
                 InviteKey = inviteKey,
-                Role = (string) result.GetValue("role"),
+                Role = (string) response.Item.GetValue("role"),
             } : null;
         }
 
         // Get all users that are linked to a game
         public async Task<List<User>> GetAll(int gameId) {
-            var response = await HttpClientService.GetAll($"game/{gameId}/users");
-            var result = await ConvertResponseService.ConvertJArray(response);
+            var response = new HttpClientResponse() {
+                HasMultipleResults = true,
+            };
+            await response.Convert(HttpClientRequestService.GetAll($"game/{gameId}/users"));
 
             var output = new List<User>();
 
             // Looping through the result
-            foreach(JObject item in result) {
+            foreach(JObject item in response.Items) {
                 string role = item.GetValue("role").ToString();
 
                 output.Add(new User((int) item.GetValue("id")) {

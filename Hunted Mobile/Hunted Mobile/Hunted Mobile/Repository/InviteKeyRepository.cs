@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 namespace Hunted_Mobile.Repository {
     public class InviteKeyRepository {
         public async Task<InviteKey> Get(string inviteCode) {
-            var response = await HttpClientService.Get($"invite-key/{inviteCode}");
-            var result = await ConvertResponseService.ConvertJObject(response);
+            var response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Get($"invite-key/{inviteCode}"));
 
-            return result != null ? new InviteKey() {
-                Value = (string) result.GetValue("value"),
-                GameId = (int) result.GetValue("game_id"),
-                Role = (string) result.GetValue("role")
+            return response.IsSuccessful ? new InviteKey() {
+                Value = (string) response.Item.GetValue("value"),
+                GameId = (int) response.Item.GetValue("game_id"),
+                Role = (string) response.Item.GetValue("role")
             } : null;
         }
     }

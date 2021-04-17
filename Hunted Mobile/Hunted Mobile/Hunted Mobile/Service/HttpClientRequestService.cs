@@ -6,13 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Service {
-    public class HttpClientService {
+    public class HttpClientRequestService {
         private const string IPAdress = "http://soproj11q.herokuapp.com";
 
         public static async Task<HttpResponseMessage> Get(string path) {
             return await GetHttpClient().GetAsync(GetUrl(path));
         }
 
+        // This methode is exact like the Get request, but it can be extended with pagination, filtering and sorting
         public static async Task<HttpResponseMessage> GetAll(string path) {
             return await GetHttpClient().GetAsync(GetUrl(path));
         }
