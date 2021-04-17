@@ -15,15 +15,11 @@ namespace Hunted_Mobile.ViewModel {
         public MessageViewModel(Messages page){
             _page = page;
 
-            AddMessage("Pauze");
-            AddMessage("Hervat");
-            AddMessage("We stoppen");
-
             WebSocketService socket = new WebSocketService(1);
-            socket.StartGame += AddMessage("Het spel gaat beginnen!");
-            socket.StartGame += AddMessage("Het spel gaat beginnen!");
-            socket.StartGame += AddMessage("Het spel gaat beginnen!");
-            socket.StartGame += AddMessage("Het spel gaat beginnen!");
+            socket.StartGame += () => AddMessage("Het spel is begonnen!");
+            socket.PauseGame += () => AddMessage("Het spel is gepauzeerd!");
+            socket.ResumeGame += () => AddMessage("Het spel wordt hervat!");
+            socket.EndGame += () => AddMessage("Het spel is afgelopen!");
 
             if(!WebSocketService.Connected) {
                 socket.Connect();
