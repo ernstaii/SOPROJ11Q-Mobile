@@ -79,7 +79,7 @@ namespace Hunted_Mobile.Service {
                 foreach(JToken child in GetValue("errors").Children()) {
                     var property = child as JProperty;
                     if(property != null) {
-                        ErrorMessages.Add(property.Name, property.Value.First.ToString());
+                        ErrorMessages.Add(property.Name.Trim('_'), property.Value.First.ToString());
                     }
                 }
             }
@@ -88,12 +88,20 @@ namespace Hunted_Mobile.Service {
             }
         }
 
-        public JToken GetValue(string key) {
+        protected JToken GetValue(string key) {
             return Item.GetValue(key);
         }
 
         public string GetStringValue(string key) {
-            return Item.GetValue(key).ToString();
+            var result = GetValue(key);
+
+            return result == null ? "" : result.ToString();
+        }
+
+        public int GetNumberValue(string key) { 
+            var result = GetValue(key);
+
+            return result == null ? 0 : ((int) result);
         }
     }
 }

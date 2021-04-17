@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Hunted_Mobile.Model.GameModels {
-    public class User {
+    public class User : CustomModelErrorMessages<User> {
         public readonly int Id;
         private string _userName;
         public Location Location { get; set; }

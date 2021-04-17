@@ -17,12 +17,13 @@ namespace Hunted_Mobile.Repository {
                 role = inviteKey.Role
             }));
 
-            return response.IsSuccessful ? new User((int) response.GetValue("id")) {
+            return new User((int) response.GetNumberValue("id")) {
                 Location = null,
                 Name = response.GetStringValue("name"),
                 InviteKey = inviteKey,
                 Role = response.GetStringValue("role"),
-            } : null;
+                ErrorMessages = response.ErrorMessages,
+            };
         }
 
         // Get all users that are linked to a game
@@ -36,18 +37,21 @@ namespace Hunted_Mobile.Repository {
 
             // Looping through the result
             foreach(JObject item in response.Items) {
-                string role = item.GetValue("role").ToString();
+                string role = item.GetValue("role")?.ToString();
 
-                output.Add(new User((int) item.GetValue("id")) {
-                    Name = item.GetValue("username").ToString(),
-                    Location = null,
-                    InviteKey = new InviteKey() {
-                        GameId = gameId,
+                try {
+                    output.Add(new User((int) item.GetValue("id")) {
+                        Name = item.GetValue("username").ToString(),
+                        Location = null,
+                        InviteKey = new InviteKey() {
+                            GameId = gameId,
+                            Role = role,
+                            Value = item.GetValue("invite_key").ToString()
+                        },
                         Role = role,
-                        Value = item.GetValue("invite_key").ToString()
-                    },
-                    Role = role,
-                });
+                    });
+                }
+                catch { }
             }
 
             return output;

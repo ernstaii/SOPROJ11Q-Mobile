@@ -28,13 +28,16 @@ namespace Hunted_Mobile.Repository {
             foreach(JObject item in response.Items) {
                 var location = item.GetValue("location").ToString().Split(',');
 
-                output.Add(new Loot((int) item.GetValue("id")) {
-                    Name = item.GetValue("name").ToString(),
-                    Location = new Location() {
-                        Latitude = double.Parse(location[0]),
-                        Longitude = double.Parse(location[1])
-                    }
-                });
+                try {
+                    output.Add(new Loot((int) item.GetValue("id")) {
+                        Name = item.GetValue("name").ToString(),
+                        Location = new Location() {
+                            Latitude = double.Parse(location[0]),
+                            Longitude = double.Parse(location[1])
+                        }
+                    });
+                }
+                catch { }
             }
 
             return output;
