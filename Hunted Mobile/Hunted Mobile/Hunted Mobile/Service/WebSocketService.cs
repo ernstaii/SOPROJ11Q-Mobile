@@ -46,12 +46,18 @@ namespace Hunted_Mobile.Service {
 
         public delegate void SocketEvent();
         public event SocketEvent StartGame;
+        public event SocketEvent PauseGame;
+        public event SocketEvent ResumeGame;
+        public event SocketEvent EndGame;
 
         public WebSocketService(int gameId) {
             _pusher.SubscribeAsync("game." + gameId);
 
             string gameIdStr = gameId.ToString();
-            Bind("startGame", ()=> StartGame(), gameIdStr);
+            Bind("game.start", ()=> StartGame(), gameIdStr);
+            Bind("game.pause", ()=> PauseGame(), gameIdStr);
+            Bind("game.resume", ()=> ResumeGame(), gameIdStr);
+            Bind("game.end", ()=> EndGame(), gameIdStr);
         }
 
         private void Bind(string eventName, Action action, string gameIdStr) {
