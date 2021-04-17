@@ -71,7 +71,6 @@ namespace Hunted_Mobile.ViewModel {
             if(!WebSocketService.Connected) {
                 WebSocketService socket = new WebSocketService(1);
                 socket.Connect();
-                socket.StartGame += StartGame;
                 socket.ResumeGame += Socket_ResumeGame;
                 socket.PauseGame += Socket_PauseGame;
                 socket.EndGame += Socket_EndGame;
@@ -89,10 +88,6 @@ namespace Hunted_Mobile.ViewModel {
 
         private void Socket_ResumeGame() {
             Console.WriteLine("Game resume event received!");
-        }
-
-        private void StartGame() {
-            Console.WriteLine("Game start event was received! OMG");
         }
         #endregion
 
@@ -221,7 +216,7 @@ namespace Hunted_Mobile.ViewModel {
                     Scale = 0.666f,
                 });
             }
-            
+
             // Playing player
             _mapView.Pins.Add(new Pin(_mapView) {
                 Label = _mapModel.PlayingUser.Name,
