@@ -19,7 +19,7 @@ namespace Hunted_Mobile.Repository {
 
             return new User((int) response.GetNumberValue("id")) {
                 Location = null,
-                Name = username,
+                UserName = username,
                 InviteKey = inviteKey,
                 Role = response.GetStringValue("role"),
                 ErrorMessages = response.ErrorMessages,
@@ -41,7 +41,7 @@ namespace Hunted_Mobile.Repository {
 
                 try {
                     output.Add(new User((int) item.GetValue("id")) {
-                        Name = item.GetValue("username").ToString(),
+                        UserName = item.GetValue("username").ToString(),
                         Location = null,
                         InviteKey = new InviteKey() {
                             GameId = gameId,

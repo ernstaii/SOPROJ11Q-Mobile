@@ -16,7 +16,7 @@ namespace Hunted_Mobile.Model {
             if(ErrorMessages != null && ErrorMessages.Count > 0) {
 
                 // Loop through the propeties of the given model
-                foreach(var property in typeof(InviteKey).GetProperties()) {
+                foreach(var property in typeof(T).GetProperties()) {
                     string propertyLowercase = property.Name.ToLower().Trim('_');
 
                     // Check if error-messages contains key and if key has value

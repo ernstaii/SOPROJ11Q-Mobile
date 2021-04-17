@@ -44,7 +44,7 @@ namespace Hunted_Mobile.ViewModel {
         // Add new user to a game
         public async Task CreateUser() {
             if(IsValid = ValidationHelper.IsFormValid(UserModel, _page)) {
-                UserModel = await _userRepository.Create(UserModel.InviteKey, this.UserModel.Name);
+                UserModel = await _userRepository.Create(UserModel.InviteKey, this.UserModel.UserName);
             }
         }
 
