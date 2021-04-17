@@ -14,7 +14,7 @@ namespace Hunted_Mobile.Repository {
     public class LootRepository {
         // Get all loot that is linked to a game
         public async Task<List<Loot>> GetAll(int gameId) {
-            var response = await new HttpClient().GetAsync(HttpClientService.GetUrl($"game/{gameId}/loot"));
+            var response = await HttpClientService.Get($"game/{gameId}/loot");
             Console.WriteLine(response + "HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
             var result = await ConvertResponseService.ConvertJArray(response);
 

@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 namespace Hunted_Mobile.Service {
     public class ConvertResponseService {
         public async static Task<JObject> ConvertJObject(HttpResponseMessage response) {
+            JObject output = null;
+            var contents = await response.Content.ReadAsStringAsync();
+            // (JObject) JsonConvert.DeserializeObject( {error: "message"} )
+
             // Check if request went successfully
             if(response.IsSuccessStatusCode) {
-                var contents = await response.Content.ReadAsStringAsync();
-
-                JObject output = null;
-
                 try {
                     output = (JObject) JsonConvert.DeserializeObject(contents);
                 }
@@ -24,6 +24,7 @@ namespace Hunted_Mobile.Service {
 
                 return output;
             }
+            // {message: "", StatusCode: StatusCode.NotFound || 404, ReasonPhrase: "Not found"}
 
             return null;
         }
