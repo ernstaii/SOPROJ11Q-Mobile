@@ -41,7 +41,10 @@ namespace Hunted_Mobile.ViewModel {
             UserModel.InviteKey = key;
         }
 
-        // Add new user to a game
+        /// <summary>
+        /// Add new user to a game
+        /// </summary>
+        /// <returns></returns>
         public async Task CreateUser() {
             if(IsValid = ValidationHelper.IsFormValid(UserModel, _page)) {
                 var result = await _userRepository.Create(UserModel.InviteKey, this.UserModel.Name);
@@ -53,6 +56,9 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
+        /// <summary>
+        /// Button event will navigate to the lobby with a new user
+        /// </summary>
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
             SubmitButtonIsEnable = false;
             await CreateUser();
