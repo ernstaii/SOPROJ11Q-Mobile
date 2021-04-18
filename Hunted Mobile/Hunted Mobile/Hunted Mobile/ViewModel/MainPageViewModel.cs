@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Xamarin.Forms;
+using System.Linq;
 
 namespace Hunted_Mobile.ViewModel {
     public class MainPageViewModel : BaseViewModel {
@@ -55,9 +56,21 @@ namespace Hunted_Mobile.ViewModel {
         /// Getting InviteKey based on the Value
         /// </summary>
         /// <returns></returns>
-        public async Task Get() {
+        public async Task GetAll() {
             if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page)) {
-                InviteKeyModel = await _inviteKeyRepository.Get(InviteKeyModel.Value);
+                var result = await _inviteKeyRepository.GetAll(InviteKeyModel.Value);
+
+                if(result.Count == 1) {
+                    InviteKeyModel = result.First();
+                } else {
+                    InviteKeys.Clear();
+
+                    foreach(var inviteKey in result) {
+                        InviteKeys.Add(inviteKey);
+                    }
+
+                    IsOverlayVisible = true;
+                }
             }
         }
 
@@ -66,10 +79,10 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
             SubmitButtonIsEnable = false;
-            await Get();
+            await GetAll();
 
             // Navigate when InviteKey is valid
-            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page)) { 
+            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page) && !IsOverlayVisible) { 
                 await NavigateToEnterUsernamePage();
             }
 
@@ -77,11 +90,7 @@ namespace Hunted_Mobile.ViewModel {
         });
 
         public InviteKey SelectedPreferenceGame { get; set; }
-
-        private ObservableCollection<InviteKey> _inviteKeys = new ObservableCollection<InviteKey>() {
-            new InviteKey() { GameId = 1 },
-            new InviteKey() { GameId = 2 }
-        };
+        private ObservableCollection<InviteKey> _inviteKeys = new ObservableCollection<InviteKey>();
 
         public ObservableCollection<InviteKey> InviteKeys {
             get { return _inviteKeys; }
@@ -99,6 +108,7 @@ namespace Hunted_Mobile.ViewModel {
                 InviteKeyModel = SelectedPreferenceGame;
 
                 await NavigateToEnterUsernamePage();
+                IsOverlayVisible = false;
             }
         });
 
