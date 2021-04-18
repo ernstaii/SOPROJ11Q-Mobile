@@ -39,7 +39,7 @@ namespace Hunted_Mobile.ViewModel {
             set {
                 _isOverlayVisible = value;
 
-                OnPropertyChanged("IsOverlayVisible ");
+                OnPropertyChanged("IsOverlayVisible");
             }
         }
 
