@@ -9,5 +9,7 @@ namespace Hunted_Mobile.Model {
         public string Value { get; set; }
         public int GameId { get; set; }
         public string Role { get; set; }
+
+        public string GameLabel => $"Spel {GameId}";
     }
 }
