@@ -13,9 +13,9 @@ using Xamarin.Forms.Xaml;
 namespace Hunted_Mobile.View {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Messages : ContentPage {
-        public Messages() {
+        public Messages(int gameId) {
             InitializeComponent();
-            BindingContext = new MessageViewModel(this);
+            BindingContext = new MessageViewModel(this, gameId);
         }
     }
 }

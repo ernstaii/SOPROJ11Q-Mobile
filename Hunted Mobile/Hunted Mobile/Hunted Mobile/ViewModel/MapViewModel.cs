@@ -81,9 +81,9 @@ namespace Hunted_Mobile.ViewModel {
             _mapModel = mapModel;
             _gameModel = gameModel;
             _gpsService = new GpsService();
-            _messagesView = new View.Messages();
+            _messagesView = new View.Messages(_gameModel.Id);
             _lootRepository = new LootRepository();
-            _webSocketService = new WebSocketService(gameModel.Id);
+            _webSocketService = new WebSocketService(_gameModel.Id);
             _userRepository = new UserRepository();
 
             _gpsService.LocationChanged += MyLocationUpdated;
