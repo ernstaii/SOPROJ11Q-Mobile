@@ -14,7 +14,8 @@ namespace Hunted_Mobile.Repository {
             await response.Convert(HttpClientRequestService.Create("users", new {
                 username = username,
                 invite_key = inviteKey.Value,
-                role = inviteKey.Role
+                role = inviteKey.Role,
+                game_id = inviteKey.GameId
             }));
 
             return new User((int) response.GetNumberValue("id")) {
@@ -49,6 +50,7 @@ namespace Hunted_Mobile.Repository {
                             Value = item.GetValue("invite_key").ToString()
                         },
                         Role = role,
+                        GameId = gameId,
                     });
                 }
                 catch { }

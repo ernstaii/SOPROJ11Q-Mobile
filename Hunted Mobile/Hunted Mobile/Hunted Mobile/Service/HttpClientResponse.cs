@@ -61,10 +61,11 @@ namespace Hunted_Mobile.Service {
 
         protected void ConvertResponseContent() {
             try {
+                if(!HasMultipleResults || HasMultipleResults && !IsSuccessful)
+                    Item = (JObject) JsonConvert.DeserializeObject(_responseContent);
+
                 if(HasMultipleResults)
                     Items = JArray.Parse(_responseContent);
-                else
-                    Item = (JObject) JsonConvert.DeserializeObject(_responseContent);
             }
             catch(Exception e) {
                 MainErrorMessage = "Er is iets misgegaan bij het omzetten van de inhoud van de response";
@@ -93,10 +94,12 @@ namespace Hunted_Mobile.Service {
         }
 
         public string GetStringValue(string key) {
-            return GetValue(key)?.ToString();
+            var result = GetValue(key);
+
+            return result != null ? result.ToString() : null;
         }
 
-        public int GetNumberValue(string key) { 
+        public int GetNumberValue(string key) {
             var result = GetValue(key);
 
             return result == null ? 0 : ((int) result);
