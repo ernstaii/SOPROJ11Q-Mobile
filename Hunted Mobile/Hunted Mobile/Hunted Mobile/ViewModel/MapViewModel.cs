@@ -63,7 +63,7 @@ namespace Hunted_Mobile.ViewModel {
 
         const string PAUSE_TITLE = "Gepauzeerd",
             END_TITLE = "Het spel is afgelopen!",
-            PAUSE_DESCRIPTION = "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij, dan wordt het spel weer hervat.",
+            PAUSE_DESCRIPTION = "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.",
             END_DESCRIPTION = "Ga terug naar de spelleider!";
 
         public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
