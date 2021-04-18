@@ -168,14 +168,14 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private void EndGame() {
+        private void EndGame(JObject data) {
             GameHasEnded = true;
             IsEnabled = false;
 
             StopIntervalTimer();
         }
 
-        private void PauseGame() {
+        private void PauseGame(JObject data) {
             IsEnabled = false;
 
             StopIntervalTimer();
@@ -350,6 +350,7 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(_messagesView);
         });
+
         /// <summary>
         /// Navigate to the RootPage
         /// </summary>
