@@ -96,7 +96,7 @@ namespace Hunted_Mobile.ViewModel {
             get { return _inviteKeys; }
             set {
                 _inviteKeys = value;
-                OnPropertyChanged("InviteKeys ");
+                OnPropertyChanged("InviteKeys");
             }
         }
 
