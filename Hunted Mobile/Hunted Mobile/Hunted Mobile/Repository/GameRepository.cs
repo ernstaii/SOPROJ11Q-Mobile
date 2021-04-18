@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 namespace Hunted_Mobile.Repository {
     public class GameRepository {
         public async Task<int?> GetInterval(int gameId) {
-            var intervalResponse = await new HttpClient().GetAsync(HttpClientService.GetUrl($"game/{gameId}/interval"));
-            var intervalResult = await ConvertResponseService.ConvertRaw(intervalResponse);
+            var response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Get($"game/{gameId}/interval"));
 
-            if(intervalResult == null) {
+            if(response.ResponseContent == null) {
                 return null;
             }
             else {
-                int.TryParse(intervalResult, out int parsed);
+                int.TryParse(response.ResponseContent, out int parsed);
                 return parsed;
             }
         }

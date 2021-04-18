@@ -5,6 +5,7 @@ using Hunted_Mobile.Service;
 using Newtonsoft.Json.Linq;
 
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
@@ -58,17 +59,13 @@ namespace Hunted_Mobile.Repository {
         }
 
         public async Task<bool> Update(int userId, Location location) {
-            // Prepare parameters inside List
-            var content = new FormUrlEncodedContent(
-                new List<KeyValuePair<string, string>> {
-                    new KeyValuePair<string, string>("location", location.ToCsvString()),
-                }
-            );
+            var response = new HttpClientResponse();
 
-            var response = await new HttpClient().PutAsync(HttpClientService.GetUrl($"users/{userId}"), content);
-            var result = await ConvertResponseService.ConvertRaw(response);
+            await response.Convert(HttpClientRequestService.Update($"users/{userId}", new {
+                location = location.ToCsvString()
+            }));
 
-            return result != null;
+            return response.ResponseContent != null;
         }
     }
 }
