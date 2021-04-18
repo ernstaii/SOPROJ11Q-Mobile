@@ -20,6 +20,7 @@ using Hunted_Mobile.Service;
 using Hunted_Mobile.Service.Gps;
 using System.Timers;
 using Newtonsoft.Json.Linq;
+using System.Windows.Input;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -29,11 +30,13 @@ namespace Hunted_Mobile.ViewModel {
         private readonly LootRepository _lootRepository;
         private readonly UserRepository _userRepository;
         private readonly GpsService _gpsService;
-        private readonly WebSocketService _socketService;
         private Timer _intervalUpdateTimer;
         private Pin _playerPin;
+        private readonly WebSocketService _webSocketService;
 
-        private bool _isEnabled { get; set; }
+        private bool _isEnabled = true;
+        private bool _gameHasEnded = false;
+
         /// <summary>
         /// This property will disable the touch of the user with the mapView
         /// </summary>
@@ -43,28 +46,46 @@ namespace Hunted_Mobile.ViewModel {
                 _isEnabled = value;
                 if(_mapView != null && _mapView.Content != null)
                     _mapView.Content.IsEnabled = _isEnabled;
-                
+
                 OnPropertyChanged("IsEnabled");
+                OnPropertyChanged("VisibleOverlay");
+                OnPropertyChanged("TitleOverlay");
+                OnPropertyChanged("DescriptionOverlay");
             }
         }
+        public bool GameHasEnded {
+            get => _gameHasEnded;
+            set {
+                _gameHasEnded = value;
+
+                OnPropertyChanged("GameHasEnded");
+            }
+        }
+        /// <summary>
+        /// The oposite of the enable-state
+        /// </summary>
+        public bool VisibleOverlay => !IsEnabled;
+
+        const string PAUSE_TITLE = "Gepauzeerd",
+            END_TITLE = "Het spel is afgelopen!",
+            PAUSE_DESCRIPTION = "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.",
+            END_DESCRIPTION = "Ga terug naar de spelleider!";
+
+        public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
+        public string DescriptionOverlay => GameHasEnded ? END_DESCRIPTION : PAUSE_DESCRIPTION;
 
         public MapViewModel(Game gameModel, Model.Map mapModel) {
             _mapModel = mapModel;
             _gameModel = gameModel;
             _gpsService = new GpsService();
             _lootRepository = new LootRepository();
-            _socketService = new WebSocketService(gameModel.Id);
+            _webSocketService = new WebSocketService(gameModel.Id);
             _userRepository = new UserRepository();
 
             _gpsService.LocationChanged += MyLocationUpdated;
 
-            if(!WebSocketService.Connected) {
-                _socketService.Connect();
-            }
-            _socketService.ResumeGame += StartIntervalTimer;
-            _socketService.PauseGame += StopIntervalTimer;
-            _socketService.EndGame += StopIntervalTimer;
-            _socketService.IntervalEvent += Test;
+            Task.Run(async () => await StartSocket());
+
             StartIntervalTimer();
         }
 
@@ -126,6 +147,41 @@ namespace Hunted_Mobile.ViewModel {
             await _userRepository.Update(_mapModel.PlayingUser.Id, _mapModel.PlayingUser.Location);
             // Get loot update from the database
             await UpdateLoot(_gameModel.Id);
+        }
+
+        private async Task StartSocket() {
+            try {
+                if(!WebSocketService.Connected) {
+                    await _webSocketService.Connect();
+                }
+
+                _webSocketService.ResumeGame += ResumeGame;
+                _webSocketService.PauseGame += PauseGame;
+                _webSocketService.EndGame += EndGame;
+
+                _webSocketService.IntervalEvent += Test;
+            }
+            catch {
+            }
+        }
+
+        private void EndGame() {
+            GameHasEnded = true;
+            IsEnabled = false;
+
+            StopIntervalTimer();
+        }
+
+        private void PauseGame() {
+            IsEnabled = false;
+
+            StopIntervalTimer();
+        }
+
+        private void ResumeGame() {
+            IsEnabled = true;
+
+            StartIntervalTimer();
         }
 
         /// <summary>
@@ -236,7 +292,7 @@ namespace Hunted_Mobile.ViewModel {
         private void DisplayPlayerPin() {
             if(_playerPin == null) {
                 _playerPin = new Pin(_mapView) {
-                    Label = _mapModel.PlayingUser.Name ?? "",
+                    Label = _mapModel.PlayingUser.UserName ?? "",
                     Color = Xamarin.Forms.Color.FromRgb(39, 96, 203)
                 };
             }
@@ -260,7 +316,7 @@ namespace Hunted_Mobile.ViewModel {
             // Players
             foreach(var user in _mapModel.GetUsers()) {
                 _mapView.Pins.Add(new Pin(_mapView) {
-                    Label = user.Name ?? "",
+                    Label = user.UserName ?? "",
                     Color = Xamarin.Forms.Color.Black,
                     Position = new Mapsui.UI.Forms.Position(user.Location.Latitude, user.Location.Longitude),
                     Scale = 0.666f,
@@ -287,5 +343,13 @@ namespace Hunted_Mobile.ViewModel {
 
             _mapModel.SetLoot(lootList);
         }
+
+        /// <summary>
+        /// Navigate to the RootPage
+        /// </summary>
+        public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
+            await _webSocketService.Disconnect();
+        });
     }
 }

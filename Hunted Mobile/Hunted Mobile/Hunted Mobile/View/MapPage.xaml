@@ -4,12 +4,47 @@
              xmlns:mapsui="clr-namespace:Mapsui.UI.Forms;assembly=Mapsui.UI.Forms"
              x:Class="Hunted_Mobile.MapPage">
     <ContentPage.Content>
-        <StackLayout>
-            <mapsui:MapView x:Name="mapView"
+        <AbsoluteLayout>
+            <StackLayout AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
+                <mapsui:MapView x:Name="mapView"
                 VerticalOptions="FillAndExpand"
                 HorizontalOptions="Fill"
                 BackgroundColor="Gray" />
-        </StackLayout>
+            </StackLayout>
+
+            <!-- Overlay -->
+            <StackLayout IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5"/>
+
+            <!-- For round corners, then a frame is neccessary -->
+            <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+                <StackLayout>
+                    <Label Text="{Binding TitleOverlay}"
+                           Padding="5"
+                           Margin="0,25,0,0" 
+                           HorizontalTextAlignment="Center" 
+                           TextColor="Black" 
+                           FontAttributes="Bold" 
+                           FontSize="30"/>
+
+                    <BoxView VerticalOptions="FillAndExpand" />
+
+                    <Label Text="{Binding DescriptionOverlay}"
+                           Margin="0,0,0,15"
+                           HorizontalTextAlignment="Center" 
+                           TextColor="Black" 
+                           FontSize="16"/>
+
+                    <BoxView VerticalOptions="FillAndExpand" />
+
+                    <Button Text="Terug naar hoofdscherm"
+                            BackgroundColor="Blue"
+                            TextColor="White"
+                            CornerRadius="30" 
+                            IsVisible="{Binding GameHasEnded}"
+                            Command="{Binding ExitGameCommand}"
+                            Margin="0, 20"/>
+                </StackLayout>
+            </Frame>
+        </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>
-    
