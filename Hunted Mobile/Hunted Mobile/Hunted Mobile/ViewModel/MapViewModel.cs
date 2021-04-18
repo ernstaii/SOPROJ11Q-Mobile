@@ -56,6 +56,8 @@ namespace Hunted_Mobile.ViewModel {
             _socketService = new WebSocketService(gameModel.Id);
             _userRepository = new UserRepository();
 
+            _gpsService.LocationChanged += MyLocationUpdated;
+
             if(!WebSocketService.Connected) {
                 _socketService.Connect();
             }
@@ -96,7 +98,6 @@ namespace Hunted_Mobile.ViewModel {
             if(!_gpsService.GpsHasStarted()) {
                 _gpsService.StartGps();
             }
-            _gpsService.LocationChanged += MyLocationUpdated;
         }
 
         private void StopIntervalTimer() {
