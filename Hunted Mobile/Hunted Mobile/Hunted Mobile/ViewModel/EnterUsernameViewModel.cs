@@ -47,12 +47,7 @@ namespace Hunted_Mobile.ViewModel {
         /// <returns></returns>
         public async Task CreateUser() {
             if(IsValid = ValidationHelper.IsFormValid(UserModel, _page)) {
-                var result = await _userRepository.Create(UserModel.InviteKey, this.UserModel.Name);
-
-                _creatingUserSucceeded = result != null;
-
-                if(_creatingUserSucceeded)
-                    UserModel = result;
+                UserModel = await _userRepository.Create(UserModel.InviteKey, this.UserModel.UserName);
             }
         }
 
@@ -64,7 +59,7 @@ namespace Hunted_Mobile.ViewModel {
             await CreateUser();
 
             // Navigate when InviteKey is valid
-            if(_creatingUserSucceeded) {
+            if(IsValid = ValidationHelper.IsFormValid(UserModel, _page)) {
                 var Navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
 
                 var previousPage = Navigation.NavigationStack.LastOrDefault();

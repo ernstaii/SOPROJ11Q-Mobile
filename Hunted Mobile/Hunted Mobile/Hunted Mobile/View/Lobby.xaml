@@ -37,7 +37,7 @@
                     <DataTemplate>
                         <ViewCell>
                             <StackLayout Padding="10">
-                                <Label Text="{Binding Name}" HorizontalTextAlignment="Center"/>
+                                <Label Text="{Binding UserName}" HorizontalTextAlignment="Center"/>
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>
@@ -58,7 +58,7 @@
                     <DataTemplate>
                         <ViewCell>
                             <StackLayout Padding="10">
-                                <Label Text="{Binding Name}" HorizontalTextAlignment="Center" />
+                                <Label Text="{Binding UserName}" HorizontalTextAlignment="Center" />
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>

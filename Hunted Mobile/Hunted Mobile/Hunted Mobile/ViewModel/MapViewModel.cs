@@ -59,21 +59,21 @@ namespace Hunted_Mobile.ViewModel {
 
             #region Temporary code (test data)
             _mapModel.AddUser(new Thief(345) {
-                Name = "Henk",
+                UserName = "Henk",
                 Location = new Location() {
                     Latitude = 51.769043,
                     Longitude = 5.516003
                 }
             });
             _mapModel.AddUser(new Police(346) {
-                Name = "Piet",
+                UserName = "Piet",
                 Location = new Location() {
                     Latitude = 51.757423,
                     Longitude = 5.523745
                 }
             });
             _mapModel.PlayingUser = new Police(123) {
-                Name = "Hans",
+                UserName = "Hans",
                 Location = new Location() {
                     Latitude = 51.770031,
                     Longitude = 5.534014
@@ -239,7 +239,7 @@ namespace Hunted_Mobile.ViewModel {
             // Players
             foreach(var user in _mapModel.GetUsers()) {
                 _mapView.Pins.Add(new Pin(_mapView) {
-                    Label = user.Name,
+                    Label = user.UserName,
                     Color = Xamarin.Forms.Color.Black,
                     Position = new Mapsui.UI.Forms.Position(user.Location.Latitude, user.Location.Longitude),
                     Scale = 0.666f,
@@ -248,7 +248,7 @@ namespace Hunted_Mobile.ViewModel {
 
             // Playing player
             _mapView.Pins.Add(new Pin(_mapView) {
-                Label = _mapModel.PlayingUser.Name,
+                Label = _mapModel.PlayingUser.UserName,
                 Color = Xamarin.Forms.Color.FromRgb(39, 96, 203),
                 Position = new Mapsui.UI.Forms.Position(_mapModel.PlayingUser.Location.Latitude, _mapModel.PlayingUser.Location.Longitude),
             });
