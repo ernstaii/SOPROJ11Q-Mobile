@@ -1,19 +1,46 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Service;
 
-using System.Net.Http;
+using Newtonsoft.Json.Linq;
+
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
     public class InviteKeyRepository {
-        public async Task<InviteKey> Get(string inviteCode) {
-            var response = await new HttpClient().GetAsync(HttpClientService.GetUrl($"invite-key/{inviteCode}"));
-            var result = await ConvertResponseService.ConvertJObject(response);
+        public async Task<List<InviteKey>> GetAll(string inviteCode) {
+            var response = new HttpClientResponse() {
+                HasMultipleResults = true,
+            };
 
-            return result != null ? new InviteKey() {
-                Value = (string) result.GetValue("value"),
-                GameId = (int) result.GetValue("game_id")
-            } : null;
+            await response.Convert(HttpClientRequestService.GetAll($"invite-key/{inviteCode}"));
+
+            List<InviteKey> result = new List<InviteKey>();
+
+            try {
+                if(!response.IsSuccessful) {
+                    result.Add(new InviteKey() {
+                        Value = inviteCode,
+                        GameId = 0,
+                        Role = null,
+                        ErrorMessages = response.ErrorMessages
+                    });
+                }
+                else {
+                    foreach(JObject item in response.Items) {
+                        result.Add(new InviteKey() {
+                            GameId = (int) item.GetValue("game_id"),
+                            Role = item.GetValue("role").ToString(),
+                            Value = item.GetValue("value").ToString()
+                        });
+                    }
+                }
+            }
+            catch(Exception e) {
+            }
+
+            return result;
         }
     }
 }
