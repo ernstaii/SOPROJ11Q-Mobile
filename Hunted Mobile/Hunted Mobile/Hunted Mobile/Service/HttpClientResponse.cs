@@ -62,7 +62,7 @@ namespace Hunted_Mobile.Service {
         protected void ConvertResponseContent() {
             try {
                 if(!HasMultipleResults || HasMultipleResults && !IsSuccessful)
-                    Item = (JObject) JsonConvert.DeserializeObject(_responseContent);
+                    Item = (JObject) JsonConvert.DeserializeObject(ResponseContent);
 
                 if(HasMultipleResults)
                     Items = JArray.Parse(ResponseContent);
