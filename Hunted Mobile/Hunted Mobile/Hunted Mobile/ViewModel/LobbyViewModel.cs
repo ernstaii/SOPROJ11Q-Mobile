@@ -18,6 +18,7 @@ namespace Hunted_Mobile.ViewModel {
         private Game _gameModel = new Game();
         private User _currentUser;
         private readonly UserRepository _userRepository = new UserRepository();
+        private readonly GameRepository _gameRepository = new GameRepository();
         private Lobby _page;
         private bool _isloading { get; set; }
         private readonly WebSocketService _webSocketService;
@@ -76,8 +77,7 @@ namespace Hunted_Mobile.ViewModel {
 
         private async void StartGame() {
             if(GameModel.Interval < 30) {
-                var gameRepo = new GameRepository();
-                GameModel.Interval = await gameRepo.GetInterval(_gameModel.Id) ?? 0;
+                GameModel.Interval = await _gameRepository.GetInterval(_gameModel.Id) ?? 0;
             }
 
             NavigateToMapPage();
