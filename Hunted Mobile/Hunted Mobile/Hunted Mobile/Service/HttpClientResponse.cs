@@ -66,8 +66,6 @@ namespace Hunted_Mobile.Service {
 
                 if(HasMultipleResults)
                     Items = JArray.Parse(ResponseContent);
-                else
-                    Item = (JObject) JsonConvert.DeserializeObject(ResponseContent);
             }
             catch(Exception e) {
                 MainErrorMessage = "Er is iets misgegaan bij het omzetten van de inhoud van de response";
