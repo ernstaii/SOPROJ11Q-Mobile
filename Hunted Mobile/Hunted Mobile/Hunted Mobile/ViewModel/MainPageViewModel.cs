@@ -4,6 +4,7 @@ using Hunted_Mobile.Service;
 using Hunted_Mobile.View;
 
 using System.Collections.ObjectModel;
+using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -55,15 +56,8 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         /// <returns></returns>
         public async Task Get() {
-            IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page);
-
-            if(IsValid) {
-                var result = await _inviteKeyRepository.Get(InviteKeyModel.Value);
-
-                if(result != null)
-                    InviteKeyModel = result;
-                else
-                    IsValid = false;
+            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page)) {
+                InviteKeyModel = await _inviteKeyRepository.Get(InviteKeyModel.Value);
             }
         }
 
@@ -75,7 +69,7 @@ namespace Hunted_Mobile.ViewModel {
             await Get();
 
             // Navigate when InviteKey is valid
-            if(IsValid) {
+            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page)) { 
                 await NavigateToEnterUsernamePage();
             }
 

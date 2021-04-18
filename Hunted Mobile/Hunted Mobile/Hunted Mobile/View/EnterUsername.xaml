@@ -17,8 +17,8 @@
 
         <StackLayout Padding="40">
             <!-- Enter here the UserName and submit with button -->
-            <Entry Placeholder="Voer uw gebruikersnaam in"  Text="{Binding UserModel.Name}" />
-            <Label TextColor="Red" x:Name="User_NameError"/>
+            <Entry Placeholder="Voer uw gebruikersnaam in"  Text="{Binding UserModel.UserName}" />
+            <Label TextColor="Red" x:Name="User_UserNameError"/>
 
             <!-- Submit UserName to join a game -->
             <Button Text="Bevestig"
