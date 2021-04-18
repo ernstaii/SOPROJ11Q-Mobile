@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Hunted_Mobile.Service;
 using Hunted_Mobile.Service.Gps;
 using System.Timers;
+using Newtonsoft.Json.Linq;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -66,8 +67,25 @@ namespace Hunted_Mobile.ViewModel {
             _socketService.ResumeGame += StartIntervalTimer;
             _socketService.PauseGame += StopIntervalTimer;
             _socketService.EndGame += StopIntervalTimer;
-            _socketService.IntervalEvent += DisplayOtherPins;
+            _socketService.IntervalEvent += Test;
             StartIntervalTimer();
+        }
+
+        private void Test(JObject data) {
+            Console.WriteLine(data);
+
+            foreach(JObject user in data.GetValue("users")) {
+                Console.WriteLine(user);
+
+                Location location = new Location((string) user.GetValue("location"));
+                int userId = -1;
+                int.TryParse((string) user.GetValue("id"), out userId);
+
+                Console.WriteLine(location.ToCsvString());
+                Console.WriteLine(userId);
+            }
+
+            DisplayOtherPins();
         }
 
         public void SetMapView(MapView mapView) {
@@ -231,6 +249,8 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         private void DisplayOtherPins() {
             _mapView.Pins.Clear();
+            
+            _mapView.Pins.Add(_playerPin);
 
             // TODO: the Name property of users is null here, it should not be
             // Players
