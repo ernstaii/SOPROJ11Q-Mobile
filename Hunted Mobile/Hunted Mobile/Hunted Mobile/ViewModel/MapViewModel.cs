@@ -71,10 +71,10 @@ namespace Hunted_Mobile.ViewModel {
             _gpsService.LocationChanged += MyLocationUpdated;
 
             WebSocketService socket = new WebSocketService(1);
-            //socket.PauseGame += () => AddMessage("Het spel is gepauzeerd!"); //TODO
-            //socket.ResumeGame += () => AddMessage("Het spel wordt hervat!");
+            //socket.PauseGame += () => AddMessage("Het spel is gepauzeerd!"); //timer
+            //socket.ResumeGame += () => AddMessage("Het spel wordt hervat!"); //timer
             
-
+            
             if(!WebSocketService.Connected) {
                 socket.Connect();
             }
@@ -205,7 +205,7 @@ namespace Hunted_Mobile.ViewModel {
                     Scale = 0.666f,
                 });
             }
-            
+
             // Playing player
             _mapView.Pins.Add(new Pin(_mapView) {
                 Label = _mapModel.PlayingUser.Name,
@@ -220,7 +220,6 @@ namespace Hunted_Mobile.ViewModel {
                     Color = Xamarin.Forms.Color.Gold,
                     Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
                     Scale = 0.5f,
-                    // TODO change icon of loot
                 });
             }
         }

@@ -42,16 +42,5 @@ namespace Hunted_Mobile.Model {
         public void SetLoot(IEnumerable<Loot> loot) {
             _loot = new List<Loot>(loot);
         }
-        
-        // TODO: remove
-        /*public void SetCircleBoundary(Position center, Distance radius) {
-            GameBoundary = new Circle() {
-                Center = center,
-                StrokeColor = Xamarin.Forms.Color.Red,
-                FillColor = Xamarin.Forms.Color.Transparent,
-                Radius = radius,
-                Quality = 360.0
-            };
-        }*/
     }
 }

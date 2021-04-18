@@ -24,10 +24,10 @@ namespace Hunted_Mobile.ViewModel {
             if(!WebSocketService.Connected) {
                 socket.Connect();
             }
-        }
 
+        }
         public void AddMessage(String message) {
-            Messages.Add("[" + DateTime.Now.ToString("HH:mm") + "] Groepsleider: " + message);
+            Messages.Add("[" + DateTime.Now.ToString("HH:mm") + "] Spelleider: " + message);
         }
     }
 }
