@@ -52,7 +52,6 @@ namespace Hunted_Mobile.Repository {
                         Role = role,
                         GameId = gameId,
                     });
-                    ;
                 }
                 catch { }
             }
