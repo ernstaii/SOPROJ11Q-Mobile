@@ -56,11 +56,6 @@ namespace Hunted_Mobile.ViewModel {
             _socketService = new WebSocketService(gameModel.Id);
             _userRepository = new UserRepository();
 
-            if(!_gpsService.GpsHasStarted()) {
-                _gpsService.StartGps();
-            }
-            _gpsService.LocationChanged += MyLocationUpdated;
-
             if(!WebSocketService.Connected) {
                 _socketService.Connect();
             }
@@ -90,10 +85,18 @@ namespace Hunted_Mobile.ViewModel {
 
         public void SetMapView(MapView mapView) {
             _mapView = mapView;
+            InitializeMap();
+        }
 
+        private void InitializeMap() {
             AddOsmLayerToMapView();
             AddGameBoundary();
             LimitViewportToGame();
+
+            if(!_gpsService.GpsHasStarted()) {
+                _gpsService.StartGps();
+            }
+            _gpsService.LocationChanged += MyLocationUpdated;
         }
 
         private void StopIntervalTimer() {
