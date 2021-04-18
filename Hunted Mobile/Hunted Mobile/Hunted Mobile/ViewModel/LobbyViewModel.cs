@@ -1,15 +1,16 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Repository;
+using Hunted_Mobile.Service;
 using Hunted_Mobile.View;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+
+using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class LobbyViewModel : BaseViewModel {
@@ -19,6 +20,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly UserRepository _userRepository = new UserRepository();
         private Lobby _page;
         private bool _isloading { get; set; }
+        private readonly WebSocketService _webSocketService;
 
         public Game GameModel {
             get => _gameModel;
@@ -58,7 +60,44 @@ namespace Hunted_Mobile.ViewModel {
             _currentUser = currentUser;
             _gameModel.Id = _currentUser.InviteKey.GameId;
 
+            _webSocketService = new WebSocketService(_gameModel.Id);
+            Task.Run(async () => await StartSocket());
+
             Task.Run(async () => await LoadUsers());
+        }
+
+        private async Task StartSocket() {
+            if(!WebSocketService.Connected) {
+                await _webSocketService.Connect();
+            }
+
+            _webSocketService.StartGame += StartGame;
+        }
+
+        private async void StartGame() {
+            if(GameModel.Interval < 30) {
+                var gameRepo = new GameRepository();
+                GameModel.Interval = await gameRepo.GetInterval(_gameModel.Id) ?? 0;
+            }
+
+            NavigateToMapPage();
+        }
+
+        // To manually navigate to a different page, the mainthread need to be approached
+        public void NavigateToMapPage() {
+            try {
+                Map mapModel = new Map() {
+                    PlayingUser = _currentUser
+                };
+                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel));
+
+                Device.BeginInvokeOnMainThread(() => {
+                    Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
+                    _webSocketService.StartGame -= StartGame;
+                });
+            }
+            catch(Exception e) {
+            }
         }
 
         public async Task LoadUsers() {

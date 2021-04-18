@@ -20,82 +20,184 @@ using Hunted_Mobile.Service;
 using Hunted_Mobile.Service.Gps;
 using System.Windows.Input;
 using Xamarin.Forms;
+using System.Timers;
+using Newtonsoft.Json.Linq;
+using System.Windows.Input;
 
 namespace Hunted_Mobile.ViewModel {
-    public class MapViewModel {
-        private readonly MapView _mapView;
+    public class MapViewModel : BaseViewModel {
+        private MapView _mapView;
         private View.Messages _messagesView;
         private readonly Model.Map _mapModel;
+        private readonly Game _gameModel;
         private readonly LootRepository _lootRepository;
+        private readonly UserRepository _userRepository;
         private readonly GpsService _gpsService;
+        private Timer _intervalUpdateTimer;
+        private Pin _playerPin;
+        private readonly WebSocketService _webSocketService;
 
-        public MapViewModel(MapView view) {
-            _mapView = view;
-            _mapModel = new Model.Map();
+        private bool _isEnabled = true;
+        private bool _gameHasEnded = false;
+
+        /// <summary>
+        /// This property will disable the touch of the user with the mapView
+        /// </summary>
+        public bool IsEnabled {
+            get => _isEnabled;
+            set {
+                _isEnabled = value;
+                if(_mapView != null && _mapView.Content != null)
+                    _mapView.Content.IsEnabled = _isEnabled;
+
+                OnPropertyChanged("IsEnabled");
+                OnPropertyChanged("VisibleOverlay");
+                OnPropertyChanged("TitleOverlay");
+                OnPropertyChanged("DescriptionOverlay");
+            }
+        }
+        public bool GameHasEnded {
+            get => _gameHasEnded;
+            set {
+                _gameHasEnded = value;
+
+                OnPropertyChanged("GameHasEnded");
+            }
+        }
+        /// <summary>
+        /// The oposite of the enable-state
+        /// </summary>
+        public bool VisibleOverlay => !IsEnabled;
+
+        const string PAUSE_TITLE = "Gepauzeerd",
+            END_TITLE = "Het spel is afgelopen!",
+            PAUSE_DESCRIPTION = "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.",
+            END_DESCRIPTION = "Ga terug naar de spelleider!";
+
+        public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
+        public string DescriptionOverlay => GameHasEnded ? END_DESCRIPTION : PAUSE_DESCRIPTION;
+
+        public MapViewModel(Game gameModel, Model.Map mapModel) {
+            _mapModel = mapModel;
+            _gameModel = gameModel;
             _gpsService = new GpsService();
             _messagesView = new View.Messages();
             _lootRepository = new LootRepository();
+            _webSocketService = new WebSocketService(gameModel.Id);
+            _userRepository = new UserRepository();
 
+            _gpsService.LocationChanged += MyLocationUpdated;
+
+            Task.Run(async () => await StartSocket());
+
+            StartIntervalTimer();
+        }
+
+        private void Test(JObject data) {
+            Console.WriteLine(data);
+
+            foreach(JObject user in data.GetValue("users")) {
+                Console.WriteLine(user);
+
+                Location location = new Location((string) user.GetValue("location"));
+                int userId = -1;
+                int.TryParse((string) user.GetValue("id"), out userId);
+
+                Console.WriteLine(location.ToCsvString());
+                Console.WriteLine(userId);
+            }
+
+            DisplayOtherPins();
+        }
+
+        public void SetMapView(MapView mapView) {
+            _mapView = mapView;
+            InitializeMap();
+        }
+
+        private void InitializeMap() {
             AddOsmLayerToMapView();
-
-            #region Temporary code (test data)
-            _mapModel.AddUser(new Thief(345) {
-                Name = "Henk",
-                Location = new Location() {
-                    Latitude = 51.769043,
-                    Longitude = 5.516003
-                }
-            });
-            _mapModel.AddUser(new Police(346) {
-                Name = "Piet",
-                Location = new Location() {
-                    Latitude = 51.757423,
-                    Longitude = 5.523745
-                }
-            });
-            _mapModel.PlayingUser = new Police(123) {
-                Name = "Hans",
-                Location = new Location() {
-                    Latitude = 51.770031,
-                    Longitude = 5.534014
-                }
-            };
-            #endregion
-
             AddGameBoundary();
             LimitViewportToGame();
 
             if(!_gpsService.GpsHasStarted()) {
                 _gpsService.StartGps();
             }
-            _gpsService.LocationChanged += MyLocationUpdated;
-
-            WebSocketService socket = new WebSocketService(1);
-            //socket.PauseGame += () => AddMessage("Het spel is gepauzeerd!"); //timer
-            //socket.ResumeGame += () => AddMessage("Het spel wordt hervat!"); //timer
-            
-            
-            if(!WebSocketService.Connected) {
-                socket.Connect();
+        }
+        private void StopIntervalTimer() {
+            if(_intervalUpdateTimer != null) {
+                _intervalUpdateTimer.Stop();
+                _intervalUpdateTimer.Dispose();
+                _intervalUpdateTimer = null;
             }
+        }
+
+        private void StartIntervalTimer() {
+            StopIntervalTimer();
+            _intervalUpdateTimer = new Timer((_gameModel.Interval - 5) * 1000);
+            _intervalUpdateTimer.AutoReset = false;
+            _intervalUpdateTimer.Elapsed += IntervalUpdate;
+            _intervalUpdateTimer.Start();
+        }
+
+        private async void IntervalUpdate(object sender, ElapsedEventArgs args) {
+            StopIntervalTimer();
+            _intervalUpdateTimer = new Timer(_gameModel.Interval * 1000);
+            _intervalUpdateTimer.AutoReset = false;
+            _intervalUpdateTimer.Elapsed += IntervalUpdate;
+            _intervalUpdateTimer.Start();
+            // Send the current user's location to the database
+            await _userRepository.Update(_mapModel.PlayingUser.Id, _mapModel.PlayingUser.Location);
+            // Get loot update from the database
+            await UpdateLoot(_gameModel.Id);
+        }
+
+        private async Task StartSocket() {
+            try {
+                if(!WebSocketService.Connected) {
+                    await _webSocketService.Connect();
+                }
+
+                _webSocketService.ResumeGame += ResumeGame;
+                _webSocketService.PauseGame += PauseGame;
+                _webSocketService.EndGame += EndGame;
+
+                _webSocketService.IntervalEvent += Test;
+            }
+            catch {
+            }
+        }
+
+        private void EndGame() {
+            GameHasEnded = true;
+            IsEnabled = false;
+
+            StopIntervalTimer();
+        }
+
+        private void PauseGame() {
+            IsEnabled = false;
+
+            StopIntervalTimer();
+        }
+
+        private void ResumeGame() {
+            IsEnabled = true;
+
+            StartIntervalTimer();
         }
 
         /// <summary>
         /// Action to execute when the device location has updated
         /// </summary>
-        private async void MyLocationUpdated(Location newLocation) {
-            await Task.Run(async () => {
-                _mapModel.PlayingUser.Location = newLocation;
+        private void MyLocationUpdated(Location newLocation) {
+            _mapModel.PlayingUser.Location = newLocation;
 
-                // Send update to the map view
-                Mapsui.UI.Forms.Position mapsuiPosition = new Mapsui.UI.Forms.Position(newLocation.Latitude, newLocation.Longitude);
-                _mapView.MyLocationLayer.UpdateMyLocation(mapsuiPosition, true);
+            // Send update to the map view
+            Mapsui.UI.Forms.Position mapsuiPosition = new Mapsui.UI.Forms.Position(newLocation.Latitude, newLocation.Longitude);
+            _mapView.MyLocationLayer.UpdateMyLocation(mapsuiPosition, true);
 
-                // todo: this call should later move to an update interval
-                await UpdateLoot(1);
-
-                DisplayPins();
-            });
+            DisplayPlayerPin();
         }
 
         private void CenterMapOnLocation(Location center, double zoomResolution) {
@@ -190,28 +292,39 @@ namespace Hunted_Mobile.ViewModel {
             };
         }
 
+        private void DisplayPlayerPin() {
+            if(_playerPin == null) {
+                _playerPin = new Pin(_mapView) {
+                    Label = _mapModel.PlayingUser.UserName ?? "",
+                    Color = Xamarin.Forms.Color.FromRgb(39, 96, 203)
+                };
+            }
+
+            _playerPin.Position = new Mapsui.UI.Forms.Position(_mapModel.PlayingUser.Location.Latitude, _mapModel.PlayingUser.Location.Longitude);
+
+            if(!_mapView.Pins.Contains(_playerPin)) {
+                _mapView.Pins.Add(_playerPin);
+            }
+        }
+
         /// <summary>
         /// Displays pins for all game objects with a location
         /// </summary>
-        private void DisplayPins() {
+        private void DisplayOtherPins() {
             _mapView.Pins.Clear();
+            
+            _mapView.Pins.Add(_playerPin);
 
+            // TODO: the Name property of users is null here, it should not be
             // Players
             foreach(var user in _mapModel.GetUsers()) {
                 _mapView.Pins.Add(new Pin(_mapView) {
-                    Label = user.Name,
+                    Label = user.UserName ?? "",
                     Color = Xamarin.Forms.Color.Black,
                     Position = new Mapsui.UI.Forms.Position(user.Location.Latitude, user.Location.Longitude),
                     Scale = 0.666f,
                 });
             }
-
-            // Playing player
-            _mapView.Pins.Add(new Pin(_mapView) {
-                Label = _mapModel.PlayingUser.Name,
-                Color = Xamarin.Forms.Color.FromRgb(39, 96, 203),
-                Position = new Mapsui.UI.Forms.Position(_mapModel.PlayingUser.Location.Latitude, _mapModel.PlayingUser.Location.Longitude),
-            });
 
             // Loot
             foreach(var loot in _mapModel.GetLoot()) {
@@ -233,8 +346,16 @@ namespace Hunted_Mobile.ViewModel {
             _mapModel.SetLoot(lootList);
         }
 
-        public ICommand ButtonSelectedCommand => new Command(async (e) => {      
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(_messagesView);      
+
+        public ICommand ButtonSelectedCommand => new Command(async (e) => {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(_messagesView);
+        });
+        /// <summary>
+        /// Navigate to the RootPage
+        /// </summary>
+        public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
+            await _webSocketService.Disconnect();
         });
     }
 }

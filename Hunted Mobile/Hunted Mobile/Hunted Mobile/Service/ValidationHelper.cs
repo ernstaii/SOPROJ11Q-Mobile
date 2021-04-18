@@ -27,9 +27,9 @@ namespace Hunted_Mobile.Service {
                 var errorControlName =
                 $"{propertyName.Replace(".", "_")}{validationLabelSuffix}";
                 var control = page.FindByName<Label>(errorControlName);
-                if(control != null) {
+                /*if(control != null) {
                     control.IsVisible = false;
-                }
+                }*/
             }
         }
 
