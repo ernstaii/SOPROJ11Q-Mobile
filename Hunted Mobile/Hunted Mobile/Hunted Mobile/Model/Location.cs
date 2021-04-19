@@ -29,8 +29,8 @@ namespace Hunted_Mobile.Model {
                 Latitude = double.Parse(split[0]);
                 Longitude = double.Parse(split[1]);
             }
-            catch(Exception) {
-
+            catch(Exception ex) {
+                Console.WriteLine(ex.Message + " occurred when parsing comma separated location: " + commaSeparatedLatitudeLongitude);
             }
         }
 
