@@ -93,21 +93,27 @@ namespace Hunted_Mobile.ViewModel {
             StartIntervalTimer();
         }
 
-        private void Test(JObject data) {
+        private void IntervalOfGame(JObject data) {
             StartIntervalTimer();
 
-            Console.WriteLine(data);
+            List<User> userList = new List<User>();
 
             foreach(JObject user in data.GetValue("users")) {
-                Console.WriteLine(user);
 
                 Location location = new Location((string) user.GetValue("location"));
                 int userId = -1;
                 int.TryParse((string) user.GetValue("id"), out userId);
 
-                Console.WriteLine(location.ToCsvString());
-                Console.WriteLine(userId);
+                User newUser = new User();
+                newUser.Id = userId;
+                newUser.UserName = ((string) user.GetValue("username"));
+                newUser.Location = location;
+                newUser.Role = ((string) user.GetValue("role"));
+
+                userList.Add(newUser);
             }
+
+            _mapModel.SetUsers(userList);
 
             DisplayOtherPins();
         }
@@ -161,7 +167,7 @@ namespace Hunted_Mobile.ViewModel {
                 _webSocketService.PauseGame += PauseGame;
                 _webSocketService.EndGame += EndGame;
 
-                _webSocketService.IntervalEvent += Test;
+                _webSocketService.IntervalEvent += IntervalOfGame;
             }
             catch {
             }
