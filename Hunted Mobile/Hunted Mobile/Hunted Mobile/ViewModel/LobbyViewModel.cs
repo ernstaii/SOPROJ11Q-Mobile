@@ -18,6 +18,7 @@ namespace Hunted_Mobile.ViewModel {
         private Game _gameModel = new Game();
         private User _currentUser;
         private readonly UserRepository _userRepository = new UserRepository();
+        private readonly GameRepository _gameRepository = new GameRepository();
         private Lobby _page;
         private bool _isloading { get; set; }
         private readonly WebSocketService _webSocketService;
@@ -74,15 +75,24 @@ namespace Hunted_Mobile.ViewModel {
             _webSocketService.StartGame += StartGame;
         }
 
-        private void StartGame() {
+        private async void StartGame() {
+            if(GameModel.Interval < 30) {
+                GameModel.Interval = await _gameRepository.GetInterval(_gameModel.Id) ?? 0;
+            }
+
             NavigateToMapPage();
         }
 
         // To manually navigate to a different page, the mainthread need to be approached
         public void NavigateToMapPage() {
             try {
+                Map mapModel = new Map() {
+                    PlayingUser = _currentUser
+                };
+                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel));
+
                 Device.BeginInvokeOnMainThread(() => {
-                    Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MapPage(GameModel), true);
+                    Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
                     _webSocketService.StartGame -= StartGame;
                 });
             }

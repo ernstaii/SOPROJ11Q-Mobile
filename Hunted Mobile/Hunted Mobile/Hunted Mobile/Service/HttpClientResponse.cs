@@ -14,7 +14,7 @@ namespace Hunted_Mobile.Service {
         public bool HasMultipleResults { get; set; }
         public HttpResponseMessage ResponseMessage { get; set; }
 
-        private string _responseContent { get; set; }
+        public string ResponseContent { get; set; }
         public JObject Item { get; set; }
         public JArray Items { get; set; }
 
@@ -52,7 +52,7 @@ namespace Hunted_Mobile.Service {
 
         protected async Task ReadingRequestContent() {
             try {
-                _responseContent = await ResponseMessage.Content.ReadAsStringAsync();
+                ResponseContent = await ResponseMessage.Content.ReadAsStringAsync();
             }
             catch(Exception e) {
                 MainErrorMessage = "Er is iets misgegaan bij het uitlezen van de inhoud van de response";
@@ -62,10 +62,10 @@ namespace Hunted_Mobile.Service {
         protected void ConvertResponseContent() {
             try {
                 if(!HasMultipleResults || HasMultipleResults && !IsSuccessful)
-                    Item = (JObject) JsonConvert.DeserializeObject(_responseContent);
+                    Item = (JObject) JsonConvert.DeserializeObject(ResponseContent);
 
                 if(HasMultipleResults)
-                    Items = JArray.Parse(_responseContent);
+                    Items = JArray.Parse(ResponseContent);
             }
             catch(Exception e) {
                 MainErrorMessage = "Er is iets misgegaan bij het omzetten van de inhoud van de response";
