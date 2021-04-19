@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Hunted_Mobile.Model.GameModels {
     public class User : CustomModelErrorMessages<User> {
-        public readonly int Id;
+        public int Id { get; set; }
         public Location Location { get; set; }
         public InviteKey InviteKey { get; set; }
 

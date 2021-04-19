@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using PusherClient;
 
@@ -45,27 +46,41 @@ namespace Hunted_Mobile.Service {
         #endregion
 
         public delegate void SocketEvent();
+        public delegate void SocketEvent<T>(T data);
         public event SocketEvent StartGame;
-        public event SocketEvent PauseGame;
+        public event SocketEvent<JObject> PauseGame;
         public event SocketEvent ResumeGame;
-        public event SocketEvent EndGame;
+        public event SocketEvent<JObject> EndGame;
+        public event SocketEvent<JObject> IntervalEvent;
 
         public WebSocketService(int gameId) {
             _pusher.SubscribeAsync("game." + gameId);
 
             string gameIdStr = gameId.ToString();
-            Bind("game.start", ()=> StartGame(), gameIdStr);
-            Bind("game.pause", ()=> PauseGame(), gameIdStr);
-            Bind("game.resume", ()=> ResumeGame(), gameIdStr);
-            Bind("game.end", ()=> EndGame(), gameIdStr);
+            Bind("game.start", () => StartGame(), gameIdStr);
+            Bind<JObject>("game.pause", (data) => PauseGame(data), gameIdStr);
+            Bind("game.resume", () => ResumeGame(), gameIdStr);
+            Bind<JObject>("game.end", (data) => EndGame(data), gameIdStr);
+            Bind<JObject>("game.interval", (data) => IntervalEvent(data), gameIdStr);
         }
 
         private void Bind(string eventName, Action action, string gameIdStr) {
             _pusher.Bind(eventName, (PusherEvent eventData) => {
-                object data = JsonConvert.DeserializeObject<object>(eventData.Data);
                 if(eventData.ChannelName.EndsWith(gameIdStr)) {
                     action();
                 }
+            });
+        }
+
+        private void Bind<T>(string eventName, Action<T> action, string gameIdStr) {
+            _pusher.Bind(eventName, (PusherEvent eventData) => {
+                try {
+                    object data = JsonConvert.DeserializeObject<T>(eventData.Data);
+                    if(eventData.ChannelName.EndsWith(gameIdStr)) {
+                        action((T) data);
+                    }
+                }
+                catch(Exception) { }
             });
         }
 

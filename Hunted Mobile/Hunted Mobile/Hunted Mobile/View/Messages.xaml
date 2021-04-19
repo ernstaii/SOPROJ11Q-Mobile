@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodel="clr-namespace:Hunted_Mobile.ViewModel" x:DataType="viewmodel:MessageViewModel"
+             x:Class="Hunted_Mobile.View.Messages">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Messages:"
+                   Margin="20, 0"/>
+            <CollectionView ItemsSource="{Binding Messages}"
+                            Margin="20, 20"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
