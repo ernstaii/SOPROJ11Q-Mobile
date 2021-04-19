@@ -90,6 +90,8 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void Test(JObject data) {
+            StartIntervalTimer();
+
             Console.WriteLine(data);
 
             foreach(JObject user in data.GetValue("users")) {
@@ -129,9 +131,9 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private void StartIntervalTimer() {
+        private void StartIntervalTimer(float secondsBeforeInterval = 5) {
             StopIntervalTimer();
-            _intervalUpdateTimer = new Timer((_gameModel.Interval - 5) * 1000);
+            _intervalUpdateTimer = new Timer((_gameModel.Interval - secondsBeforeInterval) * 1000);
             _intervalUpdateTimer.AutoReset = false;
             _intervalUpdateTimer.Elapsed += IntervalUpdate;
             _intervalUpdateTimer.Start();
@@ -139,10 +141,7 @@ namespace Hunted_Mobile.ViewModel {
 
         private async void IntervalUpdate(object sender, ElapsedEventArgs args) {
             StopIntervalTimer();
-            _intervalUpdateTimer = new Timer(_gameModel.Interval * 1000);
-            _intervalUpdateTimer.AutoReset = false;
-            _intervalUpdateTimer.Elapsed += IntervalUpdate;
-            _intervalUpdateTimer.Start();
+
             // Send the current user's location to the database
             await _userRepository.Update(_mapModel.PlayingUser.Id, _mapModel.PlayingUser.Location);
             // Get loot update from the database
