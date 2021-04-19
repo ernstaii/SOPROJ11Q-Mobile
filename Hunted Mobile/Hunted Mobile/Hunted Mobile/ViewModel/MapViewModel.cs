@@ -18,6 +18,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hunted_Mobile.Service;
 using Hunted_Mobile.Service.Gps;
+using System.Windows.Input;
+using Xamarin.Forms;
 using System.Timers;
 using Newtonsoft.Json.Linq;
 using System.Windows.Input;
@@ -25,6 +27,7 @@ using System.Windows.Input;
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
         private MapView _mapView;
+        private View.Messages _messagesView;
         private readonly Model.Map _mapModel;
         private readonly Game _gameModel;
         private readonly LootRepository _lootRepository;
@@ -78,8 +81,9 @@ namespace Hunted_Mobile.ViewModel {
             _mapModel = mapModel;
             _gameModel = gameModel;
             _gpsService = new GpsService();
+            _messagesView = new View.Messages(_gameModel.Id);
             _lootRepository = new LootRepository();
-            _webSocketService = new WebSocketService(gameModel.Id);
+            _webSocketService = new WebSocketService(_gameModel.Id);
             _userRepository = new UserRepository();
 
             _gpsService.LocationChanged += MyLocationUpdated;
@@ -122,7 +126,6 @@ namespace Hunted_Mobile.ViewModel {
                 _gpsService.StartGps();
             }
         }
-
         private void StopIntervalTimer() {
             if(_intervalUpdateTimer != null) {
                 _intervalUpdateTimer.Stop();
@@ -164,14 +167,14 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private void EndGame() {
+        private void EndGame(JObject data) {
             GameHasEnded = true;
             IsEnabled = false;
 
             StopIntervalTimer();
         }
 
-        private void PauseGame() {
+        private void PauseGame(JObject data) {
             IsEnabled = false;
 
             StopIntervalTimer();
@@ -197,7 +200,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void CenterMapOnLocation(Location center, double zoomResolution) {
-            Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
+            Mapsui.Geometries.Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
             _mapView.Navigator.CenterOn(centerPoint);
 
             _mapView.Navigator.NavigateTo(centerPoint, zoomResolution);
@@ -208,9 +211,9 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         private void LimitMapViewport(Location center, int limit = 100000) {
             _mapView.Map.Limiter = new ViewportLimiterKeepWithin();
-            Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
-            Point min = new Point(centerPoint.X - limit, centerPoint.Y - limit);
-            Point max = new Point(centerPoint.X + limit, centerPoint.Y + limit);
+            Mapsui.Geometries.Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
+            Mapsui.Geometries.Point min = new Mapsui.Geometries.Point(centerPoint.X - limit, centerPoint.Y - limit);
+            Mapsui.Geometries.Point max = new Mapsui.Geometries.Point(centerPoint.X + limit, centerPoint.Y + limit);
             _mapView.Map.Limiter.PanLimits = new BoundingBox(min, max);
         }
 
@@ -277,9 +280,9 @@ namespace Hunted_Mobile.ViewModel {
             return new Layer("Polygon") {
                 DataSource = memoryProvider,
                 Style = new VectorStyle {
-                    Fill = new Brush(new Color(0, 0, 0, 0)),
+                    Fill = new Mapsui.Styles.Brush(new Mapsui.Styles.Color(0, 0, 0, 0)),
                     Outline = new Pen {
-                        Color = Color.Red,
+                        Color = Mapsui.Styles.Color.Red,
                         Width = 2,
                         PenStyle = PenStyle.DashDotDot,
                         PenStrokeCap = PenStrokeCap.Round
@@ -329,7 +332,6 @@ namespace Hunted_Mobile.ViewModel {
                     Color = Xamarin.Forms.Color.Gold,
                     Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
                     Scale = 0.5f,
-                    // TODO change icon of loot
                 });
             }
         }
@@ -342,6 +344,11 @@ namespace Hunted_Mobile.ViewModel {
 
             _mapModel.SetLoot(lootList);
         }
+
+
+        public ICommand ButtonSelectedCommand => new Command(async (e) => {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(_messagesView);
+        });
 
         /// <summary>
         /// Navigate to the RootPage
