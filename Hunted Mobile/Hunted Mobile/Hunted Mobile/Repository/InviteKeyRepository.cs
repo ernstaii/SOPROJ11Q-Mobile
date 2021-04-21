@@ -10,19 +10,22 @@ using System.Threading.Tasks;
 namespace Hunted_Mobile.Repository {
     public class InviteKeyRepository {
         public async Task<List<InviteKey>> GetAll(string inviteCode) {
-            var response = new HttpClientResponse() {
-                HasMultipleResults = true,
-            };
-
+            var response = new HttpClientResponse();
             await response.Convert(HttpClientRequestService.Get($"invite-keys/{inviteCode}"));
 
             List<InviteKey> result = new List<InviteKey>();
-            result.Add(new InviteKey() {
-                Value = inviteCode,
-                GameId = (int) response.GetNumberValue("game_id"),
-                Role = response.GetStringValue("role").ToString(),
-                ErrorMessages = response.ErrorMessages
-            });
+            try {
+                result.Add(new InviteKey() {
+                    Value = inviteCode,
+                    GameId = response.GetNumberValue("game_id"),
+                    UserId = response.GetNumberValue("user_id"),
+                    Role = response.GetStringValue("role").ToString(),
+                    ErrorMessages = response.ErrorMessages
+                });
+            }
+            catch {
+                result.Clear();
+            }
 
             return result;
         }
