@@ -33,7 +33,7 @@ namespace Hunted_Mobile.Repository {
             var response = new HttpClientResponse() {
                 HasMultipleResults = true,
             };
-            await response.Convert(HttpClientRequestService.GetAll($"game/{gameId}/users"));
+            await response.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users"));
 
             var output = new List<User>();
 

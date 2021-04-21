@@ -18,10 +18,8 @@ namespace Hunted_Mobile.Repository {
             var response = new HttpClientResponse() {
                 HasMultipleResults = true,
             };
-            await response.Convert(HttpClientRequestService.Get($"game/{gameId}/loot"));
+            await response.Convert(HttpClientRequestService.Get($"games/{gameId}/loot"));
             
-            Console.WriteLine(response + "HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-
             var output = new List<Loot>();
 
             // Looping through the result
