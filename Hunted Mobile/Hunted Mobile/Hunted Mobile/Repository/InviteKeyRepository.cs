@@ -14,31 +14,15 @@ namespace Hunted_Mobile.Repository {
                 HasMultipleResults = true,
             };
 
-            await response.Convert(HttpClientRequestService.GetAll($"invite-key/{inviteCode}"));
+            await response.Convert(HttpClientRequestService.Get($"invite-keys/{inviteCode}"));
 
             List<InviteKey> result = new List<InviteKey>();
-
-            try {
-                if(!response.IsSuccessful) {
-                    result.Add(new InviteKey() {
-                        Value = inviteCode,
-                        GameId = 0,
-                        Role = null,
-                        ErrorMessages = response.ErrorMessages
-                    });
-                }
-                else {
-                    foreach(JObject item in response.Items) {
-                        result.Add(new InviteKey() {
-                            GameId = (int) item.GetValue("game_id"),
-                            Role = item.GetValue("role").ToString(),
-                            Value = item.GetValue("value").ToString()
-                        });
-                    }
-                }
-            }
-            catch(Exception e) {
-            }
+            result.Add(new InviteKey() {
+                Value = inviteCode,
+                GameId = (int) response.GetNumberValue("game_id"),
+                Role = response.GetStringValue("role").ToString(),
+                ErrorMessages = response.ErrorMessages
+            });
 
             return result;
         }
