@@ -76,10 +76,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private async void StartGame() {
-            if(GameModel.Interval < 30) {
-                GameModel.Interval = await _gameRepository.GetInterval(_gameModel.Id) ?? 0;
-            }
-
+            GameModel = await _gameRepository.GetGame(_gameModel.Id);
             NavigateToMapPage();
         }
 
