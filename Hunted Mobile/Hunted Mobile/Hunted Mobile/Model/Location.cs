@@ -14,6 +14,7 @@ namespace Hunted_Mobile.Model {
         /// Horizontal map coordinate
         /// </summary>
         public double Latitude { get; set; }
+
         /// <summary>
         /// Vertical map coordinate
         /// </summary>

@@ -14,6 +14,8 @@ namespace Hunted_Mobile.ViewModel {
     public class EnterUsernameViewModel : BaseViewModel {
         private User _userModel = new User();
         private bool _isloading = false;
+        private UserRepository _userRepository = new UserRepository();
+        private EnterUsername _page;
         private bool _creatingUserSucceeded { get; set; }
         public bool IsValid { get; set; }
 
@@ -32,9 +34,6 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged("SubmitButtonIsEnable");
             }
         }
-
-        private UserRepository _userRepository = new UserRepository();
-        private EnterUsername _page;
 
         public EnterUsernameViewModel(EnterUsername page, InviteKey key) {
             _page = page;

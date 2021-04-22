@@ -4,6 +4,7 @@ using Hunted_Mobile.Service;
 
 using Newtonsoft.Json.Linq;
 
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -54,7 +55,8 @@ namespace Hunted_Mobile.Repository {
                         GameId = gameId,
                     });
                 }
-                catch { }
+                catch(Exception e) { 
+                }
             }
 
             return output;

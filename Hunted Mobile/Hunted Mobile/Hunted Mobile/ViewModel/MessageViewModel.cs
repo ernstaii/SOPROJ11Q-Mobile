@@ -11,7 +11,9 @@ using Xamarin.Forms;
 namespace Hunted_Mobile.ViewModel {
     public class MessageViewModel : BaseViewModel{
         private Messages _page;
+
         public ObservableCollection<string> Messages { get; set; } = new ObservableCollection<string>();
+
         public MessageViewModel(Messages page, int gameId){
             _page = page;
 
@@ -24,9 +26,9 @@ namespace Hunted_Mobile.ViewModel {
             if(!WebSocketService.Connected) {
                 socket.Connect();
             }
-
         }
-        public void AddMessage(String message) {
+
+        private void AddMessage(String message) {
             Messages.Add("[" + DateTime.Now.ToString("HH:mm") + "] Spelleider: " + message);
         }
     }

@@ -15,6 +15,9 @@ namespace Hunted_Mobile.ViewModel {
     public class MainPageViewModel : BaseViewModel {
         private InviteKey _inviteKeyModel = new InviteKey();
         private bool _isloading = false;
+        private InviteKeyRepository _inviteKeyRepository = new InviteKeyRepository();
+        private ObservableCollection<InviteKey> _inviteKeys = new ObservableCollection<InviteKey>();
+        private MainPage _page;
         public InviteKey InviteKeyModel {
             get => _inviteKeyModel;
             set {
@@ -31,6 +34,7 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
         private bool _isOverlayVisible { get; set; }
+
         /// <summary>
         /// This property will disable the touch of the user with the mapView
         /// </summary>
@@ -43,10 +47,17 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private InviteKeyRepository _inviteKeyRepository = new InviteKeyRepository();
-        private MainPage _page;
+        public ObservableCollection<InviteKey> InviteKeys {
+            get { return _inviteKeys; }
+            set {
+                _inviteKeys = value;
+                OnPropertyChanged("InviteKeys");
+            }
+        }
 
         public bool IsValid { get; set; }
+
+        public InviteKey SelectedPreferenceGame { get; set; }
 
         public MainPageViewModel(MainPage page) {
             _page = page;
@@ -89,16 +100,6 @@ namespace Hunted_Mobile.ViewModel {
             SubmitButtonIsEnable = true;
         });
 
-        public InviteKey SelectedPreferenceGame { get; set; }
-        private ObservableCollection<InviteKey> _inviteKeys = new ObservableCollection<InviteKey>();
-
-        public ObservableCollection<InviteKey> InviteKeys {
-            get { return _inviteKeys; }
-            set {
-                _inviteKeys = value;
-                OnPropertyChanged("InviteKeys");
-            }
-        }
 
         /// <summary>
         /// Set selected InviteKey as InviteKeymodel and navigate to the next page

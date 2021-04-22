@@ -20,8 +20,6 @@ namespace Hunted_Mobile.Repository {
             };
             await response.Convert(HttpClientRequestService.Get($"game/{gameId}/loot"));
             
-            Console.WriteLine(response + "HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-
             var output = new List<Loot>();
 
             // Looping through the result
@@ -37,7 +35,8 @@ namespace Hunted_Mobile.Repository {
                         }
                     });
                 }
-                catch { }
+                catch(Exception e) { 
+                }
             }
 
             return output;

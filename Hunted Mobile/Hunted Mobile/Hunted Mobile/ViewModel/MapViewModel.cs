@@ -26,17 +26,22 @@ using System.Windows.Input;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
-        private MapView _mapView;
-        private View.Messages _messagesView;
+        const string PAUSE_TITLE = "Gepauzeerd",
+            END_TITLE = "Het spel is afgelopen!",
+            PAUSE_DESCRIPTION = "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.",
+            END_DESCRIPTION = "Ga terug naar de spelleider!";
+
         private readonly Model.Map _mapModel;
         private readonly Game _gameModel;
         private readonly LootRepository _lootRepository;
         private readonly UserRepository _userRepository;
         private readonly GpsService _gpsService;
-        private Timer _intervalUpdateTimer;
-        private Pin _playerPin;
         private readonly WebSocketService _webSocketService;
 
+        private MapView _mapView;
+        private View.Messages _messagesView;
+        private Timer _intervalUpdateTimer;
+        private Pin _playerPin;
         private bool _isEnabled = true;
         private bool _gameHasEnded = false;
 
@@ -56,6 +61,7 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged("DescriptionOverlay");
             }
         }
+
         public bool GameHasEnded {
             get => _gameHasEnded;
             set {
@@ -64,17 +70,14 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged("GameHasEnded");
             }
         }
+
         /// <summary>
         /// The oposite of the enable-state
         /// </summary>
         public bool VisibleOverlay => !IsEnabled;
 
-        const string PAUSE_TITLE = "Gepauzeerd",
-            END_TITLE = "Het spel is afgelopen!",
-            PAUSE_DESCRIPTION = "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.",
-            END_DESCRIPTION = "Ga terug naar de spelleider!";
-
         public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
+
         public string DescriptionOverlay => GameHasEnded ? END_DESCRIPTION : PAUSE_DESCRIPTION;
 
         public MapViewModel(Game gameModel, Model.Map mapModel) {
@@ -92,6 +95,18 @@ namespace Hunted_Mobile.ViewModel {
 
             StartIntervalTimer();
         }
+
+        public ICommand ButtonSelectedCommand => new Command(async (e) => {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(_messagesView);
+        });
+
+        /// <summary>
+        /// Navigate to the RootPage
+        /// </summary>
+        public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
+            await _webSocketService.Disconnect();
+        });
 
         private void IntervalOfGame(JObject data) {
             StartIntervalTimer();
@@ -132,6 +147,7 @@ namespace Hunted_Mobile.ViewModel {
                 _gpsService.StartGps();
             }
         }
+
         private void StopIntervalTimer() {
             if(_intervalUpdateTimer != null) {
                 _intervalUpdateTimer.Stop();
@@ -350,18 +366,5 @@ namespace Hunted_Mobile.ViewModel {
 
             _mapModel.SetLoot(lootList);
         }
-
-
-        public ICommand ButtonSelectedCommand => new Command(async (e) => {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(_messagesView);
-        });
-
-        /// <summary>
-        /// Navigate to the RootPage
-        /// </summary>
-        public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
-            await _webSocketService.Disconnect();
-        });
     }
 }
