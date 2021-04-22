@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
@@ -24,7 +25,15 @@ namespace Hunted_Mobile.Repository {
                 });
             }
             catch {
-                result.Clear();
+                result.Add(new InviteKey() {
+                    Value = inviteCode,
+                    GameId = 0,
+                    UserId = 0,
+                    Role =null,
+                    ErrorMessages = new Dictionary<string, string>() {
+                        { "value", "De code is onjuist of al in gebruik"}
+                    }
+                });
             }
 
             return result;
