@@ -15,15 +15,11 @@ namespace Hunted_Mobile.Repository {
             await response.Convert(HttpClientRequestService.Create("users", new {
                 username = username,
                 invite_key = inviteKey.Value,
-                role = inviteKey.Role,
-                game_id = inviteKey.GameId
             }));
 
             return new User((int) response.GetNumberValue("id")) {
-                Location = null,
                 UserName = username,
                 InviteKey = inviteKey,
-                Role = response.GetStringValue("role"),
                 ErrorMessages = response.ErrorMessages,
             };
         }
@@ -39,19 +35,10 @@ namespace Hunted_Mobile.Repository {
 
             // Looping through the result
             foreach(JObject item in response.Items) {
-                string role = item.GetValue("role")?.ToString();
-
                 try {
                     output.Add(new User((int) item.GetValue("id")) {
                         UserName = item.GetValue("username").ToString(),
-                        Location = null,
-                        InviteKey = new InviteKey() {
-                            GameId = gameId,
-                            Role = role,
-                            Value = item.GetValue("invite_key").ToString()
-                        },
-                        Role = role,
-                        GameId = gameId,
+                        Role = item.GetValue("role").ToString() ?? "thief",
                     });
                 }
                 catch { }

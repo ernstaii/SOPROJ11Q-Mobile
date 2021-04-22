@@ -19,19 +19,19 @@ namespace Hunted_Mobile.Repository {
                 result.Add(new InviteKey() {
                     Value = inviteCode,
                     GameId = response.GetNumberValue("game_id"),
-                    UserId = response.GetNumberValue("user_id"),
+                    UserId = 0,
                     Role = response.GetStringValue("role").ToString(),
                     ErrorMessages = response.ErrorMessages
                 });
             }
-            catch {
+            catch (Exception e) {
                 result.Add(new InviteKey() {
                     Value = inviteCode,
                     GameId = 0,
                     UserId = 0,
-                    Role =null,
-                    ErrorMessages = new Dictionary<string, string>() {
-                        { "value", "De code is onjuist of al in gebruik"}
+                    Role = null,
+                    ErrorMessages = response.ErrorMessages.Count() > 0 ? response.ErrorMessages : new Dictionary<string, string>() {
+                        { "value", "Er is iets misgegaan"}
                     }
                 });
             }

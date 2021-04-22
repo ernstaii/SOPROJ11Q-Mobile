@@ -26,6 +26,8 @@ namespace Hunted_Mobile.Service {
         public HttpClientResponse() { }
 
         public async Task Convert(Task<HttpResponseMessage> request) {
+            HasServerErrors = false;
+            ErrorMessages.Clear();
             await ExecuteRequest(request);
 
             if(!HasErrors) {
