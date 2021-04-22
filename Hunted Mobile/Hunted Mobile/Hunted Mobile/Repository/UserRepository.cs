@@ -4,6 +4,7 @@ using Hunted_Mobile.Service;
 
 using Newtonsoft.Json.Linq;
 
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -19,12 +20,15 @@ namespace Hunted_Mobile.Repository {
                 game_id = inviteKey.GameId
             }));
 
-            return new User((int) response.GetNumberValue("id")) {
-                Location = null,
+            var responseLoc = response.GetStringValue("location");
+
+            return new User(response.GetNumberValue("id")) {
+                Location = string.IsNullOrWhiteSpace(responseLoc) ? null : new Location(responseLoc),
                 UserName = username,
                 InviteKey = inviteKey,
                 Role = response.GetStringValue("role"),
                 ErrorMessages = response.ErrorMessages,
+                GameId = response.GetNumberValue("game_id")
             };
         }
 
@@ -40,11 +44,12 @@ namespace Hunted_Mobile.Repository {
             // Looping through the result
             foreach(JObject item in response.Items) {
                 string role = item.GetValue("role")?.ToString();
+                Location location = new Location(item.GetValue("location")?.ToString());
 
                 try {
                     output.Add(new User((int) item.GetValue("id")) {
                         UserName = item.GetValue("username").ToString(),
-                        Location = null,
+                        Location = location,
                         InviteKey = new InviteKey() {
                             GameId = gameId,
                             Role = role,
@@ -52,9 +57,13 @@ namespace Hunted_Mobile.Repository {
                         },
                         Role = role,
                         GameId = gameId,
+                        Id = int.Parse(item.GetValue("id").ToString())
                     });
+                    ;
                 }
-                catch { }
+                catch(Exception ex) {
+                    Console.WriteLine(ex.ToString());
+                }
             }
 
             return output;

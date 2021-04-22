@@ -38,6 +38,7 @@ namespace Hunted_Mobile.Repository {
                 }
             }
             catch(Exception e) {
+                Console.WriteLine(e.ToString());
             }
 
             return result;

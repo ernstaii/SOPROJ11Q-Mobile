@@ -22,11 +22,10 @@ using System.Windows.Input;
 using Xamarin.Forms;
 using System.Timers;
 using Newtonsoft.Json.Linq;
-using System.Windows.Input;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
-        private MapView _mapView;
+        private MapView _mapView = null;
         private View.Messages _messagesView;
         private readonly Model.Map _mapModel;
         private readonly Game _gameModel;
@@ -35,7 +34,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly GpsService _gpsService;
         private Timer _intervalUpdateTimer;
         private Pin _playerPin;
-        private readonly WebSocketService _webSocketService;
+        private WebSocketService _webSocketService;
 
         private bool _isEnabled = true;
         private bool _gameHasEnded = false;
@@ -69,6 +68,8 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         public bool VisibleOverlay => !IsEnabled;
 
+        public bool Initialized { get; private set; }
+
         const string PAUSE_TITLE = "Gepauzeerd",
             END_TITLE = "Het spel is afgelopen!",
             PAUSE_DESCRIPTION = "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.",
@@ -77,20 +78,28 @@ namespace Hunted_Mobile.ViewModel {
         public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
         public string DescriptionOverlay => GameHasEnded ? END_DESCRIPTION : PAUSE_DESCRIPTION;
 
-        public MapViewModel(Game gameModel, Model.Map mapModel) {
+        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository) {
             _mapModel = mapModel;
             _gameModel = gameModel;
-            _gpsService = new GpsService();
+            _gpsService = gpsService;
             _messagesView = new View.Messages(_gameModel.Id);
-            _lootRepository = new LootRepository();
-            _webSocketService = new WebSocketService(_gameModel.Id);
-            _userRepository = new UserRepository();
+            _lootRepository = lootRepository;
+            _userRepository = userRepository;
+        }
 
-            _gpsService.LocationChanged += MyLocationUpdated;
+        private async Task PollLoot() {
+            var lootList = await _lootRepository.GetAll(_gameModel.Id);
+            _mapModel.SetLoot(lootList);
+        }
 
-            Task.Run(async () => await StartSocket());
-
-            StartIntervalTimer();
+        private async Task PollUsers() {
+            var userList = new List<User>();
+            foreach(User user in await _userRepository.GetAll(_gameModel.Id)) {
+                if(user.Id != _mapModel.PlayingUser.Id) {
+                    userList.Add(user);
+                }
+            }
+            _mapModel.SetUsers(userList);
         }
 
         private void IntervalOfGame(JObject data) {
@@ -119,19 +128,44 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public void SetMapView(MapView mapView) {
-            _mapView = mapView;
-            InitializeMap();
+            if(mapView != null) {
+                bool initializedBefore = _mapView != null;
+                _mapView = mapView;
+
+                if(!initializedBefore) {
+                    InitializeMap();
+                }
+            }
         }
 
-        private void InitializeMap() {
+        private async void InitializeMap() {
             AddOsmLayerToMapView();
             AddGameBoundary();
             LimitViewportToGame();
 
+            await PollLoot();
+            DisplayOtherPins();
+
             if(!_gpsService.GpsHasStarted()) {
-                _gpsService.StartGps();
+                await _gpsService.StartGps();
             }
+            _gpsService.LocationChanged += MyLocationUpdated;
+
+            await StartSocket();
+
+            StartIntervalTimer();
+
+            Timer initialPlayerUpdateTimer = new Timer(5000);
+            initialPlayerUpdateTimer.AutoReset = false;
+            initialPlayerUpdateTimer.Elapsed += async (object sender, ElapsedEventArgs args) => {
+                await PollUsers();
+                DisplayOtherPins();
+                Initialized = true;
+                initialPlayerUpdateTimer.Dispose();
+            };
+            initialPlayerUpdateTimer.Start();
         }
+
         private void StopIntervalTimer() {
             if(_intervalUpdateTimer != null) {
                 _intervalUpdateTimer.Stop();
@@ -140,25 +174,24 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private void StartIntervalTimer(float secondsBeforeInterval = 5) {
+        private void StartIntervalTimer(float secondsBeforeGameInterval = 5) {
             StopIntervalTimer();
-            _intervalUpdateTimer = new Timer((_gameModel.Interval - secondsBeforeInterval) * 1000);
+            _intervalUpdateTimer = new Timer((_gameModel.Interval - secondsBeforeGameInterval) * 1000);
             _intervalUpdateTimer.AutoReset = false;
-            _intervalUpdateTimer.Elapsed += IntervalUpdate;
+            _intervalUpdateTimer.Elapsed += PreIntervalUpdate;
             _intervalUpdateTimer.Start();
         }
 
-        private async void IntervalUpdate(object sender, ElapsedEventArgs args) {
+        private async void PreIntervalUpdate(object sender = null, ElapsedEventArgs args = null) {
             StopIntervalTimer();
 
             // Send the current user's location to the database
             await _userRepository.Update(_mapModel.PlayingUser.Id, _mapModel.PlayingUser.Location);
-            // Get loot update from the database
-            await UpdateLoot(_gameModel.Id);
         }
 
         private async Task StartSocket() {
             try {
+                _webSocketService = new WebSocketService(_gameModel.Id);
                 if(!WebSocketService.Connected) {
                     await _webSocketService.Connect();
                 }
@@ -169,7 +202,8 @@ namespace Hunted_Mobile.ViewModel {
 
                 _webSocketService.IntervalEvent += IntervalOfGame;
             }
-            catch {
+            catch(Exception ex) {
+                Console.WriteLine("An error occurred when connecting the web socket: " + ex.StackTrace);
             }
         }
 
@@ -195,7 +229,7 @@ namespace Hunted_Mobile.ViewModel {
         /// <summary>
         /// Action to execute when the device location has updated
         /// </summary>
-        private void MyLocationUpdated(Location newLocation) {
+        private async void MyLocationUpdated(Location newLocation) {
             _mapModel.PlayingUser.Location = newLocation;
 
             // Send update to the map view
@@ -203,6 +237,10 @@ namespace Hunted_Mobile.ViewModel {
             _mapView.MyLocationLayer.UpdateMyLocation(mapsuiPosition, true);
 
             DisplayPlayerPin();
+
+            if(!Initialized) {
+                await _userRepository.Update(_mapModel.PlayingUser.Id, _mapModel.PlayingUser.Location);
+            }
         }
 
         private void CenterMapOnLocation(Location center, double zoomResolution) {
@@ -298,9 +336,14 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void DisplayPlayerPin() {
+            if(_mapModel.PlayingUser == null || _mapModel.PlayingUser.UserName == null || _mapModel.PlayingUser.Location == null) {
+                //TODO TODO
+                throw new NullReferenceException("The player object is not correct AAAHH");
+            }
+
             if(_playerPin == null) {
                 _playerPin = new Pin(_mapView) {
-                    Label = _mapModel.PlayingUser.UserName ?? "",
+                    Label = _mapModel.PlayingUser.UserName,
                     Color = Xamarin.Forms.Color.FromRgb(39, 96, 203)
                 };
             }
@@ -317,38 +360,35 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         private void DisplayOtherPins() {
             _mapView.Pins.Clear();
-            
-            _mapView.Pins.Add(_playerPin);
 
-            // TODO: the Name property of users is null here, it should not be
+            if(_playerPin != null) {
+                _mapView.Pins.Add(_playerPin);
+            }
+
+            //TODO: the null checks here should probably be resolved elsewhere
             // Players
             foreach(var user in _mapModel.GetUsers()) {
-                _mapView.Pins.Add(new Pin(_mapView) {
-                    Label = user.UserName ?? "",
-                    Color = Xamarin.Forms.Color.Black,
-                    Position = new Mapsui.UI.Forms.Position(user.Location.Latitude, user.Location.Longitude),
-                    Scale = 0.666f,
-                });
+                if(user.Location != null && user.UserName != null) {
+                    _mapView.Pins.Add(new Pin(_mapView) {
+                        Label = user.UserName,
+                        Color = Xamarin.Forms.Color.Black,
+                        Position = new Mapsui.UI.Forms.Position(user.Location.Latitude, user.Location.Longitude),
+                        Scale = 0.666f,
+                    });
+                }
             }
 
             // Loot
             foreach(var loot in _mapModel.GetLoot()) {
-                _mapView.Pins.Add(new Pin(_mapView) {
-                    Label = loot.Name,
-                    Color = Xamarin.Forms.Color.Gold,
-                    Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
-                    Scale = 0.5f,
-                });
+                if(loot.Name != null && loot.Location != null) {
+                    _mapView.Pins.Add(new Pin(_mapView) {
+                        Label = loot.Name,
+                        Color = Xamarin.Forms.Color.Gold,
+                        Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
+                        Scale = 0.5f,
+                    });
+                }
             }
-        }
-
-        /// <summary>
-        /// Gets all the loot from the database and updates the _model
-        /// </summary>
-        private async Task UpdateLoot(int gameId) {
-            var lootList = await _lootRepository.GetAll(gameId);
-
-            _mapModel.SetLoot(lootList);
         }
 
 
