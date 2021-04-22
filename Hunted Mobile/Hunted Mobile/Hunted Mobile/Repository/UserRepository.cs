@@ -37,11 +37,12 @@ namespace Hunted_Mobile.Repository {
             foreach(JObject item in response.Items) {
                 try {
                     output.Add(new User((int) item.GetValue("id")) {
-                        UserName = item.GetValue("username").ToString(),
-                        Role = item.GetValue("role").ToString() ?? "thief",
+                        UserName = item.GetValue("username")?.ToString(),
+                        Role = item.GetValue("role")?.ToString() ?? "thief",
                     });
                 }
-                catch { }
+                catch { 
+                }
             }
 
             return output;
