@@ -188,10 +188,6 @@ dotnet_naming_rule.method_should_be_pascal_case.severity = warning
 dotnet_naming_rule.method_should_be_pascal_case.symbols = method
 dotnet_naming_rule.method_should_be_pascal_case.style = pascal_case
 
-dotnet_naming_rule.property_should_be_pascal_case.severity = warning
-dotnet_naming_rule.property_should_be_pascal_case.symbols = property
-dotnet_naming_rule.property_should_be_pascal_case.style = pascal_case
-
 dotnet_naming_rule.anything_const_should_be_screaming_snake_case.severity = warning
 dotnet_naming_rule.anything_const_should_be_screaming_snake_case.symbols = anything_const
 dotnet_naming_rule.anything_const_should_be_screaming_snake_case.style = screaming_snake_case
@@ -199,6 +195,14 @@ dotnet_naming_rule.anything_const_should_be_screaming_snake_case.style = screami
 dotnet_naming_rule.local_or_parameter_should_be_camel_case.severity = warning
 dotnet_naming_rule.local_or_parameter_should_be_camel_case.symbols = local_or_parameter
 dotnet_naming_rule.local_or_parameter_should_be_camel_case.style = camel_case
+
+dotnet_naming_rule.public_or_internal_property_should_be_pascal_case.severity = warning
+dotnet_naming_rule.public_or_internal_property_should_be_pascal_case.symbols = public_or_internal_property
+dotnet_naming_rule.public_or_internal_property_should_be_pascal_case.style = pascal_case
+
+dotnet_naming_rule.private_or_protected_property_should_be_don_t_use.severity = error
+dotnet_naming_rule.private_or_protected_property_should_be_don_t_use.symbols = private_or_protected_property
+dotnet_naming_rule.private_or_protected_property_should_be_don_t_use.style = don_t_use
 
 dotnet_naming_rule.public_or_internal_field_should_be_don_t_use.severity = error
 dotnet_naming_rule.public_or_internal_field_should_be_don_t_use.symbols = public_or_internal_field
@@ -238,10 +242,6 @@ dotnet_naming_symbols.method.applicable_kinds = method
 dotnet_naming_symbols.method.applicable_accessibilities = public
 dotnet_naming_symbols.method.required_modifiers = 
 
-dotnet_naming_symbols.property.applicable_kinds = property
-dotnet_naming_symbols.property.applicable_accessibilities = public, internal, private, protected, protected_internal
-dotnet_naming_symbols.property.required_modifiers = 
-
 dotnet_naming_symbols.public_or_internal_field.applicable_kinds = field
 dotnet_naming_symbols.public_or_internal_field.applicable_accessibilities = public, internal
 dotnet_naming_symbols.public_or_internal_field.required_modifiers = 
@@ -265,6 +265,14 @@ dotnet_naming_symbols.anything_const.required_modifiers = const
 dotnet_naming_symbols.local_or_parameter.applicable_kinds = parameter, local, local_function
 dotnet_naming_symbols.local_or_parameter.applicable_accessibilities = *
 dotnet_naming_symbols.local_or_parameter.required_modifiers = 
+
+dotnet_naming_symbols.private_or_protected_property.applicable_kinds = property
+dotnet_naming_symbols.private_or_protected_property.applicable_accessibilities = private, protected, private_protected, local
+dotnet_naming_symbols.private_or_protected_property.required_modifiers = 
+
+dotnet_naming_symbols.public_or_internal_property.applicable_kinds = property
+dotnet_naming_symbols.public_or_internal_property.applicable_accessibilities = public, internal
+dotnet_naming_symbols.public_or_internal_property.required_modifiers = 
 
 # Naming styles
 
