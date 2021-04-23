@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace Hunted_Mobile.Model {
     public class Map {
-        private List<User> _users = new List<User>();
+        private List<User> users = new List<User>();
 
-        private List<Loot> _loot = new List<Loot>();
+        private List<Loot> loot = new List<Loot>();
         public User PlayingUser { get; set; }
 
         public Boundary GameBoundary { get; set; }
@@ -14,29 +14,29 @@ namespace Hunted_Mobile.Model {
         public Map() { }
 
         public void AddUser(User user) {
-            _users.Add(user);
+            users.Add(user);
         }
         public void RemoveUser(User user) {
-            _users.Remove(user);
+            users.Remove(user);
         }
         public IEnumerable<User> GetUsers() {
-            return _users.AsReadOnly();
+            return users.AsReadOnly();
         }
         public void SetUsers(IEnumerable<User> users) {
-            _users = new List<User>(users);
+            this.users = new List<User>(users);
         }
 
         public void AddLoot(Loot loot) {
-            _loot.Add(loot);
+            this.loot.Add(loot);
         }
         public void RemoveLoot(Loot loot) {
-            _loot.Remove(loot);
+            this.loot.Remove(loot);
         }
         public IEnumerable<Loot> GetLoot() {
-            return _loot.AsReadOnly();
+            return loot.AsReadOnly();
         }
         public void SetLoot(IEnumerable<Loot> loot) {
-            _loot = new List<Loot>(loot);
+            this.loot = new List<Loot>(loot);
         }
     }
 }

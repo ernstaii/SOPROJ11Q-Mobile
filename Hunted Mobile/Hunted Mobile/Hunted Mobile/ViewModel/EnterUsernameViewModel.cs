@@ -12,42 +12,33 @@ using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class EnterUsernameViewModel : BaseViewModel {
-        private User _userModel = new User();
-        private bool _isloading = false;
-        private readonly UserRepository _userRepository = new UserRepository();
-        private readonly EnterUsername _page;
-        private bool _creatingUserSucceeded { get; set; }
+        private readonly UserRepository userRepository = new UserRepository();
+        private readonly EnterUsername page;
+        private User userModel = new User();
+        private bool isloading = false;
+        private readonly bool creatingUserSucceeded;
+
         public bool IsValid { get; set; }
 
         public User UserModel {
-            get => _userModel;
+            get => userModel;
             set {
-                _userModel = value;
+                userModel = value;
                 OnPropertyChanged("UserModel");
             }
         }
 
         public bool SubmitButtonIsEnable {
-            get => _isloading;
+            get => isloading;
             set {
-                _isloading = value;
+                isloading = value;
                 OnPropertyChanged("SubmitButtonIsEnable");
             }
         }
 
         public EnterUsernameViewModel(EnterUsername page, InviteKey key) {
-            _page = page;
+            this.page = page;
             UserModel.InviteKey = key;
-        }
-
-        /// <summary>
-        /// Add new user to a game
-        /// </summary>
-        /// <returns></returns>
-        public async Task CreateUser() {
-            if(IsValid = ValidationHelper.IsFormValid(UserModel, _page)) {
-                UserModel = await _userRepository.Create(UserModel.InviteKey, UserModel.UserName);
-            }
         }
 
         /// <summary>
@@ -58,15 +49,25 @@ namespace Hunted_Mobile.ViewModel {
             await CreateUser();
 
             // Navigate when InviteKey is valid
-            if(IsValid = ValidationHelper.IsFormValid(UserModel, _page)) {
-                var Navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
+            if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
+                var navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
 
-                var previousPage = Navigation.NavigationStack.LastOrDefault();
-                await Navigation.PushAsync(new Lobby(UserModel), true);
-                Navigation.RemovePage(previousPage);
+                var previousPage = navigation.NavigationStack.LastOrDefault();
+                await navigation.PushAsync(new Lobby(UserModel), true);
+                navigation.RemovePage(previousPage);
             }
 
             SubmitButtonIsEnable = true;
         });
+
+        /// <summary>
+        /// Add new user to a game
+        /// </summary>
+        /// <returns></returns>
+        public async Task CreateUser() {
+            if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
+                UserModel = await userRepository.Create(UserModel.InviteKey, UserModel.UserName);
+            }
+        }
     }
 }

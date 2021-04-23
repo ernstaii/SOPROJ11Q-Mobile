@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Hunted_Mobile.Model {
     public abstract class CustomModelErrorMessages<T> : IValidatableObject {
-        private Dictionary<string, string> _errorMessages = new Dictionary<string, string>();
+        private Dictionary<string, string> errorMessages = new Dictionary<string, string>();
         public Dictionary<string, string> ErrorMessages {
-            get => _errorMessages; set {
+            get => errorMessages; set {
                 if(value != null)
-                    _errorMessages = value;
+                    errorMessages = value;
             }
         }
 

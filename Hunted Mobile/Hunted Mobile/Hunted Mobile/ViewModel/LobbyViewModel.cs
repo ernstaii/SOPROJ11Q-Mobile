@@ -14,36 +14,35 @@ using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class LobbyViewModel : BaseViewModel {
-        private List<User> _users = new List<User>();
-        private Game _gameModel = new Game();
-        private readonly User _currentUser;
-        private readonly UserRepository _userRepository = new UserRepository();
-        private readonly GameRepository _gameRepository = new GameRepository();
-        private readonly Lobby _page;
-        private readonly WebSocketService _webSocketService;
-
-        private bool _isloading { get; set; }
+        private List<User> users = new List<User>();
+        private Game gameModel = new Game();
+        private readonly User currentUser;
+        private readonly UserRepository userRepository = new UserRepository();
+        private readonly GameRepository gameRepository = new GameRepository();
+        private readonly Lobby page;
+        private readonly WebSocketService webSocketService;
+        private bool isloading;
 
         public Game GameModel {
-            get => _gameModel;
+            get => gameModel;
             set {
-                _gameModel = value;
+                gameModel = value;
                 OnPropertyChanged("GameModel");
             }
         }
 
         public bool IsLoading {
-            get => _isloading;
+            get => isloading;
             set {
-                _isloading = value;
+                isloading = value;
                 OnPropertyChanged("IsLoading");
             }
         }
 
         public List<User> Users {
-            get => _users;
+            get => users;
             set {
-                _users = value;
+                users = value;
                 OnPropertyChanged("Thiefs");
                 OnPropertyChanged("Police");
             }
@@ -58,11 +57,11 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public LobbyViewModel(Lobby page, User currentUser) {
-            _page = page;
-            _currentUser = currentUser;
-            _gameModel.Id = _currentUser.InviteKey.GameId;
+            this.page = page;
+            this.currentUser = currentUser;
+            gameModel.Id = this.currentUser.InviteKey.GameId;
 
-            _webSocketService = new WebSocketService(_gameModel.Id);
+            webSocketService = new WebSocketService(gameModel.Id);
             Task.Run(async () => await StartSocket());
 
             Task.Run(async () => await LoadUsers());
@@ -70,15 +69,15 @@ namespace Hunted_Mobile.ViewModel {
 
         private async Task StartSocket() {
             if(!WebSocketService.Connected) {
-                await _webSocketService.Connect();
+                await webSocketService.Connect();
             }
 
-            _webSocketService.StartGame += StartGame;
+            webSocketService.StartGame += StartGame;
         }
 
         private async void StartGame() {
             if(GameModel.Interval < 30) {
-                GameModel.Interval = await _gameRepository.GetInterval(_gameModel.Id) ?? 0;
+                GameModel.Interval = await gameRepository.GetInterval(gameModel.Id) ?? 0;
             }
 
             NavigateToMapPage();
@@ -88,22 +87,23 @@ namespace Hunted_Mobile.ViewModel {
         public void NavigateToMapPage() {
             try {
                 Map mapModel = new Map() {
-                    PlayingUser = _currentUser
+                    PlayingUser = currentUser
                 };
                 var mapPage = new MapPage(new MapViewModel(GameModel, mapModel));
 
                 Device.BeginInvokeOnMainThread(() => {
                     Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
-                    _webSocketService.StartGame -= StartGame;
+                    webSocketService.StartGame -= StartGame;
                 });
             }
             catch(Exception e) {
+                Console.WriteLine(e.ToString());
             }
         }
 
         public async Task LoadUsers() {
             IsLoading = true;
-            Users = await _userRepository.GetAll(GameModel.Id);
+            Users = await userRepository.GetAll(GameModel.Id);
             IsLoading = false;
         }
     }
