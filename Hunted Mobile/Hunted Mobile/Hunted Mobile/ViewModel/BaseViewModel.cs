@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Hunted_Mobile.ViewModel {
     public class BaseViewModel : INotifyPropertyChanged {

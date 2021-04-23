@@ -1,22 +1,13 @@
 ﻿using Hunted_Mobile.Model;
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Hunted_Mobile.Repository;
+using Hunted_Mobile.ViewModel;
 
 using Xamarin.Forms;
-using Hunted_Mobile.ViewModel;
-using Hunted_Mobile.Model.GameModels;
 
 namespace Hunted_Mobile.View {
     public partial class MainPage : ContentPage {
-        private MainPageViewModel _mainPageViewModel;
+        private readonly MainPageViewModel _mainPageViewModel;
         public MainPage() {
-            this.InitializeComponent();
+            InitializeComponent();
             BindingContext = _mainPageViewModel = new MainPageViewModel(this);
         }
 

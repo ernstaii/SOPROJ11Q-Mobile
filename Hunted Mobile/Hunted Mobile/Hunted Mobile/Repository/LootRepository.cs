@@ -6,8 +6,6 @@ using Newtonsoft.Json.Linq;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 
@@ -19,7 +17,7 @@ namespace Hunted_Mobile.Repository {
                 HasMultipleResults = true,
             };
             await response.Convert(HttpClientRequestService.Get($"game/{gameId}/loot"));
-            
+
             var output = new List<Loot>();
 
             // Looping through the result
@@ -35,7 +33,7 @@ namespace Hunted_Mobile.Repository {
                         }
                     });
                 }
-                catch(Exception e) { 
+                catch(Exception e) {
                 }
             }
 

@@ -4,20 +4,19 @@ using Hunted_Mobile.Service;
 using Hunted_Mobile.View;
 
 using System.Collections.ObjectModel;
-using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Xamarin.Forms;
-using System.Linq;
 
 namespace Hunted_Mobile.ViewModel {
     public class MainPageViewModel : BaseViewModel {
         private InviteKey _inviteKeyModel = new InviteKey();
         private bool _isloading = false;
-        private InviteKeyRepository _inviteKeyRepository = new InviteKeyRepository();
+        private readonly InviteKeyRepository _inviteKeyRepository = new InviteKeyRepository();
         private ObservableCollection<InviteKey> _inviteKeys = new ObservableCollection<InviteKey>();
-        private MainPage _page;
+        private readonly MainPage _page;
         public InviteKey InviteKeyModel {
             get => _inviteKeyModel;
             set {
@@ -73,7 +72,8 @@ namespace Hunted_Mobile.ViewModel {
 
                 if(result.Count == 1) {
                     InviteKeyModel = result.First();
-                } else {
+                }
+                else {
                     InviteKeys.Clear();
 
                     foreach(var inviteKey in result) {
@@ -93,7 +93,7 @@ namespace Hunted_Mobile.ViewModel {
             await GetAll();
 
             // Navigate when InviteKey is valid
-            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page) && !IsOverlayVisible) { 
+            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page) && !IsOverlayVisible) {
                 await NavigateToEnterUsernamePage();
             }
 
