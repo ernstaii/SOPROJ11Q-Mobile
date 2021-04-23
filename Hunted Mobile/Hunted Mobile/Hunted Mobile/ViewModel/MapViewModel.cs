@@ -25,7 +25,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
-        private MapView _mapView = null;
+        private MapView _mapView;
         private View.Messages _messagesView;
         private readonly Model.Map _mapModel;
         private readonly Game _gameModel;
@@ -127,18 +127,18 @@ namespace Hunted_Mobile.ViewModel {
             DisplayOtherPins();
         }
 
-        public void SetMapView(MapView mapView) {
+        public async Task SetMapView(MapView mapView) {
             if(mapView != null) {
                 bool initializedBefore = _mapView != null;
                 _mapView = mapView;
 
                 if(!initializedBefore) {
-                    InitializeMap();
+                    await InitializeMap();
                 }
             }
         }
 
-        private async void InitializeMap() {
+        private async Task InitializeMap() {
             AddOsmLayerToMapView();
             AddGameBoundary();
             LimitViewportToGame();
@@ -336,11 +336,6 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void DisplayPlayerPin() {
-            if(_mapModel.PlayingUser == null || _mapModel.PlayingUser.UserName == null || _mapModel.PlayingUser.Location == null) {
-                //TODO TODO
-                throw new NullReferenceException("The player object is not correct AAAHH");
-            }
-
             if(_playerPin == null) {
                 _playerPin = new Pin(_mapView) {
                     Label = _mapModel.PlayingUser.UserName,
