@@ -35,6 +35,7 @@ namespace Hunted_Mobile.ViewModel {
         private Timer _intervalUpdateTimer;
         private Pin _playerPin;
         private WebSocketService _webSocketService;
+        private Loot _selectedLoot = new Loot(0);
 
         private bool _isEnabled = true;
         private bool _gameHasEnded = false;
@@ -61,6 +62,14 @@ namespace Hunted_Mobile.ViewModel {
                 _gameHasEnded = value;
 
                 OnPropertyChanged("GameHasEnded");
+            }
+        }
+        public Loot SelectedLoot {
+            get => _selectedLoot;
+            set {
+                _selectedLoot = value;
+
+                OnPropertyChanged("SelectedLoot");
             }
         }
         /// <summary>
@@ -388,17 +397,17 @@ namespace Hunted_Mobile.ViewModel {
                         Scale = 0.5f,
                         Tag = LOOT_TAG,
                     });
-
                 }
             }
         }
 
         private void HandlePinClicked(object sender, PinClickedEventArgs args) {
-            if(args.Pin.Tag == LOOT_TAG) {
+            if($"{args.Pin.Tag}" == LOOT_TAG) {
                 var loot = _mapModel.FindLoot(new Location(args.Pin.Position));
 
                 if(loot != null) {
-                    Console.WriteLine("Handle shit");
+                    SelectedLoot = loot;
+                    SelectedLoot.IsHandlingLoot = true;
                 }
             }
         }
@@ -414,6 +423,15 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
             await _webSocketService.Disconnect();
+        });
+
+        public ICommand PickupLootCommand => new Xamarin.Forms.Command((e) => {
+            // Instant finishing off
+            SelectedLoot.HasFinishedHandlingLoot = true;
+        });
+
+        public ICommand ClosePickingLootCommand => new Xamarin.Forms.Command((e) => {
+            SelectedLoot.HasFinishedHandlingLoot = false;
         });
     }
 }
