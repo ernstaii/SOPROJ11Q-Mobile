@@ -144,13 +144,13 @@ namespace Hunted_Mobile.ViewModel {
             LimitViewportToGame();
 
             Task.Run(async () => {
-                await PollLoot();
-                DisplayOtherPins();
-
                 if(!_gpsService.GpsHasStarted()) {
                     await _gpsService.StartGps();
                 }
                 _gpsService.LocationChanged += MyLocationUpdated;
+
+                await PollLoot();
+                DisplayOtherPins();
 
                 await StartSocket();
 
