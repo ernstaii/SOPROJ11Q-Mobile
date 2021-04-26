@@ -4,6 +4,7 @@ using Hunted_Mobile.Service;
 
 using Newtonsoft.Json.Linq;
 
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -17,10 +18,13 @@ namespace Hunted_Mobile.Repository {
                 invite_key = inviteKey.Value,
             }));
 
+            var responseLoc = response.GetStringValue("location");
+
             return new User((int) response.GetNumberValue("id")) {
                 UserName = username,
                 InviteKey = inviteKey,
                 ErrorMessages = response.ErrorMessages,
+                Location = string.IsNullOrWhiteSpace(responseLoc) ? null : new Location(responseLoc)
             };
         }
 
@@ -39,9 +43,12 @@ namespace Hunted_Mobile.Repository {
                     output.Add(new User((int) item.GetValue("id")) {
                         UserName = item.GetValue("username")?.ToString(),
                         Role = item.GetValue("role")?.ToString() ?? "thief",
+                        Location = new Location(item.GetValue("location")?.ToString())
                     });
+                    ;
                 }
-                catch { 
+                catch(Exception ex) {
+                    Console.WriteLine(ex.ToString());
                 }
             }
 

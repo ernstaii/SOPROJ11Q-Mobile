@@ -86,14 +86,15 @@ namespace Hunted_Mobile.ViewModel {
                 Map mapModel = new Map() {
                     PlayingUser = _currentUser
                 };
-                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel));
+                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel, new Service.Gps.GpsService(), new LootRepository(), new UserRepository()));
 
                 Device.BeginInvokeOnMainThread(() => {
                     Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
                     _webSocketService.StartGame -= StartGame;
                 });
             }
-            catch(Exception e) {
+            catch(Exception ex) {
+                Console.WriteLine(ex.ToString());
             }
         }
 

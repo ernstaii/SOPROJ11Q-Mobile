@@ -15,6 +15,7 @@ namespace Hunted_Mobile.Repository {
             await response.Convert(HttpClientRequestService.Get($"invite-keys/{inviteCode}"));
 
             List<InviteKey> result = new List<InviteKey>();
+
             try {
                 result.Add(new InviteKey() {
                     Value = inviteCode,
@@ -24,7 +25,7 @@ namespace Hunted_Mobile.Repository {
                     ErrorMessages = response.ErrorMessages
                 });
             }
-            catch (Exception e) {
+            catch(Exception) {
                 result.Add(new InviteKey() {
                     Value = inviteCode,
                     GameId = 0,
