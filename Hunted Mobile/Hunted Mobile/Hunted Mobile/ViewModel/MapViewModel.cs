@@ -127,43 +127,45 @@ namespace Hunted_Mobile.ViewModel {
             DisplayOtherPins();
         }
 
-        public async Task SetMapView(MapView mapView) {
+        public void SetMapView(MapView mapView) {
             if(mapView != null) {
                 bool initializedBefore = _mapView != null;
                 _mapView = mapView;
 
                 if(!initializedBefore) {
-                    await InitializeMap();
+                    InitializeMap();
                 }
             }
         }
 
-        private async Task InitializeMap() {
+        private void InitializeMap() {
             AddOsmLayerToMapView();
             AddGameBoundary();
             LimitViewportToGame();
 
-            await PollLoot();
-            DisplayOtherPins();
-
-            if(!_gpsService.GpsHasStarted()) {
-                await _gpsService.StartGps();
-            }
-            _gpsService.LocationChanged += MyLocationUpdated;
-
-            await StartSocket();
-
-            StartIntervalTimer();
-
-            Timer initialPlayerUpdateTimer = new Timer(5000);
-            initialPlayerUpdateTimer.AutoReset = false;
-            initialPlayerUpdateTimer.Elapsed += async (object sender, ElapsedEventArgs args) => {
-                await PollUsers();
+            Task.Run(async () => {
+                await PollLoot();
                 DisplayOtherPins();
-                Initialized = true;
-                initialPlayerUpdateTimer.Dispose();
-            };
-            initialPlayerUpdateTimer.Start();
+
+                if(!_gpsService.GpsHasStarted()) {
+                    await _gpsService.StartGps();
+                }
+                _gpsService.LocationChanged += MyLocationUpdated;
+
+                await StartSocket();
+
+                StartIntervalTimer();
+
+                Timer initialPlayerUpdateTimer = new Timer(5000);
+                initialPlayerUpdateTimer.AutoReset = false;
+                initialPlayerUpdateTimer.Elapsed += async (object sender, ElapsedEventArgs args) => {
+                    await PollUsers();
+                    DisplayOtherPins();
+                    Initialized = true;
+                    initialPlayerUpdateTimer.Dispose();
+                };
+                initialPlayerUpdateTimer.Start();
+            });
         }
 
         private void StopIntervalTimer() {

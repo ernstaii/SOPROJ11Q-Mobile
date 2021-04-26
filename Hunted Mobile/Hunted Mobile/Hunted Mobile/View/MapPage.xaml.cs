@@ -1,7 +1,4 @@
-﻿using Hunted_Mobile.Model;
-using Hunted_Mobile.ViewModel;
-
-using System.Threading.Tasks;
+﻿using Hunted_Mobile.ViewModel;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -12,7 +9,7 @@ namespace Hunted_Mobile {
         public MapPage(MapViewModel viewModel) {
             InitializeComponent();
 
-            Task.Run(async () => await viewModel.SetMapView(mapView));
+            viewModel.SetMapView(mapView);
 
             BindingContext = viewModel;
         }
