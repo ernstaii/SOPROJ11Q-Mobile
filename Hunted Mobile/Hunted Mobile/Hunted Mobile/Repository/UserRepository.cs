@@ -16,19 +16,15 @@ namespace Hunted_Mobile.Repository {
             await response.Convert(HttpClientRequestService.Create("users", new {
                 username = username,
                 invite_key = inviteKey.Value,
-                role = inviteKey.Role,
-                game_id = inviteKey.GameId
             }));
 
             var responseLoc = response.GetStringValue("location");
 
-            return new User(response.GetNumberValue("id")) {
-                Location = string.IsNullOrWhiteSpace(responseLoc) ? null : new Location(responseLoc),
+            return new User((int) response.GetNumberValue("id")) {
                 UserName = username,
                 InviteKey = inviteKey,
-                Role = response.GetStringValue("role"),
                 ErrorMessages = response.ErrorMessages,
-                GameId = response.GetNumberValue("game_id")
+                Location = string.IsNullOrWhiteSpace(responseLoc) ? null : new Location(responseLoc)
             };
         }
 
@@ -37,27 +33,17 @@ namespace Hunted_Mobile.Repository {
             var response = new HttpClientResponse() {
                 HasMultipleResults = true,
             };
-            await response.Convert(HttpClientRequestService.GetAll($"game/{gameId}/users"));
+            await response.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users"));
 
             var output = new List<User>();
 
             // Looping through the result
             foreach(JObject item in response.Items) {
-                string role = item.GetValue("role")?.ToString();
-                Location location = new Location(item.GetValue("location")?.ToString());
-
                 try {
                     output.Add(new User((int) item.GetValue("id")) {
-                        UserName = item.GetValue("username").ToString(),
-                        Location = location,
-                        InviteKey = new InviteKey() {
-                            GameId = gameId,
-                            Role = role,
-                            Value = item.GetValue("invite_key").ToString()
-                        },
-                        Role = role,
-                        GameId = gameId,
-                        Id = int.Parse(item.GetValue("id").ToString())
+                        UserName = item.GetValue("username")?.ToString(),
+                        Role = item.GetValue("role")?.ToString() ?? "thief",
+                        Location = new Location(item.GetValue("location")?.ToString())
                     });
                     ;
                 }
