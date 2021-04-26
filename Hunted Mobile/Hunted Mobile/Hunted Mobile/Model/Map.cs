@@ -5,6 +5,7 @@ using Mapsui.UI.Forms;
 using Mapsui.UI.Objects;
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Hunted_Mobile.Model {
     public class Map {
@@ -41,6 +42,9 @@ namespace Hunted_Mobile.Model {
         }
         public void SetLoot(IEnumerable<Loot> loot) {
             _loot = new List<Loot>(loot);
+        }
+        public Loot FindLoot(Location location) {
+            return _loot.FirstOrDefault(loot => loot.Location.Equals(location));
         }
     }
 }

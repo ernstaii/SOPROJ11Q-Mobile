@@ -73,7 +73,8 @@ namespace Hunted_Mobile.ViewModel {
         const string PAUSE_TITLE = "Gepauzeerd",
             END_TITLE = "Het spel is afgelopen!",
             PAUSE_DESCRIPTION = "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.",
-            END_DESCRIPTION = "Ga terug naar de spelleider!";
+            END_DESCRIPTION = "Ga terug naar de spelleider!",
+            LOOT_TAG = "loot";
 
         public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
         public string DescriptionOverlay => GameHasEnded ? END_DESCRIPTION : PAUSE_DESCRIPTION;
@@ -165,6 +166,8 @@ namespace Hunted_Mobile.ViewModel {
                     initialPlayerUpdateTimer.Dispose();
                 };
                 initialPlayerUpdateTimer.Start();
+
+                _mapView.PinClicked += HandlePinClicked;
             });
         }
 
@@ -383,7 +386,19 @@ namespace Hunted_Mobile.ViewModel {
                         Color = Xamarin.Forms.Color.Gold,
                         Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
                         Scale = 0.5f,
+                        Tag = LOOT_TAG,
                     });
+
+                }
+            }
+        }
+
+        private void HandlePinClicked(object sender, PinClickedEventArgs args) {
+            if(args.Pin.Tag == LOOT_TAG) {
+                var loot = _mapModel.FindLoot(new Location(args.Pin.Position));
+
+                if(loot != null) {
+                    Console.WriteLine("Handle shit");
                 }
             }
         }
