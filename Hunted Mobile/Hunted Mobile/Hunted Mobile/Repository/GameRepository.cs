@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
     public class GameRepository {
-        public async Task<int?> GetInterval(int gameId) {
+        public async Task<Game> GetGame(int gameId) {
             var response = new HttpClientResponse();
-            await response.Convert(HttpClientRequestService.Get($"game/{gameId}/interval"));
+            await response.Convert(HttpClientRequestService.Get($"games/{gameId}"));
 
-            if(response.ResponseContent == null) {
-                return null;
-            }
-            else {
-                int.TryParse(response.ResponseContent, out int parsed);
-                return parsed;
-            }
+            return new Game() {
+                Id = response.GetNumberValue("id"),
+                Duration = response.GetNumberValue("duration"),
+                Interval = response.GetNumberValue("interval"),
+                TimeLeft = response.GetNumberValue("time_left"),
+                Status = response.GetStringValue("status"),
+            };
         }
     }
 }

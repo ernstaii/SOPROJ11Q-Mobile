@@ -38,7 +38,6 @@ namespace Hunted_Mobile.ViewModel {
             get => _isOverlayVisible;
             set {
                 _isOverlayVisible = value;
-
                 OnPropertyChanged("IsOverlayVisible");
             }
         }
@@ -59,10 +58,11 @@ namespace Hunted_Mobile.ViewModel {
         public async Task GetAll() {
             if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page)) {
                 var result = await _inviteKeyRepository.GetAll(InviteKeyModel.Value);
+                IsOverlayVisible = false;
 
                 if(result.Count == 1) {
                     InviteKeyModel = result.First();
-                } else {
+                } else if(result.Count > 1) {
                     InviteKeys.Clear();
 
                     foreach(var inviteKey in result) {
