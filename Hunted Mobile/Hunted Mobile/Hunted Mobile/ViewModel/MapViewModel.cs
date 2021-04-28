@@ -433,5 +433,10 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand ClosePickingLootCommand => new Xamarin.Forms.Command((e) => {
             SelectedLoot.HasFinishedHandlingLoot = false;
         });
+
+        public ICommand CancelPickUpLootCommand => new Xamarin.Forms.Command((e) => {
+            SelectedLoot.HasFinishedHandlingLoot = false;
+            SelectedLoot.IsHandlingLoot = false;
+        });
     }
 }

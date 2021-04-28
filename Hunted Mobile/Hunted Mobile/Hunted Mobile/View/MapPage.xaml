@@ -45,6 +45,10 @@
                             CornerRadius="30" 
                             Command="{Binding PickupLootCommand}"
                             Margin="0, 20"/>
+                    <Button Text="Terug"
+                            CornerRadius="30" 
+                            Command="{Binding CancelPickUpLootCommand}"
+                            Margin="0, 20"/>
                 </StackLayout>
             </Frame>
             <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding SelectedLoot.HasFinishedHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
