@@ -19,7 +19,7 @@
             
             <!-- Overlay -->
             <!-- <StackLayout IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5"/> -->
-            <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding SelectedLoot.IsHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+            <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding IsHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
                 <StackLayout>
                     <Label Text="{Binding SelectedLoot.Name}"
                            Padding="5"
@@ -43,15 +43,14 @@
                             BackgroundColor="Green"
                             TextColor="White"
                             CornerRadius="30" 
-                            Command="{Binding PickupLootCommand}"
-                            Margin="0, 20"/>
+                            Command="{Binding PickupLootCommand}"/>
                     <Button Text="Terug"
                             CornerRadius="30" 
                             Command="{Binding CancelPickUpLootCommand}"
-                            Margin="0, 20"/>
+                            Margin="0, 0, 0, 20"/>
                 </StackLayout>
             </Frame>
-            <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding SelectedLoot.HasFinishedHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+            <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding HasFinishedHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
                 <StackLayout>
                     <Label Text="{Binding SelectedLoot.Name}"
                            Padding="5"

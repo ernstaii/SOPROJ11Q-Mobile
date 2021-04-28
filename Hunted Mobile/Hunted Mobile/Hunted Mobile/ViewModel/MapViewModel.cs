@@ -39,6 +39,8 @@ namespace Hunted_Mobile.ViewModel {
 
         private bool _isEnabled = true;
         private bool _gameHasEnded = false;
+        private bool _isHandlingLoot = false;
+        private bool _hasFinishedHandlingLoot = false;
 
         /// <summary>
         /// This property will disable the touch of the user with the mapView
@@ -56,6 +58,7 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged("DescriptionOverlay");
             }
         }
+
         public bool GameHasEnded {
             get => _gameHasEnded;
             set {
@@ -64,12 +67,35 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged("GameHasEnded");
             }
         }
+
         public Loot SelectedLoot {
             get => _selectedLoot;
             set {
                 _selectedLoot = value;
 
                 OnPropertyChanged("SelectedLoot");
+            }
+        }
+
+        public bool IsHandlingLoot {
+            get => _isHandlingLoot;
+            set {
+                _isHandlingLoot = value;
+                if(value)
+                    HasFinishedHandlingLoot = false;
+
+                OnPropertyChanged("IsHandlingLoot");
+            }
+        }
+
+        public bool HasFinishedHandlingLoot {
+            get => _hasFinishedHandlingLoot;
+            set {
+                _hasFinishedHandlingLoot = value;
+                if(value)
+                    IsHandlingLoot = false;
+
+                OnPropertyChanged("HasFinishedHandlingLoot");
             }
         }
         /// <summary>
@@ -407,7 +433,7 @@ namespace Hunted_Mobile.ViewModel {
 
                 if(loot != null) {
                     SelectedLoot = loot;
-                    SelectedLoot.IsHandlingLoot = true;
+                    IsHandlingLoot = true;
                 }
             }
         }
@@ -427,16 +453,16 @@ namespace Hunted_Mobile.ViewModel {
 
         public ICommand PickupLootCommand => new Xamarin.Forms.Command((e) => {
             // Instant finishing off
-            SelectedLoot.HasFinishedHandlingLoot = true;
+            HasFinishedHandlingLoot = true;
         });
 
         public ICommand ClosePickingLootCommand => new Xamarin.Forms.Command((e) => {
-            SelectedLoot.HasFinishedHandlingLoot = false;
+            HasFinishedHandlingLoot = false;
         });
 
         public ICommand CancelPickUpLootCommand => new Xamarin.Forms.Command((e) => {
-            SelectedLoot.HasFinishedHandlingLoot = false;
-            SelectedLoot.IsHandlingLoot = false;
+            HasFinishedHandlingLoot = false;
+            IsHandlingLoot = false;
         });
     }
 }
