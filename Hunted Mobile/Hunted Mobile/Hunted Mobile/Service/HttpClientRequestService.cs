@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Service {
     public class HttpClientRequestService {
-        private const string IPAdress = "http://192.168.1.12:8000";
+        private const string IPAdress = "http://soproj11q.herokuapp.com";
 
         public static async Task<HttpResponseMessage> Get(string path) {
             return await GetHttpClient().GetAsync(GetUrl(path));

@@ -28,7 +28,6 @@ namespace Hunted_Mobile.Repository
                 }
             }
 
-
             return result;
         }
     }

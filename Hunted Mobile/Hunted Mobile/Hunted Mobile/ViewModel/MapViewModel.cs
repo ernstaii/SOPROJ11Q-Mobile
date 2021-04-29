@@ -142,8 +142,10 @@ namespace Hunted_Mobile.ViewModel {
 
         private void InitializeMap() {
             AddOsmLayerToMapView();
-            AddGameBoundary();
-            LimitViewportToGame();
+            Task.Run(async () => {
+                await AddGameBoundary();
+                LimitViewportToGame();
+            });
 
             Task.Run(async () => {
                 if(!_gpsService.GpsHasStarted()) {
@@ -307,18 +309,12 @@ namespace Hunted_Mobile.ViewModel {
         /// <summary>
         /// Adds the visual game boundary as a polygon
         /// </summary>
-        private async void AddGameBoundary() {
+        private async Task AddGameBoundary() {
             List<Location> locations = await _borderMarkerRepository.GetAll(_gameModel.Id);
             Boundary boundary = new Boundary();
 
-            foreach(Location location in locations) {
+            foreach(Location location in locations)
                 boundary.Points.Add(location);
-            }
-            //boundary.Points.Add(new Location(51.779043, 5.506003));
-            //boundary.Points.Add(new Location(51.761559, 5.491387));
-            //boundary.Points.Add(new Location(51.743866, 5.506616));
-            //boundary.Points.Add(new Location(51.755662, 5.553818));
-            //boundary.Points.Add(new Location(51.772993, 5.546168));
 
             _mapModel.GameBoundary = boundary;
 
