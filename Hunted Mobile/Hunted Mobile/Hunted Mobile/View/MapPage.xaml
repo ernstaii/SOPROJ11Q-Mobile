@@ -32,6 +32,14 @@
                     <BoxView VerticalOptions="FillAndExpand" />
 
                     <Label Text="Houdt de knop ingedrukt om de buit op te pakken."
+                           IsVisible="{Binding IsCloseToSelectedLoot}"
+                           Margin="0,0,0,15"
+                           HorizontalTextAlignment="Center" 
+                           TextColor="Black" 
+                           FontSize="16"/>
+                    
+                    <Label Text="Je bent te ver weg om deze buit op te pakken."
+                           IsVisible="{Binding IsFarFromSelectedLoot}"
                            Margin="0,0,0,15"
                            HorizontalTextAlignment="Center" 
                            TextColor="Black" 
@@ -40,6 +48,7 @@
                     <BoxView VerticalOptions="FillAndExpand" />
 
                     <Button Text="Oppakken"
+                            IsVisible="{Binding IsCloseToSelectedLoot}"
                             BackgroundColor="Green"
                             TextColor="White"
                             CornerRadius="30" 

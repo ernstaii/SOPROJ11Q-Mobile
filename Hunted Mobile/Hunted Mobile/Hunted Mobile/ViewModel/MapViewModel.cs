@@ -74,6 +74,7 @@ namespace Hunted_Mobile.ViewModel {
                 _selectedLoot = value;
 
                 OnPropertyChanged("SelectedLoot");
+                OnPropertyChanged(nameof(IsCloseToSelectedLoot));
             }
         }
 
@@ -85,6 +86,7 @@ namespace Hunted_Mobile.ViewModel {
                     HasFinishedHandlingLoot = false;
 
                 OnPropertyChanged("IsHandlingLoot");
+                OnPropertyChanged(nameof(IsCloseToSelectedLoot));
             }
         }
 
@@ -98,6 +100,18 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged("HasFinishedHandlingLoot");
             }
         }
+
+        public bool IsCloseToSelectedLoot {
+            get {
+                if(IsHandlingLoot && _mapModel != null && _mapModel.PlayingUser != null && _mapModel.PlayingUser.Location != null && SelectedLoot != null && SelectedLoot.Location != null) {
+                    return _mapModel.PlayingUser.Location.DistanceToOtherInMeters(SelectedLoot.Location) < 10;
+                }
+                else return false;
+            }
+        }
+
+        public bool IsFarFromSelectedLoot => !IsCloseToSelectedLoot;
+
         /// <summary>
         /// The oposite of the enable-state
         /// </summary>
@@ -277,6 +291,8 @@ namespace Hunted_Mobile.ViewModel {
             _mapView.MyLocationLayer.UpdateMyLocation(mapsuiPosition, true);
 
             DisplayPlayerPin();
+
+            OnPropertyChanged(nameof(IsCloseToSelectedLoot));
 
             if(!Initialized) {
                 await _userRepository.Update(_mapModel.PlayingUser.Id, _mapModel.PlayingUser.Location);

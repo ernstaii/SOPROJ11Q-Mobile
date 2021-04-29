@@ -61,10 +61,23 @@ namespace Hunted_Mobile.Model {
             return new Plugin.Geolocator.Abstractions.Position(Latitude, Longitude);
         }
 
-        public double DistanceToOther(Location location) {
+        public double DistanceToOther(Location other) {
             return Math.Sqrt(
-                Math.Pow(location.Latitude - Latitude, 2) + Math.Pow(location.Longitude - Longitude, 2)
+                Math.Pow(other.Latitude - Latitude, 2) + Math.Pow(other.Longitude - Longitude, 2)
             );
+        }
+
+        // https://stackoverflow.com/a/11172685
+        public double DistanceToOtherInMeters(Location other) {
+            var R = 6378.137; // Radius of earth in KM
+            var dLat = other.Latitude * Math.PI / 180 - Latitude * Math.PI / 180;
+            var dLon = other.Longitude * Math.PI / 180 - Longitude * Math.PI / 180;
+            var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                Math.Cos(Latitude * Math.PI / 180) * Math.Cos(other.Latitude * Math.PI / 180) *
+                Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            var d = R * c;
+            return d * 1000; // meters
         }
 
         public string ToCsvString() {
