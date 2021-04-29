@@ -20,12 +20,23 @@ namespace Hunted_Mobile.Repository {
 
             var responseLoc = response.GetStringValue("location");
 
-            return new User((int) response.GetNumberValue("id")) {
-                UserName = username,
-                InviteKey = inviteKey,
+            User user = new User(
+                response.GetNumberValue("id"),
+                username,
+                inviteKey
+            ) {
+                Role = inviteKey.Role,
                 ErrorMessages = response.ErrorMessages,
                 Location = string.IsNullOrWhiteSpace(responseLoc) ? null : new Location(responseLoc)
             };
+
+            if(inviteKey.Role == "thief") {
+                return new Thief(user);
+            }
+            else if(inviteKey.Role == "police") {
+                return new Police(user);
+            }
+            else return user;
         }
 
         // Get all users that are linked to a game
@@ -40,10 +51,12 @@ namespace Hunted_Mobile.Repository {
             // Looping through the result
             foreach(JObject item in response.Items) {
                 try {
-                    output.Add(new User((int) item.GetValue("id")) {
+                    output.Add(new User() {
+                        Id = (int) item.GetValue("id"),
                         UserName = item.GetValue("username")?.ToString(),
                         Role = item.GetValue("role")?.ToString() ?? "thief",
-                        Location = new Location(item.GetValue("location")?.ToString())
+                        Location = new Location(item.GetValue("location")?.ToString()),
+                        
                     });
                     ;
                 }
@@ -58,7 +71,7 @@ namespace Hunted_Mobile.Repository {
         public async Task<bool> Update(int userId, Location location) {
             var response = new HttpClientResponse();
 
-            await response.Convert(HttpClientRequestService.Update($"users/{userId}", new {
+            await response.Convert(HttpClientRequestService.Put($"users/{userId}", new {
                 location = location.ToCsvString()
             }));
 

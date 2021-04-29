@@ -5,8 +5,10 @@ using System.Text;
 
 namespace Hunted_Mobile.Model.GameModels {
     public class User : CustomModelErrorMessages<User> {
+        [Required]
         public int Id { get; set; }
         public Location Location { get; set; }
+        [Required]
         public InviteKey InviteKey { get; set; }
 
         [Required(ErrorMessage = "De gebruikersnaam is verplicht")]
@@ -15,8 +17,10 @@ namespace Hunted_Mobile.Model.GameModels {
         public string UserName { get; set; }
         public string Role { get; set; }
 
-        public User(int id) {
+        public User(int id, string userName, InviteKey inviteKey) {
             Id = id;
+            UserName = userName;
+            InviteKey = inviteKey;
         }
 
         public User() {

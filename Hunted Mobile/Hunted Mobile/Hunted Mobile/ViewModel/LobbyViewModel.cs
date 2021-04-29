@@ -86,7 +86,7 @@ namespace Hunted_Mobile.ViewModel {
                 Map mapModel = new Map() {
                     PlayingUser = _currentUser
                 };
-                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel, new Service.Gps.GpsService(), new LootRepository(), new UserRepository()));
+                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel, new Service.Gps.GpsService(), new LootRepository(), new UserRepository(), new GameRepository()));
 
                 Device.BeginInvokeOnMainThread(() => {
                     Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);

@@ -4,7 +4,9 @@ using System.Text;
 
 namespace Hunted_Mobile.Model.GameModels {
     public abstract class Player : User {
-        protected Player(int id) : base(id) {
+        protected Player(User user) : base(user.Id, user.UserName, user.InviteKey) {
+            ErrorMessages = user.ErrorMessages;
+            Location = user.Location;
         }
     }
 }

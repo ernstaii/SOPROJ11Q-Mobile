@@ -19,7 +19,23 @@ namespace Hunted_Mobile.Repository {
                 Interval = response.GetNumberValue("interval"),
                 TimeLeft = response.GetNumberValue("time_left"),
                 Status = response.GetStringValue("status"),
+                ThievesScore = response.GetNumberValue("thieves_score"),
+                PoliceScore = response.GetNumberValue("police_score"),
             };
+        }
+
+        public async Task<bool> UpdateThievesScore(int gameId, int score) {
+            var response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Patch($"games/{gameId}/thieves-score/{score}"));
+
+            return response.IsSuccessful;
+        }
+
+        public async Task<bool> UpdatePoliceScore(int gameId, int score) {
+            var response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Patch($"games/{gameId}/police-score/{score}"));
+
+            return response.IsSuccessful;
         }
     }
 }

@@ -40,5 +40,13 @@ namespace Hunted_Mobile.Repository {
 
             return output;
         }
+
+        public async Task<bool> Delete(int lootId) {
+            var response = new HttpClientResponse();
+
+            await response.Convert(HttpClientRequestService.Delete($"loots/{lootId}"));
+
+            return response.IsSuccessful;
+        }
     }
 }
