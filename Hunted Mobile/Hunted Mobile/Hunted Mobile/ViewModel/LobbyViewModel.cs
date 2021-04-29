@@ -14,11 +14,12 @@ using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class LobbyViewModel : BaseViewModel {
-        private List<User> _users = new List<User>();
+        private List<Player> _users = new List<Player>();
         private Game _gameModel = new Game();
-        private User _currentUser;
+        private Player _currentUser;
         private readonly UserRepository _userRepository = new UserRepository();
         private readonly GameRepository _gameRepository = new GameRepository();
+        private readonly InviteKeyRepository _inviteKeyRepository = new InviteKeyRepository();
         private Lobby _page;
         private bool _isloading { get; set; }
         private readonly WebSocketService _webSocketService;
@@ -39,7 +40,7 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public List<User> Users {
+        public List<Player> Users {
             get => _users;
             set {
                 _users = value;
@@ -48,15 +49,15 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public ObservableCollection<User> Thiefs {
-            get => new ObservableCollection<User>(Users.Where(user => user.Role == "thief").ToList());
+        public ObservableCollection<Player> Thiefs {
+            get => new ObservableCollection<Player>(Users.Where(user => user is Thief).ToList());
         }
 
-        public ObservableCollection<User> Police {
-            get => new ObservableCollection<User>(Users.Where(user => user.Role == "police").ToList());
+        public ObservableCollection<Player> Police {
+            get => new ObservableCollection<Player>(Users.Where(user => user is Police).ToList());
         }
 
-        public LobbyViewModel(Lobby page, User currentUser) {
+        public LobbyViewModel(Lobby page, Player currentUser) {
             _page = page;
             _currentUser = currentUser;
             _gameModel.Id = _currentUser.InviteKey.GameId;
@@ -86,7 +87,7 @@ namespace Hunted_Mobile.ViewModel {
                 Map mapModel = new Map() {
                     PlayingUser = _currentUser
                 };
-                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel, new Service.Gps.GpsService(), new LootRepository(), new UserRepository(), new GameRepository()));
+                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel, new Service.Gps.GpsService(), new LootRepository(), _userRepository, _gameRepository, _inviteKeyRepository));
 
                 Device.BeginInvokeOnMainThread(() => {
                     Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
@@ -100,7 +101,12 @@ namespace Hunted_Mobile.ViewModel {
 
         public async Task LoadUsers() {
             IsLoading = true;
-            Users = await _userRepository.GetAll(GameModel.Id);
+            Users.Clear();
+            foreach(User user in await _userRepository.GetAll(GameModel.Id, _inviteKeyRepository)) {
+                if(user is Player) {
+                    Users.Add((Player) user);
+                }
+            }
             IsLoading = false;
         }
     }

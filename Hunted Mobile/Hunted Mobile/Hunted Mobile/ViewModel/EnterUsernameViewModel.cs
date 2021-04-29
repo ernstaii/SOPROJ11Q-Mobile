@@ -62,11 +62,13 @@ namespace Hunted_Mobile.ViewModel {
 
             // Navigate when InviteKey is valid
             if(IsValid = ValidationHelper.IsFormValid(UserModel, _page)) {
-                var Navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
+                if(UserModel is Player) {
+                    var Navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
 
-                var previousPage = Navigation.NavigationStack.LastOrDefault();
-                await Navigation.PushAsync(new Lobby(UserModel), true);
-                Navigation.RemovePage(previousPage);
+                    var previousPage = Navigation.NavigationStack.LastOrDefault();
+                    await Navigation.PushAsync(new Lobby((Player) UserModel), true);
+                    Navigation.RemovePage(previousPage);
+                }
             }
 
             SubmitButtonIsEnable = true;

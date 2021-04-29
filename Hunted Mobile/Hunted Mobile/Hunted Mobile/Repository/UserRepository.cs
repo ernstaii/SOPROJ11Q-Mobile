@@ -25,47 +25,56 @@ namespace Hunted_Mobile.Repository {
                 username,
                 inviteKey
             ) {
-                Role = inviteKey.Role,
                 ErrorMessages = response.ErrorMessages,
                 Location = string.IsNullOrWhiteSpace(responseLoc) ? null : new Location(responseLoc)
             };
 
-            if(inviteKey.Role == "thief") {
+            inviteKey.UserId = user.Id;
+
+            if(inviteKey?.Role == "thief") {
                 return new Thief(user);
             }
-            else if(inviteKey.Role == "police") {
+            else if(inviteKey?.Role == "police") {
                 return new Police(user);
             }
             else return user;
         }
 
         // Get all users that are linked to a game
-        public async Task<List<User>> GetAll(int gameId) {
-            var response = new HttpClientResponse() {
+        public async Task<List<User>> GetAll(int gameId, InviteKeyRepository inviteKeyRepository) {
+            var usersResponse = new HttpClientResponse() {
                 HasMultipleResults = true,
             };
-            await response.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users"));
+            await usersResponse.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users"));
 
-            var output = new List<User>();
+            var inviteKeys = await inviteKeyRepository.GetAll(gameId);
+
+            var result = new List<User>();
 
             // Looping through the result
-            foreach(JObject item in response.Items) {
+            foreach(JObject item in usersResponse.Items) {
                 try {
-                    output.Add(new User() {
-                        Id = (int) item.GetValue("id"),
-                        UserName = item.GetValue("username")?.ToString(),
-                        Role = item.GetValue("role")?.ToString() ?? "thief",
-                        Location = new Location(item.GetValue("location")?.ToString()),
-                        
-                    });
-                    ;
+                    int userId = (int) item.GetValue("id");
+
+                    InviteKey inviteKey = inviteKeys.Find((key) => { return key.UserId == userId; });
+
+                    User user = new User(userId, item.GetValue("username")?.ToString(), inviteKey);
+                    user.Location = new Location(item.GetValue("location")?.ToString());
+
+                    if(inviteKey?.Role == "thief") {
+                        result.Add(new Thief(user));
+                    }
+                    else if(inviteKey?.Role == "police") {
+                        result.Add(new Police(user));
+                    }
+                    else result.Add(user);
                 }
                 catch(Exception ex) {
                     Console.WriteLine(ex.ToString());
                 }
             }
 
-            return output;
+            return result;
         }
 
         public async Task<bool> Update(int userId, Location location) {

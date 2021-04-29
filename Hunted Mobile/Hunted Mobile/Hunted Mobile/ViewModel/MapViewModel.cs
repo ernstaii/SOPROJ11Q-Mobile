@@ -32,6 +32,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly LootRepository _lootRepository;
         private readonly UserRepository _userRepository;
         private readonly GameRepository _gameRepository;
+        private readonly InviteKeyRepository _inviteKeyRepository;
         private readonly GpsService _gpsService;
         private Timer _intervalUpdateTimer;
         private Pin _playerPin;
@@ -131,7 +132,7 @@ namespace Hunted_Mobile.ViewModel {
         public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
         public string DescriptionOverlay => GameHasEnded ? END_DESCRIPTION : PAUSE_DESCRIPTION;
 
-        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository) {
+        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository, InviteKeyRepository inviteKeyRepository) {
             _mapModel = mapModel;
             _gameModel = gameModel;
             _gpsService = gpsService;
@@ -139,6 +140,7 @@ namespace Hunted_Mobile.ViewModel {
             _lootRepository = lootRepository;
             _userRepository = userRepository;
             _gameRepository = gameRepository;
+            _inviteKeyRepository = inviteKeyRepository;
         }
 
         private async Task PollLoot() {
@@ -148,11 +150,10 @@ namespace Hunted_Mobile.ViewModel {
 
         private async Task PollUsers() {
             var userList = new List<User>();
-            foreach(User user in await _userRepository.GetAll(_gameModel.Id)) {
-                if(user.Id == _mapModel.PlayingUser.Id) {
-                    _mapModel.PlayingUser = user;
+            foreach(User user in await _userRepository.GetAll(_gameModel.Id, _inviteKeyRepository)) {
+                if(user.Id != _mapModel.PlayingUser.Id) { 
+                    userList.Add(user);
                 }
-                else userList.Add(user);
             }
             _mapModel.SetUsers(userList);
         }
@@ -172,7 +173,6 @@ namespace Hunted_Mobile.ViewModel {
                 newUser.Id = userId;
                 newUser.UserName = ((string) user.GetValue("username"));
                 newUser.Location = location;
-                newUser.Role = ((string) user.GetValue("role"));
 
                 userList.Add(newUser);
             }
@@ -451,11 +451,13 @@ namespace Hunted_Mobile.ViewModel {
 
         private void HandlePinClicked(object sender, PinClickedEventArgs args) {
             if($"{args.Pin.Tag}" == LOOT_TAG) {
-                var loot = _mapModel.FindLoot(new Location(args.Pin.Position));
+                if(_mapModel.PlayingUser is Thief) {
+                    var loot = _mapModel.FindLoot(new Location(args.Pin.Position));
 
-                if(loot != null) {
-                    SelectedLoot = loot;
-                    IsHandlingLoot = true;
+                    if(loot != null) {
+                        SelectedLoot = loot;
+                        IsHandlingLoot = true;
+                    }
                 }
             }
         }
@@ -480,13 +482,12 @@ namespace Hunted_Mobile.ViewModel {
             Task.Run(async () => {
                 Game game = await _gameRepository.GetGame(_gameModel.Id);
 
-                if(_mapModel.PlayingUser.Role == "thief") {
-                    bool deleted = await _lootRepository.Delete(SelectedLoot.Id);
-                    if(deleted) {
-                        await _gameRepository.UpdateThievesScore(game.Id, game.ThievesScore + 50);
-                        await PollLoot();
-                        DisplayOtherPins();
-                    }
+                // User should be a thief here since a police can't open the dialog
+                bool deleted = await _lootRepository.Delete(SelectedLoot.Id);
+                if(deleted) {
+                    await _gameRepository.UpdateThievesScore(game.Id, game.ThievesScore + 50);
+                    await PollLoot();
+                    DisplayOtherPins();
                 }
             });
         });
