@@ -35,9 +35,12 @@ namespace Hunted_Mobile.ViewModel {
         private Timer _intervalUpdateTimer;
         private Pin _playerPin;
         private WebSocketService _webSocketService;
+        private Loot _selectedLoot = new Loot(0);
 
         private bool _isEnabled = true;
         private bool _gameHasEnded = false;
+        private bool _isHandlingLoot = false;
+        private bool _hasFinishedHandlingLoot = false;
 
         /// <summary>
         /// This property will disable the touch of the user with the mapView
@@ -55,12 +58,44 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged("DescriptionOverlay");
             }
         }
+
         public bool GameHasEnded {
             get => _gameHasEnded;
             set {
                 _gameHasEnded = value;
 
                 OnPropertyChanged("GameHasEnded");
+            }
+        }
+
+        public Loot SelectedLoot {
+            get => _selectedLoot;
+            set {
+                _selectedLoot = value;
+
+                OnPropertyChanged("SelectedLoot");
+            }
+        }
+
+        public bool IsHandlingLoot {
+            get => _isHandlingLoot;
+            set {
+                _isHandlingLoot = value;
+                if(value)
+                    HasFinishedHandlingLoot = false;
+
+                OnPropertyChanged("IsHandlingLoot");
+            }
+        }
+
+        public bool HasFinishedHandlingLoot {
+            get => _hasFinishedHandlingLoot;
+            set {
+                _hasFinishedHandlingLoot = value;
+                if(value)
+                    IsHandlingLoot = false;
+
+                OnPropertyChanged("HasFinishedHandlingLoot");
             }
         }
         /// <summary>
@@ -73,7 +108,8 @@ namespace Hunted_Mobile.ViewModel {
         const string PAUSE_TITLE = "Gepauzeerd",
             END_TITLE = "Het spel is afgelopen!",
             PAUSE_DESCRIPTION = "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.",
-            END_DESCRIPTION = "Ga terug naar de spelleider!";
+            END_DESCRIPTION = "Ga terug naar de spelleider!",
+            LOOT_TAG = "loot";
 
         public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
         public string DescriptionOverlay => GameHasEnded ? END_DESCRIPTION : PAUSE_DESCRIPTION;
@@ -165,6 +201,8 @@ namespace Hunted_Mobile.ViewModel {
                     initialPlayerUpdateTimer.Dispose();
                 };
                 initialPlayerUpdateTimer.Start();
+
+                _mapView.PinClicked += HandlePinClicked;
             });
         }
 
@@ -383,7 +421,19 @@ namespace Hunted_Mobile.ViewModel {
                         Color = Xamarin.Forms.Color.Gold,
                         Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
                         Scale = 0.5f,
+                        Tag = LOOT_TAG,
                     });
+                }
+            }
+        }
+
+        private void HandlePinClicked(object sender, PinClickedEventArgs args) {
+            if($"{args.Pin.Tag}" == LOOT_TAG) {
+                var loot = _mapModel.FindLoot(new Location(args.Pin.Position));
+
+                if(loot != null) {
+                    SelectedLoot = loot;
+                    IsHandlingLoot = true;
                 }
             }
         }
@@ -399,6 +449,20 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
             await _webSocketService.Disconnect();
+        });
+
+        public ICommand PickupLootCommand => new Xamarin.Forms.Command((e) => {
+            // Instant finishing off
+            HasFinishedHandlingLoot = true;
+        });
+
+        public ICommand ClosePickingLootCommand => new Xamarin.Forms.Command((e) => {
+            HasFinishedHandlingLoot = false;
+        });
+
+        public ICommand CancelPickUpLootCommand => new Xamarin.Forms.Command((e) => {
+            HasFinishedHandlingLoot = false;
+            IsHandlingLoot = false;
         });
     }
 }
