@@ -33,7 +33,7 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged("SubmitButtonIsEnable");
             }
         }
-        private bool _isOverlayVisible { get; set; }
+        private bool _isOverlayVisible;
 
         /// <summary>
         /// This property will disable the touch of the user with the mapView
