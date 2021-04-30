@@ -12,13 +12,12 @@ using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class EnterUsernameViewModel : BaseViewModel {
-        private User _userModel { get; set; }
+        private User _userModel;
         private bool _isloading = false;
         private UserRepository _userRepository = new UserRepository();
         private EnterUsername _page;
-        private bool _creatingUserSucceeded { get; set; }
-        private UserRepository _userRepository = new UserRepository();
-        private EnterUsername _page;
+        private bool _creatingUserSucceeded;
+
         public bool IsValid { get; set; }
 
         public User UserModel {
