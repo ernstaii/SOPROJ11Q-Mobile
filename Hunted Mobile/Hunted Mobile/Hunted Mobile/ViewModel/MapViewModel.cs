@@ -31,6 +31,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Game _gameModel;
         private readonly LootRepository _lootRepository;
         private readonly UserRepository _userRepository;
+        private readonly BorderMarkerRepository _borderMarkerRepository;
         private readonly GpsService _gpsService;
         private Timer _intervalUpdateTimer;
         private Pin _playerPin;
@@ -114,13 +115,14 @@ namespace Hunted_Mobile.ViewModel {
         public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
         public string DescriptionOverlay => GameHasEnded ? END_DESCRIPTION : PAUSE_DESCRIPTION;
 
-        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository) {
+        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, BorderMarkerRepository borderMarkerRepository) {
             _mapModel = mapModel;
             _gameModel = gameModel;
             _gpsService = gpsService;
             _messagesView = new View.Messages(_gameModel.Id);
             _lootRepository = lootRepository;
             _userRepository = userRepository;
+            _borderMarkerRepository = borderMarkerRepository;
         }
 
         private async Task PollLoot() {
@@ -176,8 +178,10 @@ namespace Hunted_Mobile.ViewModel {
 
         private void InitializeMap() {
             AddOsmLayerToMapView();
-            AddGameBoundary();
-            LimitViewportToGame();
+            Task.Run(async () => {
+                await AddGameBoundary();
+                LimitViewportToGame();
+            });
 
             Task.Run(async () => {
                 if(!_gpsService.GpsHasStarted()) {
@@ -343,13 +347,12 @@ namespace Hunted_Mobile.ViewModel {
         /// <summary>
         /// Adds the visual game boundary as a polygon
         /// </summary>
-        private void AddGameBoundary() {
+        private async Task AddGameBoundary() {
+            List<Location> locations = await _borderMarkerRepository.GetAll(_gameModel.Id);
             Boundary boundary = new Boundary();
-            boundary.Points.Add(new Location(51.779043, 5.506003));
-            boundary.Points.Add(new Location(51.761559, 5.491387));
-            boundary.Points.Add(new Location(51.743866, 5.506616));
-            boundary.Points.Add(new Location(51.755662, 5.553818));
-            boundary.Points.Add(new Location(51.772993, 5.546168));
+
+            foreach(Location location in locations)
+                boundary.Points.Add(location);
 
             _mapModel.GameBoundary = boundary;
 
