@@ -13,7 +13,7 @@ namespace Hunted_Mobile.Service {
     /// </summary>
     public class WebSocketService {
         #region Static
-        private static readonly Pusher pusher = new Pusher(
+        private static readonly Pusher _pusher = new Pusher(
             "27357622ad22f596bba2",
             new PusherOptions() {
                 Cluster = "eu",
@@ -28,8 +28,8 @@ namespace Hunted_Mobile.Service {
 
         // Static initializer, executed once during the first usage of the class
         static WebSocketService() {
-            pusher.ConnectionStateChanged += ConnectionStateChanged;
-            pusher.Error += ErrorOccured;
+            _pusher.ConnectionStateChanged += ConnectionStateChanged;
+            _pusher.Error += ErrorOccured;
         }
 
         private static void ErrorOccured(object sender, PusherException error) {
@@ -54,7 +54,7 @@ namespace Hunted_Mobile.Service {
         public event SocketEvent<JObject> IntervalEvent;
 
         public WebSocketService(int gameId) {
-            pusher.SubscribeAsync("game." + gameId);
+            _pusher.SubscribeAsync("game." + gameId);
 
             string gameIdStr = gameId.ToString();
             Bind("game.start", () => StartGame(), gameIdStr);
@@ -65,7 +65,7 @@ namespace Hunted_Mobile.Service {
         }
 
         private void Bind(string eventName, Action action, string gameIdStr) {
-            pusher.Bind(eventName, (PusherEvent eventData) => {
+            _pusher.Bind(eventName, (PusherEvent eventData) => {
                 if(eventData.ChannelName.EndsWith(gameIdStr)) {
                     action();
                 }
@@ -73,7 +73,7 @@ namespace Hunted_Mobile.Service {
         }
 
         private void Bind<T>(string eventName, Action<T> action, string gameIdStr) {
-            pusher.Bind(eventName, (PusherEvent eventData) => {
+            _pusher.Bind(eventName, (PusherEvent eventData) => {
                 try {
                     object data = JsonConvert.DeserializeObject<T>(eventData.Data);
                     if(eventData.ChannelName.EndsWith(gameIdStr)) {
@@ -85,11 +85,11 @@ namespace Hunted_Mobile.Service {
         }
 
         public async Task Connect() {
-            await pusher.ConnectAsync();
+            await _pusher.ConnectAsync();
         }
 
         public async Task Disconnect() {
-            await pusher.DisconnectAsync();
+            await _pusher.DisconnectAsync();
         }
     }
 }

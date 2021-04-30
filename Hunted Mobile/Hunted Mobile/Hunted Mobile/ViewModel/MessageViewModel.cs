@@ -6,12 +6,12 @@ using System.Collections.ObjectModel;
 
 namespace Hunted_Mobile.ViewModel {
     public class MessageViewModel : BaseViewModel {
-        private readonly Messages page;
+        private readonly Messages _page;
 
         public ObservableCollection<string> Messages { get; set; } = new ObservableCollection<string>();
 
         public MessageViewModel(Messages page, int gameId) {
-            this.page = page;
+            _page = page;
 
             WebSocketService socket = new WebSocketService(gameId);
             AddMessage("Het spel is begonnen!");

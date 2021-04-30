@@ -19,7 +19,7 @@ namespace Hunted_Mobile.Service {
         public JArray Items { get; set; }
 
         // Properties for getting and displaying errors
-        public Dictionary<string, string> ErrorMessages { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> ErrorMessages = new Dictionary<string, string>();
         public string MainErrorMessage { get; set; }
         public bool HasErrors => ErrorMessages.Count > 0 || MainErrorMessage != null && MainErrorMessage.Length > 0;
 

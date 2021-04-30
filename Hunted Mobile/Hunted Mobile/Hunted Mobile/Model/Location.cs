@@ -32,9 +32,9 @@ namespace Hunted_Mobile.Model {
             }
         }
 
-        public Location(double latitude, double longitude) {
-            Latitude = latitude;
-            Longitude = longitude;
+        public Location(double Latitude, double Longitude) {
+            this.Latitude = Latitude;
+            this.Longitude = Longitude;
         }
 
         public Location(Mapsui.UI.Forms.Position position) {
