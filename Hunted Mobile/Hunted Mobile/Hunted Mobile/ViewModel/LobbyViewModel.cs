@@ -21,8 +21,8 @@ namespace Hunted_Mobile.ViewModel {
         private readonly GameRepository _gameRepository = new GameRepository();
         private Lobby _page;
         private readonly WebSocketService _webSocketService;
-        
-        private bool _isloading { get; set; }
+
+        private bool _isloading;
         
         public Game GameModel {
             get => _gameModel;
