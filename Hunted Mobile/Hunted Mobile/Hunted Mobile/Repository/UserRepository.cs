@@ -45,7 +45,8 @@ namespace Hunted_Mobile.Repository {
             var usersResponse = new HttpClientResponse() {
                 HasMultipleResults = true,
             };
-            await usersResponse.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users"));
+
+            await usersResponse.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users-with-role"));
 
             var inviteKeys = await inviteKeyRepository.GetAll(gameId);
 

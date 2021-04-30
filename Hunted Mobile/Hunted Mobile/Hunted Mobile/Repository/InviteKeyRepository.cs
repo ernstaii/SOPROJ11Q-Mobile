@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
@@ -32,7 +33,7 @@ namespace Hunted_Mobile.Repository {
                     UserId = 0,
                     Role = null,
                     ErrorMessages = response.ErrorMessages.Count() > 0 ? response.ErrorMessages : new Dictionary<string, string>() {
-                        { "value", "Er is iets misgegaan"}
+                        { "value", response.Status == HttpStatusCode.NotFound ? "De code is niet gevonden" : "Er is iets misgegaan"}
                     }
                 });
             }
