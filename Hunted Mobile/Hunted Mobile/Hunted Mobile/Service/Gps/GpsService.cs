@@ -6,6 +6,7 @@ using Plugin.Geolocator.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Service.Gps {
     public class GpsService {
@@ -26,7 +27,7 @@ namespace Hunted_Mobile.Service.Gps {
             LocationChanged(new Location(args.Position));
         }
 
-        public async void StartGps() {
+        public async Task StartGps() {
             await CrossGeolocator.Current.StartListeningAsync(
                 TimeSpan.FromSeconds(14),
                 8,

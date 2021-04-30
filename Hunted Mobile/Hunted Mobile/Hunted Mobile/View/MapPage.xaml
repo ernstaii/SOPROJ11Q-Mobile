@@ -19,6 +19,66 @@
             
             <!-- Overlay -->
             <!-- <StackLayout IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5"/> -->
+            <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding IsHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+                <StackLayout>
+                    <Label Text="{Binding SelectedLoot.Name}"
+                           Padding="5"
+                           Margin="0,25,0,0" 
+                           HorizontalTextAlignment="Center" 
+                           TextColor="Black" 
+                           FontAttributes="Bold" 
+                           FontSize="30"/>
+
+                    <BoxView VerticalOptions="FillAndExpand" />
+
+                    <Label Text="Houdt de knop ingedrukt om de buit op te pakken."
+                           Margin="0,0,0,15"
+                           HorizontalTextAlignment="Center" 
+                           TextColor="Black" 
+                           FontSize="16"/>
+
+                    <BoxView VerticalOptions="FillAndExpand" />
+
+                    <Button Text="Oppakken"
+                            BackgroundColor="Green"
+                            TextColor="White"
+                            CornerRadius="30" 
+                            Command="{Binding PickupLootCommand}"/>
+                    <Button Text="Terug"
+                            CornerRadius="30" 
+                            Command="{Binding CancelPickUpLootCommand}"
+                            Margin="0, 0, 0, 20"/>
+                </StackLayout>
+            </Frame>
+            <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding HasFinishedHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+                <StackLayout>
+                    <Label Text="{Binding SelectedLoot.Name}"
+                           Padding="5"
+                           Margin="0,25,0,0" 
+                           HorizontalTextAlignment="Center" 
+                           TextColor="Black" 
+                           FontAttributes="Bold" 
+                           FontSize="30"/>
+
+                    <BoxView VerticalOptions="FillAndExpand" />
+
+                    <Label Text="✅ Klaar! De buit is opgepakt!"
+                           Margin="0,0,0,15"
+                           HorizontalTextAlignment="Center" 
+                           TextColor="Black" 
+                           FontSize="16"/>
+
+                    <BoxView VerticalOptions="FillAndExpand" />
+
+                    <Button Text="Klaar"
+                            BackgroundColor="Green"
+                            TextColor="White"
+                            CornerRadius="30" 
+                            Command="{Binding ClosePickingLootCommand}"
+                            Margin="0, 20"/>
+                </StackLayout>
+            </Frame>
+
 
             <!-- For round corners, then a frame is neccessary -->
             <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">

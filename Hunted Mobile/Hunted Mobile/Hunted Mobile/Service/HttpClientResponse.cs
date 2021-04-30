@@ -20,12 +20,14 @@ namespace Hunted_Mobile.Service {
 
         // Properties for getting and displaying errors
         public Dictionary<string, string> ErrorMessages = new Dictionary<string, string>();
-        public string MainErrorMessage { get; set; }
-        public bool HasErrors => ErrorMessages.Count > 0 || MainErrorMessage != null && MainErrorMessage.Length > 0;
+        public bool HasErrors => ErrorMessages.Count > 0 && !HasServerErrors;
+        private bool HasServerErrors { get; set; }
 
         public HttpClientResponse() { }
 
         public async Task Convert(Task<HttpResponseMessage> request) {
+            HasServerErrors = false;
+            ErrorMessages.Clear();
             await ExecuteRequest(request);
 
             if(!HasErrors) {
@@ -41,12 +43,11 @@ namespace Hunted_Mobile.Service {
         protected async Task ExecuteRequest(Task<HttpResponseMessage> request) {
             try {
                 ErrorMessages.Clear();
-                MainErrorMessage = null;
 
                 ResponseMessage = await request;
             }
             catch(Exception e) {
-                MainErrorMessage = "Er is iets misgegaan met het maken van een request";
+                HasServerErrors = true;
             }
         }
 
@@ -55,27 +56,25 @@ namespace Hunted_Mobile.Service {
                 ResponseContent = await ResponseMessage.Content.ReadAsStringAsync();
             }
             catch(Exception e) {
-                MainErrorMessage = "Er is iets misgegaan bij het uitlezen van de inhoud van de response";
+                HasServerErrors = true;
             }
         }
 
         protected void ConvertResponseContent() {
             try {
-                if(!HasMultipleResults || HasMultipleResults && !IsSuccessful)
-                    Item = (JObject) JsonConvert.DeserializeObject(ResponseContent);
-
                 if(HasMultipleResults)
                     Items = JArray.Parse(ResponseContent);
+
+                if(!HasMultipleResults || HasMultipleResults && !IsSuccessful)
+                    Item = (JObject) JsonConvert.DeserializeObject(ResponseContent);
             }
             catch(Exception e) {
-                MainErrorMessage = "Er is iets misgegaan bij het omzetten van de inhoud van de response";
+                HasServerErrors = true;
             }
         }
 
         protected void GetErrors() {
             try {
-                MainErrorMessage = GetStringValue("message");
-
                 // Loop through every error
                 foreach(JToken child in GetValue("errors").Children()) {
                     var property = child as JProperty;
@@ -85,7 +84,7 @@ namespace Hunted_Mobile.Service {
                 }
             }
             catch(Exception e) {
-                MainErrorMessage = "Er is iets misgegaan bij het omzetten van de errors van de response";
+                HasServerErrors = true;
             }
         }
 

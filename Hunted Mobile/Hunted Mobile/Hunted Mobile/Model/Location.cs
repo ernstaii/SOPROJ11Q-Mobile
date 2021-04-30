@@ -71,5 +71,9 @@ namespace Hunted_Mobile.Model {
         public string ToCsvString() {
             return $"{Latitude},{Longitude}";
         }
+
+        public bool Equals(Location location) {
+            return location.Latitude.Equals(Latitude) && location.Longitude.Equals(Longitude);
+        }
     }
 }

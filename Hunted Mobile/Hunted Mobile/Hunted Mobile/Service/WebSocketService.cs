@@ -75,12 +75,14 @@ namespace Hunted_Mobile.Service {
         private void Bind<T>(string eventName, Action<T> action, string gameIdStr) {
             _pusher.Bind(eventName, (PusherEvent eventData) => {
                 try {
-                    object data = JsonConvert.DeserializeObject<T>(eventData.Data);
                     if(eventData.ChannelName.EndsWith(gameIdStr)) {
-                        action((T) data);
+                        T data = JsonConvert.DeserializeObject<T>(eventData.Data);
+                        action(data);
                     }
                 }
-                catch(Exception) { }
+                catch(Exception ex) {
+                    Console.WriteLine("An error occurred while deserializing event data: " + ex.StackTrace);
+                }
             });
         }
 
