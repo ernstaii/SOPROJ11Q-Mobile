@@ -109,10 +109,8 @@
 
                     <Button Text="Terug naar hoofdscherm"
                             CornerRadius="30" 
-                            BackgroundColor="White"
-                            BorderWidth="1"
-                            BorderColor="RoyalBlue"
-                            TextColor="RoyalBlue"
+                            BackgroundColor="RoyalBlue"
+                            TextColor="White"
                             IsVisible="{Binding GameHasEnded}"
                             Command="{Binding ExitGameCommand}"
                             Margin="0, 20"/>

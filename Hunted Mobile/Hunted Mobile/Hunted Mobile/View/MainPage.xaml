@@ -49,10 +49,8 @@
 
                 <Button Text="Deelnemen"
                         CornerRadius="30" 
-                        BackgroundColor="White"
-                        BorderWidth="1"
-                        BorderColor="RoyalBlue"
-                        TextColor="RoyalBlue"
+                        BackgroundColor="RoyalBlue"
+                        TextColor="White"
                         Command="{Binding EnterGamePreference}"
                         Margin="0, 40"/>
             </StackLayout>
