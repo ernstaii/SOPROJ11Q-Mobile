@@ -108,9 +108,11 @@
                     <BoxView VerticalOptions="FillAndExpand" />
 
                     <Button Text="Terug naar hoofdscherm"
-                            BackgroundColor="Blue"
-                            TextColor="White"
                             CornerRadius="30" 
+                            BackgroundColor="White"
+                            BorderWidth="1"
+                            BorderColor="RoyalBlue"
+                            TextColor="RoyalBlue"
                             IsVisible="{Binding GameHasEnded}"
                             Command="{Binding ExitGameCommand}"
                             Margin="0, 20"/>
