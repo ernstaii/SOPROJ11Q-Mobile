@@ -14,8 +14,8 @@ namespace Hunted_Mobile.ViewModel {
     public class EnterUsernameViewModel : BaseViewModel {
         private User _userModel = new User();
         private bool _isloading = false;
-        private readonly UserRepository _userRepository = new UserRepository();
-        private readonly EnterUsername _page;
+        private UserRepository _userRepository = new UserRepository();
+        private EnterUsername _page;
         private bool _creatingUserSucceeded { get; set; }
         public bool IsValid { get; set; }
 
@@ -46,7 +46,7 @@ namespace Hunted_Mobile.ViewModel {
         /// <returns></returns>
         public async Task CreateUser() {
             if(IsValid = ValidationHelper.IsFormValid(UserModel, _page)) {
-                UserModel = await _userRepository.Create(UserModel.InviteKey, UserModel.UserName);
+                UserModel = await _userRepository.Create(UserModel.InviteKey, this.UserModel.UserName);
             }
         }
 

@@ -1,33 +1,32 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Repository;
-using Hunted_Mobile.Service;
-using Hunted_Mobile.Service.Gps;
 
 using Mapsui;
 using Mapsui.Geometries;
-using Mapsui.Layers;
 using Mapsui.Projection;
+using Mapsui.UI;
+using Mapsui.Layers;
 using Mapsui.Providers;
 using Mapsui.Styles;
-using Mapsui.UI;
 using Mapsui.UI.Forms;
 using Mapsui.Utilities;
 using Mapsui.Widgets;
 
-using Newtonsoft.Json.Linq;
-
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Timers;
+using Hunted_Mobile.Service;
+using Hunted_Mobile.Service.Gps;
 using System.Windows.Input;
-
 using Xamarin.Forms;
+using System.Timers;
+using Newtonsoft.Json.Linq;
+using System.Windows.Input;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
-        private const string PAUSE_TITLE = "Gepauzeerd",
+        const string PAUSE_TITLE = "Gepauzeerd",
             END_TITLE = "Het spel is afgelopen!",
             PAUSE_DESCRIPTION = "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.",
             END_DESCRIPTION = "Ga terug naar de spelleider!";
@@ -40,7 +39,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly WebSocketService _webSocketService;
 
         private MapView _mapView;
-        private readonly View.Messages _messagesView;
+        private View.Messages _messagesView;
         private Timer _intervalUpdateTimer;
         private Pin _playerPin;
         private bool _isEnabled = true;
@@ -334,7 +333,7 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         private void DisplayOtherPins() {
             _mapView.Pins.Clear();
-
+            
             _mapView.Pins.Add(_playerPin);
 
             // TODO: the Name property of users is null here, it should not be

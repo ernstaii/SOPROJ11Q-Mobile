@@ -1,5 +1,9 @@
 ﻿using Hunted_Mobile.Model.GameModels;
 
+using Mapsui.Geometries;
+using Mapsui.UI.Forms;
+using Mapsui.UI.Objects;
+
 using System.Collections.Generic;
 
 namespace Hunted_Mobile.Model {

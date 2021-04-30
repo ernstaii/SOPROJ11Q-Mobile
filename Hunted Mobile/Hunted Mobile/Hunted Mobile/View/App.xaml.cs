@@ -1,6 +1,9 @@
 ﻿using Hunted_Mobile.View;
 
+using System;
+
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 namespace Hunted_Mobile {
     public partial class App : Application {

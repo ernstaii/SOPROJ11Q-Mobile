@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Hunted_Mobile.Model {
     public class InviteKey : CustomModelErrorMessages<InviteKey> {

@@ -16,14 +16,14 @@ namespace Hunted_Mobile.ViewModel {
     public class LobbyViewModel : BaseViewModel {
         private List<User> _users = new List<User>();
         private Game _gameModel = new Game();
-        private readonly User _currentUser;
+        private User _currentUser;
         private readonly UserRepository _userRepository = new UserRepository();
         private readonly GameRepository _gameRepository = new GameRepository();
-        private readonly Lobby _page;
+        private Lobby _page;
         private readonly WebSocketService _webSocketService;
-
+        
         private bool _isloading { get; set; }
-
+        
         public Game GameModel {
             get => _gameModel;
             set {

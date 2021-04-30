@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
@@ -19,7 +20,7 @@ namespace Hunted_Mobile.Repository {
                 game_id = inviteKey.GameId
             }));
 
-            return new User(response.GetNumberValue("id")) {
+            return new User((int) response.GetNumberValue("id")) {
                 Location = null,
                 UserName = username,
                 InviteKey = inviteKey,

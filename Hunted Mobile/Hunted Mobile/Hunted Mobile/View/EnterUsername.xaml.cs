@@ -1,6 +1,10 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.ViewModel;
 
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
