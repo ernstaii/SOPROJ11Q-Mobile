@@ -27,8 +27,8 @@ namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
         private MapView _mapView;
         private View.Messages _messagesView;
+        private Game _gameModel;
         private readonly Model.Map _mapModel;
-        private readonly Game _gameModel;
         private readonly LootRepository _lootRepository;
         private readonly UserRepository _userRepository;
         private readonly GameRepository _gameRepository;
@@ -131,6 +131,21 @@ namespace Hunted_Mobile.ViewModel {
 
         public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
         public string DescriptionOverlay => GameHasEnded ? END_DESCRIPTION : PAUSE_DESCRIPTION;
+
+        public int PlayingUserScore {
+            get {
+                if(_mapModel != null && _gameModel != null) {
+                    if(_mapModel.PlayingUser is Thief) {
+                        return _gameModel.ThievesScore;
+                    }
+                    else if(_mapModel.PlayingUser is Police) {
+                        return _gameModel.PoliceScore;
+                    }
+                    else return 0;
+                }
+                else return 0;
+            }
+        }
 
         public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository, InviteKeyRepository inviteKeyRepository) {
             _mapModel = mapModel;
@@ -486,6 +501,8 @@ namespace Hunted_Mobile.ViewModel {
                 bool deleted = await _lootRepository.Delete(SelectedLoot.Id);
                 if(deleted) {
                     await _gameRepository.UpdateThievesScore(game.Id, game.ThievesScore + 50);
+                    _gameModel = await _gameRepository.GetGame(_gameModel.Id);
+                    OnPropertyChanged(nameof(PlayingUserScore));
                     await PollLoot();
                     DisplayOtherPins();
                 }

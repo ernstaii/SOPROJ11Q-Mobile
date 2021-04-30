@@ -119,6 +119,15 @@
                             Margin="0, 20"/>
                 </StackLayout>
             </Frame>
+
+            <Label Text="Score:"
+                   FontSize="40"
+                   Margin="10"
+                   BackgroundColor="White" />
+            <Label Text="{Binding PlayingUserScore}"
+                   FontSize="40"
+                   Margin="130,10,10,10"
+                   BackgroundColor="White" />
         </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>
