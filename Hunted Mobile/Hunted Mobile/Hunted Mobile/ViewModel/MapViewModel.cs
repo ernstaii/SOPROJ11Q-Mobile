@@ -181,17 +181,18 @@ namespace Hunted_Mobile.ViewModel {
             List<User> userList = new List<User>();
 
             foreach(JObject user in data.GetValue("users")) {
-
-                Location location = new Location((string) user.GetValue("location"));
                 int userId = -1;
                 int.TryParse((string) user.GetValue("id"), out userId);
 
-                User newUser = new User();
-                newUser.Id = userId;
-                newUser.UserName = ((string) user.GetValue("username"));
-                newUser.Location = location;
+                if(userId != _mapModel.PlayingUser.Id) {
+                    Location location = new Location((string) user.GetValue("location"));
+                    User newUser = new User();
+                    newUser.Id = userId;
+                    newUser.UserName = ((string) user.GetValue("username"));
+                    newUser.Location = location;
 
-                userList.Add(newUser);
+                    userList.Add(newUser);
+                }
             }
 
             _mapModel.SetUsers(userList);
@@ -212,12 +213,11 @@ namespace Hunted_Mobile.ViewModel {
 
         private void InitializeMap() {
             AddOsmLayerToMapView();
+
             Task.Run(async () => {
                 await AddGameBoundary();
                 LimitViewportToGame();
-            });
 
-            Task.Run(async () => {
                 if(!_gpsService.GpsHasStarted()) {
                     await _gpsService.StartGps();
                 }
