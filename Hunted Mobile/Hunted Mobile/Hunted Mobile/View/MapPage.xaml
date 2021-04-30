@@ -10,13 +10,19 @@
                 VerticalOptions="FillAndExpand"
                 HorizontalOptions="Fill"
                 BackgroundColor="Gray" />
-                <Button Text="Messages"
-                    CornerRadius="30"
-                    Margin="10, 10"
-                    HeightRequest="20"
-                    Command="{Binding ButtonSelectedCommand}"/>
             </StackLayout>
-            
+
+            <Button Text="X"
+                    Command="{Binding ButtonSelectedCommand}"
+                    FontSize="25"
+                    CornerRadius="30" 
+                    BackgroundColor="White"
+                    BorderWidth="1"
+                    BorderColor="RoyalBlue"
+                    TextColor="RoyalBlue"
+                    AbsoluteLayout.LayoutFlags="PositionProportional"  
+                    AbsoluteLayout.LayoutBounds=".98,0.01,60,60" />
+
             <!-- Overlay -->
             <!-- <StackLayout IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5"/> -->
             <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding IsHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
