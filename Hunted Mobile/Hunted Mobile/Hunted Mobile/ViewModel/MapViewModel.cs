@@ -167,11 +167,19 @@ namespace Hunted_Mobile.ViewModel {
             if(mapView != null) {
                 bool initializedBefore = _mapView != null;
                 _mapView = mapView;
+                DisableDefaultMapViewOptions();
 
                 if(!initializedBefore) {
                     InitializeMap();
                 }
             }
+        }
+
+        // In the Mockups, these options are not visible, so this method makes sure that the options are hidden
+        private void DisableDefaultMapViewOptions() {
+            _mapView.IsZoomButtonVisible = false;
+            _mapView.IsNorthingButtonVisible = false;
+            _mapView.IsMyLocationButtonVisible = false;
         }
 
         private void InitializeMap() {
@@ -286,7 +294,7 @@ namespace Hunted_Mobile.ViewModel {
         private void CenterMapOnLocation(Location center, double zoomResolution) {
             Mapsui.Geometries.Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
             _mapView.Navigator.CenterOn(centerPoint);
-
+           // _mapView.Padding = new Thickness(80, 20, 100, 40);
             _mapView.Navigator.NavigateTo(centerPoint, zoomResolution);
         }
 
@@ -443,9 +451,6 @@ namespace Hunted_Mobile.ViewModel {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(_messagesView);
         });
 
-        /// <summary>
-        /// Navigate to the RootPage
-        /// </summary>
         public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
             await _webSocketService.Disconnect();
