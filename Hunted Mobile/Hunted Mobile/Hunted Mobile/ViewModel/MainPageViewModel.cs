@@ -13,43 +13,44 @@ using System.Linq;
 
 namespace Hunted_Mobile.ViewModel {
     public class MainPageViewModel : BaseViewModel {
-        private InviteKey _inviteKeyModel = new InviteKey();
-        private bool _isloading = false;
-        private InviteKeyRepository _inviteKeyRepository = new InviteKeyRepository();
-        private ObservableCollection<InviteKey> _inviteKeys = new ObservableCollection<InviteKey>();
-        private MainPage _page;
+        private InviteKey inviteKeyModel = new InviteKey();
+        private bool isloading = false;
+        private readonly InviteKeyRepository inviteKeyRepository = new InviteKeyRepository();
+        private ObservableCollection<InviteKey> inviteKeys = new ObservableCollection<InviteKey>();
+        private readonly MainPage page;
+        private bool isOverlayVisible;
+
         public InviteKey InviteKeyModel {
-            get => _inviteKeyModel;
+            get => inviteKeyModel;
             set {
-                _inviteKeyModel = value;
+                inviteKeyModel = value;
                 OnPropertyChanged("InviteKeyModel");
             }
         }
 
         public bool SubmitButtonIsEnable {
-            get => _isloading;
+            get => isloading;
             set {
-                _isloading = value;
+                isloading = value;
                 OnPropertyChanged("SubmitButtonIsEnable");
             }
         }
-        private bool _isOverlayVisible;
 
         /// <summary>
         /// This property will disable the touch of the user with the mapView
         /// </summary>
         public bool IsOverlayVisible {
-            get => _isOverlayVisible;
+            get => isOverlayVisible;
             set {
-                _isOverlayVisible = value;
+                isOverlayVisible = value;
                 OnPropertyChanged("IsOverlayVisible");
             }
         }
 
         public ObservableCollection<InviteKey> InviteKeys {
-            get { return _inviteKeys; }
+            get { return inviteKeys; }
             set {
-                _inviteKeys = value;
+                inviteKeys = value;
                 OnPropertyChanged("InviteKeys");
             }
         }
@@ -59,7 +60,7 @@ namespace Hunted_Mobile.ViewModel {
         public InviteKey SelectedPreferenceGame { get; set; }
 
         public MainPageViewModel(MainPage page) {
-            _page = page;
+            this.page = page;
         }
 
         /// <summary>
@@ -67,8 +68,8 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         /// <returns></returns>
         public async Task GetAll() {
-            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page)) {
-                var result = await _inviteKeyRepository.GetAll(InviteKeyModel.Value);
+            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, page)) {
+                var result = await inviteKeyRepository.GetAll(InviteKeyModel.Value);
                 IsOverlayVisible = false;
 
                 if(result.Count == 1) {
@@ -93,7 +94,7 @@ namespace Hunted_Mobile.ViewModel {
             await GetAll();
 
             // Navigate when InviteKey is valid
-            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page) && !IsOverlayVisible) { 
+            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, page) && !IsOverlayVisible) { 
                 await NavigateToEnterUsernamePage();
             }
 

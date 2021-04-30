@@ -5,17 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Threading.Tasks;
 
 using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class MessageViewModel : BaseViewModel{
-        private Messages _page;
+        private readonly Messages page;
 
         public ObservableCollection<string> Messages { get; set; } = new ObservableCollection<string>();
 
         public MessageViewModel(Messages page, int gameId){
-            _page = page;
+            this.page = page;
 
             WebSocketService socket = new WebSocketService(gameId);
             AddMessage("Het spel is begonnen!");
@@ -24,7 +25,7 @@ namespace Hunted_Mobile.ViewModel {
             socket.EndGame += (data) => AddMessage((String)data.GetValue("message"));
 
             if(!WebSocketService.Connected) {
-                socket.Connect();
+                Task.Run(async () => await socket.Connect());
             }
         }
 
