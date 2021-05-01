@@ -12,7 +12,7 @@
                    FontAttributes="Bold"
                    FontSize="36"/>
 
-            <CollectionView ItemsSource="{Binding ChatMessages}" Margin="15">
+            <CollectionView ItemsSource="{Binding ChatMessages}" Margin="15" x:Name="ChatMessages_Collection">
                 <CollectionView.ItemTemplate>
                     <!-- Custom layout of item -->
                     <DataTemplate>

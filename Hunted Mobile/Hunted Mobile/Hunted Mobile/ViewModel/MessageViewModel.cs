@@ -14,9 +14,11 @@ namespace Hunted_Mobile.ViewModel {
     public class MessageViewModel : BaseViewModel {
         private Messages _page;
         public ObservableCollection<GameMessage> ChatMessages { get; set; } = new ObservableCollection<GameMessage>();
+        private CollectionView _collectionView { get; set; }
 
-        public MessageViewModel(Messages page, int gameId){
+        public MessageViewModel(Messages page, int gameId, CollectionView collection) {
             _page = page;
+            _collectionView = collection;
 
             WebSocketService socket = new WebSocketService(gameId);
             AddMessage("Het spel is begonnen!");
@@ -30,11 +32,14 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public void AddMessage(String message) {
-            ChatMessages.Add(new GameMessage() {
+            ChatMessages.Insert(0, new GameMessage() {
                 Message = message,
                 Time = DateTime.Now.ToString("HH:mm"),
                 UserName = "Spelleider"
             });
+
+            // Scroll to top of CollectionView, because otherwise new items are not shown
+            _collectionView.ScrollTo(0, position: ScrollToPosition.Start);
         }
     }
 }

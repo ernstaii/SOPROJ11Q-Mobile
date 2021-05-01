@@ -15,7 +15,7 @@ namespace Hunted_Mobile.View {
     public partial class Messages : ContentPage {
         public Messages(int gameId) {
             InitializeComponent();
-            BindingContext = new MessageViewModel(this, gameId);
+            BindingContext = new MessageViewModel(this, gameId, ChatMessages_Collection);
         }
     }
 }
