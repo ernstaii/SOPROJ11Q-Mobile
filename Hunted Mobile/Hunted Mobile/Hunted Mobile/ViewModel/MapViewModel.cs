@@ -40,6 +40,7 @@ namespace Hunted_Mobile.ViewModel {
 
         private bool _isEnabled = true;
         private bool _gameHasEnded = false;
+        private bool _openMainMapMenu = false;
         private bool _isHandlingLoot = false;
         private bool _hasFinishedHandlingLoot = false;
 
@@ -66,6 +67,13 @@ namespace Hunted_Mobile.ViewModel {
                 _gameHasEnded = value;
 
                 OnPropertyChanged("GameHasEnded");
+            }
+        }
+        public bool OpenMainMapMenu {
+            get => _openMainMapMenu;
+            set {
+                _openMainMapMenu = value;
+                OnPropertyChanged("OpenMainMapMenu");
             }
         }
 
@@ -466,6 +474,15 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand CancelPickUpLootCommand => new Xamarin.Forms.Command((e) => {
             HasFinishedHandlingLoot = false;
             IsHandlingLoot = false;
+        });
+
+        public ICommand OpenMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
+            HasFinishedHandlingLoot = false;
+            OpenMainMapMenu = true;
+        });
+
+        public ICommand CloseMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
+            OpenMainMapMenu = false;
         });
     }
 }
