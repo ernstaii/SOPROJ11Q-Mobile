@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:mapsui="clr-namespace:Mapsui.UI.Forms;assembly=Mapsui.UI.Forms"
+             xmlns:mapsui="clr-namespace:Mapsui.UI.Forms;assembly=Mapsui.UI.Forms" 
+             xmlns:local="clr-namespace:Xamarin.Forms.BehaviorsPack;assembly=Xamarin.Forms.BehaviorsPack"
              x:Class="Hunted_Mobile.MapPage">
     <ContentPage.Content>
         <AbsoluteLayout>
@@ -52,14 +53,10 @@
                             BackgroundColor="Green"
                             TextColor="White"
                             CornerRadius="30">
-                        <!--
-                         <Button.Behaviors>
-                            <prism:EventToCommandBehavior EventName="Pressed"
-                                  Command="{Binding Button_PressedPickupLoot}" />
-                            <prism:EventToCommandBehavior EventName="Released"
-                                  Command="{Binding Button_ReleasedPickupLoot}" />
+                        <Button.Behaviors>
+                            <local:EventToCommandBehavior EventName="Pressed" Command="{Binding Button_PressedPickupLoot}"/>
+                            <local:EventToCommandBehavior EventName="Released" Command="{Binding Button_ReleasedPickupLoot}"/>
                         </Button.Behaviors>
-                        -->
                     </Button>
                     
                     <Button Text="Terug"

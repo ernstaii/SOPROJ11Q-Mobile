@@ -25,6 +25,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
+        private const int LOOT_PICKUP_TIME_IN_SECONDES = 5,
+            LOOT_PICKUP_MAX_DISTANCE_IN_METERS = 10;
+
         private MapView _mapView;
         private View.Messages _messagesView;
         private Game _gameModel;
@@ -110,7 +113,7 @@ namespace Hunted_Mobile.ViewModel {
         public bool IsCloseToSelectedLoot {
             get {
                 if(IsHandlingLoot && _mapModel != null && _mapModel.PlayingUser != null && _mapModel.PlayingUser.Location != null && SelectedLoot != null && SelectedLoot.Location != null) {
-                    return _mapModel.PlayingUser.Location.DistanceToOtherInMeters(SelectedLoot.Location) < 10000000;
+                    return _mapModel.PlayingUser.Location.DistanceToOtherInMeters(SelectedLoot.Location) <= LOOT_PICKUP_MAX_DISTANCE_IN_METERS;
                 }
                 else return false;
             }
@@ -474,28 +477,10 @@ namespace Hunted_Mobile.ViewModel {
                 }
             }
         }
-        private void Do_Something(object sender, EventArgs e) {
-            //Do Stuff
+
+        private void SuccessfullyPickedUpLoot(object sender, EventArgs e) {
             _lootTimer.Stop();
             _lootTimer = null;
-        }
-
-
-        public ICommand ButtonSelectedCommand => new Command(async (e) => {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(_messagesView);
-        });
-
-        /// <summary>
-        /// Navigate to the RootPage
-        /// </summary>
-        public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
-            await _webSocketService.Disconnect();
-        });
-
-        public ICommand PickupLootCommand => new Xamarin.Forms.Command((e) => {
-            //
-            // Instant finishing off
             HasFinishedHandlingLoot = true;
 
             Task.Run(async () => {
@@ -511,6 +496,19 @@ namespace Hunted_Mobile.ViewModel {
                     DisplayOtherPins();
                 }
             });
+        }
+
+
+        public ICommand ButtonSelectedCommand => new Command(async (e) => {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(_messagesView);
+        });
+
+        /// <summary>
+        /// Navigate to the RootPage
+        /// </summary>
+        public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
+            await _webSocketService.Disconnect();
         });
 
         public ICommand ClosePickingLootCommand => new Xamarin.Forms.Command((e) => {
@@ -524,14 +522,18 @@ namespace Hunted_Mobile.ViewModel {
 
         public ICommand Button_PressedPickupLoot => new Xamarin.Forms.Command((e) => {
             _lootTimer = new Timer();
-            _lootTimer.Interval = 3000;
-            _lootTimer.Elapsed += Do_Something;
+
+            // Interval is set with milisecondes
+            _lootTimer.Interval = LOOT_PICKUP_TIME_IN_SECONDES * 1000;
+            _lootTimer.Elapsed += SuccessfullyPickedUpLoot;
             _lootTimer.Start();
         });
 
         public ICommand Button_ReleasedPickupLoot => new Xamarin.Forms.Command((e) => {
-            _lootTimer.Stop();
-            _lootTimer = null;
+            if(_lootTimer != null) {
+                _lootTimer.Stop();
+                _lootTimer = null;
+            }
         });
     }
 }
