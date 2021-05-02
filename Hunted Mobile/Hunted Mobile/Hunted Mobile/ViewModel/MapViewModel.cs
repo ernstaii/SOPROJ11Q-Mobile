@@ -36,6 +36,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly BorderMarkerRepository _borderMarkerRepository;
         private readonly GpsService _gpsService;
         private Timer _intervalUpdateTimer;
+        private Timer _lootTimer;
         private Pin _playerPin;
         private WebSocketService _webSocketService;
         private Loot _selectedLoot = new Loot(-1);
@@ -109,19 +110,14 @@ namespace Hunted_Mobile.ViewModel {
         public bool IsCloseToSelectedLoot {
             get {
                 if(IsHandlingLoot && _mapModel != null && _mapModel.PlayingUser != null && _mapModel.PlayingUser.Location != null && SelectedLoot != null && SelectedLoot.Location != null) {
-                    return _mapModel.PlayingUser.Location.DistanceToOtherInMeters(SelectedLoot.Location) < 10;
+                    return _mapModel.PlayingUser.Location.DistanceToOtherInMeters(SelectedLoot.Location) < 10000000;
                 }
                 else return false;
             }
         }
 
         public bool IsFarFromSelectedLoot => !IsCloseToSelectedLoot;
-
-        /// <summary>
-        /// The oposite of the enable-state
-        /// </summary>
         public bool VisibleOverlay => !IsEnabled;
-
         public bool Initialized { get; private set; }
 
         const string PAUSE_TITLE = "Gepauzeerd",
@@ -166,8 +162,8 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private async Task PollUsers() {
-            var userList = new List<User>();
-            foreach(User user in await _userRepository.GetAll(_gameModel.Id, _inviteKeyRepository)) {
+            var userList = new List<Player>();
+            foreach(Player user in await _userRepository.GetAll(_gameModel.Id)) {
                 if(user.Id != _mapModel.PlayingUser.Id) { 
                     userList.Add(user);
                 }
@@ -178,7 +174,7 @@ namespace Hunted_Mobile.ViewModel {
         private void IntervalOfGame(JObject data) {
             StartIntervalTimer();
 
-            List<User> userList = new List<User>();
+            List<Player> userList = new List<Player>();
 
             foreach(JObject user in data.GetValue("users")) {
                 int userId = -1;
@@ -186,7 +182,7 @@ namespace Hunted_Mobile.ViewModel {
 
                 if(userId != _mapModel.PlayingUser.Id) {
                     Location location = new Location((string) user.GetValue("location"));
-                    User newUser = new User();
+                    Player newUser = new Player();
                     newUser.Id = userId;
                     newUser.UserName = ((string) user.GetValue("username"));
                     newUser.Location = location;
@@ -392,7 +388,6 @@ namespace Hunted_Mobile.ViewModel {
                 boundary.Points.Add(location);
 
             _mapModel.GameBoundary = boundary;
-
             _mapView.Map.Layers.Add(CreateBoundaryLayer());
         }
 
@@ -479,6 +474,11 @@ namespace Hunted_Mobile.ViewModel {
                 }
             }
         }
+        private void Do_Something(object sender, EventArgs e) {
+            //Do Stuff
+            _lootTimer.Stop();
+            _lootTimer = null;
+        }
 
 
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
@@ -494,6 +494,7 @@ namespace Hunted_Mobile.ViewModel {
         });
 
         public ICommand PickupLootCommand => new Xamarin.Forms.Command((e) => {
+            //
             // Instant finishing off
             HasFinishedHandlingLoot = true;
 
@@ -519,6 +520,18 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand CancelPickUpLootCommand => new Xamarin.Forms.Command((e) => {
             HasFinishedHandlingLoot = false;
             IsHandlingLoot = false;
+        });
+
+        public ICommand Button_PressedPickupLoot => new Xamarin.Forms.Command((e) => {
+            _lootTimer = new Timer();
+            _lootTimer.Interval = 3000;
+            _lootTimer.Elapsed += Do_Something;
+            _lootTimer.Start();
+        });
+
+        public ICommand Button_ReleasedPickupLoot => new Xamarin.Forms.Command((e) => {
+            _lootTimer.Stop();
+            _lootTimer = null;
         });
     }
 }

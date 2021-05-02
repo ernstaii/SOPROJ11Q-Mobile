@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Hunted_Mobile.Model.GameModels {
     public class Thief : Player {
-        public Thief(User user) : base(user) {
+        public Thief(Player player) : base(player) {
         }
     }
 }
