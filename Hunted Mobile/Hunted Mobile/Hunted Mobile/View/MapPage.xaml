@@ -92,7 +92,7 @@
                     AbsoluteLayout.LayoutBounds=".5,0.97,60,60" />
 
             <!-- The Main Map menu -->
-            <Frame CornerRadius="10" OutlineColor="Black" BackgroundColor="White" IsVisible="{Binding OpenMainMapMenu}" AbsoluteLayout.LayoutBounds="0.5, 1, 1, 265" AbsoluteLayout.LayoutFlags="WidthProportional,PositionProportional" Padding="15">
+            <Frame CornerRadius="10" OutlineColor="Black" BackgroundColor="White" IsVisible="{Binding OpenMainMapMenu}" AbsoluteLayout.LayoutBounds="0.5, 1, 1, 260" AbsoluteLayout.LayoutFlags="WidthProportional,PositionProportional" Padding="15">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="15" />
@@ -110,8 +110,6 @@
                     <!-- Notify user functionality -->
                     <Label Text="AUT. TRILLEN" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" HorizontalTextAlignment="Center"/>
                     <Label Text="TRILLEN" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Column="1" HorizontalTextAlignment="Center"/>
-
-                    <Rectangle BackgroundColor="Black" Grid.Row="1" Grid.Column="1"/>
 
                     <!-- Other functionality -->
                     <Label Text="BUIT" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Row="2" HorizontalTextAlignment="Center"/>
