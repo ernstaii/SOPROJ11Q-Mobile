@@ -134,6 +134,42 @@ namespace Hunted_Mobile.ViewModel {
             this.borderMarkerRepository = borderMarkerRepository;
         }
 
+        public ICommand ButtonSelectedCommand => new Command(async (e) => {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(messagesView);
+        });
+
+        /// <summary>
+        /// Navigate to the RootPage
+        /// </summary>
+        public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
+            await webSocketService.Disconnect();
+        });
+
+        public ICommand PickupLootCommand => new Xamarin.Forms.Command((e) => {
+            // Instant finishing off
+            HasFinishedHandlingLoot = true;
+        });
+
+        public ICommand ClosePickingLootCommand => new Xamarin.Forms.Command((e) => {
+            HasFinishedHandlingLoot = false;
+        });
+
+        public ICommand CancelPickUpLootCommand => new Xamarin.Forms.Command((e) => {
+            HasFinishedHandlingLoot = false;
+            IsHandlingLoot = false;
+        });
+
+        public ICommand OpenMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
+            HasFinishedHandlingLoot = false;
+            OpenMainMapMenu = true;
+        });
+
+        public ICommand CloseMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
+            OpenMainMapMenu = false;
+        });
+
+
         private async Task PollLoot() {
             var lootList = await lootRepository.GetAll(gameModel.Id);
             mapModel.SetLoot(lootList);
@@ -449,38 +485,5 @@ namespace Hunted_Mobile.ViewModel {
                 }
             }
         }
-
-
-        public ICommand ButtonSelectedCommand => new Command(async (e) => {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(messagesView);
-        });
-
-        public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
-            await webSocketService.Disconnect();
-        });
-
-        public ICommand PickupLootCommand => new Xamarin.Forms.Command((e) => {
-            // Instant finishing off
-            HasFinishedHandlingLoot = true;
-        });
-
-        public ICommand ClosePickingLootCommand => new Xamarin.Forms.Command((e) => {
-            HasFinishedHandlingLoot = false;
-        });
-
-        public ICommand CancelPickUpLootCommand => new Xamarin.Forms.Command((e) => {
-            HasFinishedHandlingLoot = false;
-            IsHandlingLoot = false;
-        });
-
-        public ICommand OpenMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
-            HasFinishedHandlingLoot = false;
-            OpenMainMapMenu = true;
-        });
-
-        public ICommand CloseMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
-            OpenMainMapMenu = false;
-        });
     }
 }
