@@ -2,13 +2,13 @@
 
 namespace Hunted_Mobile.Model.GameModels {
     public class Loot {
-        private readonly int _id;
+        private readonly int id;
 
         public Location Location { get; set; }
         public string Name { get; set; }
 
         public Loot(int id) {
-            _id = id;
+            this.id = id;
         }
     }
 }
