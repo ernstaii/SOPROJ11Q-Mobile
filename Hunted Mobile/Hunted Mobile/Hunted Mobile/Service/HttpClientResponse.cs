@@ -19,14 +19,14 @@ namespace Hunted_Mobile.Service {
         public JArray Items { get; set; }
 
         // Properties for getting and displaying errors
-        public Dictionary<string, string> ErrorMessages = new Dictionary<string, string>();
-        public bool HasErrors => ErrorMessages.Count > 0 && !HasServerErrors;
-        private bool HasServerErrors { get; set; }
+        public Dictionary<string, string> ErrorMessages { get; set; } = new Dictionary<string, string>();
+        public bool HasErrors => ErrorMessages.Count > 0 && !hasServerErrors;
+        private bool hasServerErrors;
 
         public HttpClientResponse() { }
 
         public async Task Convert(Task<HttpResponseMessage> request) {
-            HasServerErrors = false;
+            hasServerErrors = false;
             ErrorMessages.Clear();
             await ExecuteRequest(request);
 
@@ -46,8 +46,8 @@ namespace Hunted_Mobile.Service {
 
                 ResponseMessage = await request;
             }
-            catch(Exception e) {
-                HasServerErrors = true;
+            catch(Exception) {
+                hasServerErrors = true;
             }
         }
 
@@ -55,8 +55,8 @@ namespace Hunted_Mobile.Service {
             try {
                 ResponseContent = await ResponseMessage.Content.ReadAsStringAsync();
             }
-            catch(Exception e) {
-                HasServerErrors = true;
+            catch(Exception) {
+                hasServerErrors = true;
             }
         }
 
@@ -68,8 +68,8 @@ namespace Hunted_Mobile.Service {
                 if(!HasMultipleResults || HasMultipleResults && !IsSuccessful)
                     Item = (JObject) JsonConvert.DeserializeObject(ResponseContent);
             }
-            catch(Exception e) {
-                HasServerErrors = true;
+            catch(Exception) {
+                hasServerErrors = true;
             }
         }
 
@@ -83,8 +83,8 @@ namespace Hunted_Mobile.Service {
                     }
                 }
             }
-            catch(Exception e) {
-                HasServerErrors = true;
+            catch(Exception) {
+                hasServerErrors = true;
             }
         }
 
