@@ -35,7 +35,9 @@ namespace Hunted_Mobile.Repository {
                         }
                     });
                 }
-                catch { }
+                catch(Exception e) {
+                    Console.WriteLine(e.ToString());
+                }
             }
 
             return output;
