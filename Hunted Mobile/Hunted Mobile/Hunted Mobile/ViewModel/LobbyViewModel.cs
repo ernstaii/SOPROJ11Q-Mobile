@@ -61,10 +61,9 @@ namespace Hunted_Mobile.ViewModel {
             _page = page;
             _currentUser = currentUser;
             _gameModel.Id = _currentUser.InviteKey.GameId;
-
             _webSocketService = new WebSocketService(_gameModel.Id);
-            Task.Run(async () => await StartSocket());
 
+            Task.Run(async () => await StartSocket());
             Task.Run(async () => await LoadUsers());
         }
 
@@ -102,12 +101,7 @@ namespace Hunted_Mobile.ViewModel {
 
         public async Task LoadUsers() {
             IsLoading = true;
-            Users.Clear();
-            foreach(User user in await _userRepository.GetAll(GameModel.Id, _inviteKeyRepository)) {
-                if(user is Player) {
-                    Users.Add((Player) user);
-                }
-            }
+            Users = await _userRepository.GetAll(GameModel.Id);
             IsLoading = false;
         }
     }

@@ -11,64 +11,65 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
     public class UserRepository {
-        public async Task<User> Create(InviteKey inviteKey, string username) {
+        public async Task<Player> Create(Player player) {
             var response = new HttpClientResponse();
             await response.Convert(HttpClientRequestService.Create("users", new {
-                username = username,
-                invite_key = inviteKey.Value,
+                username = player.UserName,
+                invite_key = player.InviteKey.Value,
             }));
 
             var responseLoc = response.GetStringValue("location");
 
-            User user = new User(
-                response.GetNumberValue("id"),
-                username,
-                inviteKey
-            ) {
+            Type t = typeof(Thief);
+
+            Player newUser = new Player() {
+                Id = response.GetNumberValue("id"),
+                InviteKey = player.InviteKey,
+                UserName = player.UserName,
                 ErrorMessages = response.ErrorMessages,
                 Location = string.IsNullOrWhiteSpace(responseLoc) ? null : new Location(responseLoc)
             };
+            newUser.InviteKey.UserId = newUser.Id;
 
-            inviteKey.UserId = user.Id;
-
-            if(inviteKey?.Role == "thief") {
-                return new Thief(user);
-            }
-            else if(inviteKey?.Role == "police") {
-                return new Police(user);
-            }
-            else return user;
+            if(newUser.InviteKey.Role == "thief")
+                return new Thief(newUser);
+            else if(newUser.InviteKey.Role == "police")
+                return new Police(newUser);
+            else
+                return newUser;
         }
 
         // Get all users that are linked to a game
-        public async Task<List<User>> GetAll(int gameId, InviteKeyRepository inviteKeyRepository) {
+        public async Task<List<Player>> GetAll(int gameId) {
             var usersResponse = new HttpClientResponse() {
                 HasMultipleResults = true,
             };
 
             await usersResponse.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users-with-role"));
 
-            var inviteKeys = await inviteKeyRepository.GetAll(gameId);
-
-            var result = new List<User>();
+            var result = new List<Player>();
 
             // Looping through the result
             foreach(JObject item in usersResponse.Items) {
                 try {
+                    string role = item.GetValue("role")?.ToString();
                     int userId = (int) item.GetValue("id");
 
-                    InviteKey inviteKey = inviteKeys.Find((key) => { return key.UserId == userId; });
+                    Player user = new Player() {
+                        Id = userId,
+                        UserName = item.GetValue("username")?.ToString(),
+                        InviteKey = new InviteKey() {
+                            Role = role
+                        },
+                        Location = new Location(item.GetValue("location")?.ToString()),
+                    };
 
-                    User user = new User(userId, item.GetValue("username")?.ToString(), inviteKey);
-                    user.Location = new Location(item.GetValue("location")?.ToString());
-
-                    if(inviteKey?.Role == "thief") {
+                    if(role == "thief")
                         result.Add(new Thief(user));
-                    }
-                    else if(inviteKey?.Role == "police") {
+                    else if(role == "police")
                         result.Add(new Police(user));
-                    }
-                    else result.Add(user);
+                    else
+                        result.Add(user);
                 }
                 catch(Exception ex) {
                     Console.WriteLine(ex.ToString());

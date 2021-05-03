@@ -9,26 +9,26 @@ using System.Linq;
 
 namespace Hunted_Mobile.Model {
     public class Map {
-        private List<User> _users = new List<User>();
+        private List<Player> _users = new List<Player>();
 
         private List<Loot> _loot = new List<Loot>();
-        public User PlayingUser { get; set; }
+        public Player PlayingUser { get; set; }
 
         public Boundary GameBoundary { get; set; }
 
         public Map() { }
 
-        public void AddUser(User user) {
+        public void AddUser(Player user) {
             _users.Add(user);
         }
-        public void RemoveUser(User user) {
+        public void RemoveUser(Player user) {
             _users.Remove(user);
         }
-        public IEnumerable<User> GetUsers() {
+        public IEnumerable<Player> GetUsers() {
             return _users.AsReadOnly();
         }
-        public void SetUsers(IEnumerable<User> users) {
-            _users = new List<User>(users);
+        public void SetUsers(IEnumerable<Player> users) {
+            _users = new List<Player>(users);
         }
 
         public void AddLoot(Loot loot) {
