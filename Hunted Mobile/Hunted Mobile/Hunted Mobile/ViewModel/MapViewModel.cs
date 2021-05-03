@@ -22,6 +22,7 @@ using System.Windows.Input;
 using Xamarin.Forms;
 using System.Timers;
 using Newtonsoft.Json.Linq;
+using Hunted_Mobile.Model.Resource;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -37,6 +38,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly GameRepository _gameRepository;
         private readonly InviteKeyRepository _inviteKeyRepository;
         private readonly BorderMarkerRepository _borderMarkerRepository;
+        private readonly ResourceRepository _resourceRepository;
         private readonly GpsService _gpsService;
         private Timer _intervalUpdateTimer;
         private Timer _lootTimer;
@@ -122,6 +124,7 @@ namespace Hunted_Mobile.ViewModel {
         public bool IsFarFromSelectedLoot => !IsCloseToSelectedLoot;
         public bool VisibleOverlay => !IsEnabled;
         public bool Initialized { get; private set; }
+        public Resource ChatIcon { get; private set; }
 
         const string PAUSE_TITLE = "Gepauzeerd",
             END_TITLE = "Het spel is afgelopen!",
@@ -147,7 +150,7 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository, InviteKeyRepository inviteKeyRepository, BorderMarkerRepository borderMarkerRepository) {
+        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository, InviteKeyRepository inviteKeyRepository, BorderMarkerRepository borderMarkerRepository, ResourceRepository resourceRepository) {
             _mapModel = mapModel;
             _gameModel = gameModel;
             _gpsService = gpsService;
@@ -157,6 +160,10 @@ namespace Hunted_Mobile.ViewModel {
             _gameRepository = gameRepository;
             _inviteKeyRepository = inviteKeyRepository;
             _borderMarkerRepository = borderMarkerRepository;
+            _resourceRepository = resourceRepository;
+
+            ChatIcon = _resourceRepository.GetImage("chat.png");
+            OnPropertyChanged(nameof(ChatIcon));
         }
 
         private async Task PollLoot() {
@@ -447,6 +454,8 @@ namespace Hunted_Mobile.ViewModel {
                         Color = Xamarin.Forms.Color.Black,
                         Position = new Mapsui.UI.Forms.Position(user.Location.Latitude, user.Location.Longitude),
                         Scale = 0.666f,
+                        Icon = ChatIcon.Data,
+                        Type = PinType.Icon,
                     });
                 }
             }

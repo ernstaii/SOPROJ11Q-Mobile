@@ -11,11 +11,12 @@
                 VerticalOptions="FillAndExpand"
                 HorizontalOptions="Fill"
                 BackgroundColor="Gray" />
-                <Button Text="Messages"
-                    CornerRadius="30"
-                    Margin="10, 10"
-                    HeightRequest="20"
-                    Command="{Binding ButtonSelectedCommand}"/>
+
+                <ImageButton Source="{Binding ChatIcon.AbsolutePath}"
+                            CornerRadius="30"
+                            Margin="10, 10"
+                            HeightRequest="20"
+                            Command="{Binding ButtonSelectedCommand}"/>
             </StackLayout>
             
             <!-- Overlay -->
