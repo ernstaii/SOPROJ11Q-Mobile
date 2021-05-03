@@ -43,12 +43,14 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private InviteKeyRepository _inviteKeyRepository = new InviteKeyRepository();
+        private GameRepository _gameRepository;
         private MainPage _page;
 
         public bool IsValid { get; set; }
 
         public MainPageViewModel(MainPage page) {
             _page = page;
+            _gameRepository = new GameRepository();
         }
 
         /// <summary>
@@ -81,8 +83,10 @@ namespace Hunted_Mobile.ViewModel {
             SubmitButtonIsEnable = false;
             await GetAll();
 
+            Game toBeJoined = await _gameRepository.GetGame(InviteKeyModel.GameId);
+
             // Navigate when InviteKey is valid
-            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page) && !IsOverlayVisible) { 
+            if((IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page) && !IsOverlayVisible) || toBeJoined.Status == "on-going") { 
                 await NavigateToEnterUsernamePage();
             }
 
