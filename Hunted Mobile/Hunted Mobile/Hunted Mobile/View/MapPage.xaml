@@ -89,7 +89,7 @@
                     BorderColor="LightGray"
                     TextColor="RoyalBlue"
                     AbsoluteLayout.LayoutFlags="PositionProportional"  
-                    AbsoluteLayout.LayoutBounds=".5,0.97,60,60" />
+                    AbsoluteLayout.LayoutBounds=".5,0.98,60,60" />
 
             <!-- The Main Map menu -->
             <Frame CornerRadius="10" OutlineColor="Black" BackgroundColor="White" IsVisible="{Binding OpenMainMapMenu}" AbsoluteLayout.LayoutBounds="0.5, 1, 1, 260" AbsoluteLayout.LayoutFlags="WidthProportional,PositionProportional" Padding="15">
