@@ -12,22 +12,20 @@ using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class MessageViewModel : BaseViewModel {
-        private Messages _page;
         public ObservableCollection<GameMessage> ChatMessages { get; set; } = new ObservableCollection<GameMessage>();
-        private CollectionView _collectionView { get; set; }
+        public CollectionView CollectionView { get; set; }
 
-        public MessageViewModel(Messages page, int gameId, CollectionView collection) {
-            _page = page;
-            _collectionView = collection;
+        public MessageViewModel(int gameId, CollectionView collection) {
+            CollectionView = collection;
 
             WebSocketService socket = new WebSocketService(gameId);
             AddMessage("Het spel is begonnen!");
-            socket.PauseGame += (data) => AddMessage((String)data.GetValue("message"));
+            socket.PauseGame += (data) => AddMessage((String) data.GetValue("message"));
             socket.ResumeGame += () => AddMessage("Het spel wordt hervat!");
-            socket.EndGame += (data) => AddMessage((String)data.GetValue("message"));
+            socket.EndGame += (data) => AddMessage((String) data.GetValue("message"));
 
             if(!WebSocketService.Connected) {
-                Task.Run(async() => await socket.Connect());
+                Task.Run(async () => await socket.Connect());
             }
         }
 
@@ -39,7 +37,7 @@ namespace Hunted_Mobile.ViewModel {
             });
 
             // Scroll to top of CollectionView, because otherwise new items are not shown
-            _collectionView.ScrollTo(0, position: ScrollToPosition.Start);
+            CollectionView.ScrollTo(0, position: ScrollToPosition.Start);
         }
     }
 }
