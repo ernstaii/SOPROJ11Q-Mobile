@@ -211,14 +211,21 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public void SetMapView(MapView mapView) {
-            if(mapView != null) {
-                bool initializedBefore = this.mapView != null;
-                this.mapView = mapView;
+            bool initializedBefore = this.mapView != null;
+            this.mapView = mapView;
+            DisableDefaultMapViewOptions();
 
-                if(!initializedBefore) {
-                    InitializeMap();
-                }
+            if(!initializedBefore) {
+                InitializeMap();
             }
+        }
+
+
+        // In the Mockups, these options are not visible, so this method makes sure that the options are hidden
+        private void DisableDefaultMapViewOptions() {
+            mapView.IsZoomButtonVisible = false;
+            mapView.IsNorthingButtonVisible = false;
+            mapView.IsMyLocationButtonVisible = false;
         }
 
         private void InitializeMap() {
@@ -335,7 +342,6 @@ namespace Hunted_Mobile.ViewModel {
         private void CenterMapOnLocation(Location center, double zoomResolution) {
             Mapsui.Geometries.Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
             mapView.Navigator.CenterOn(centerPoint);
-
             mapView.Navigator.NavigateTo(centerPoint, zoomResolution);
         }
 
