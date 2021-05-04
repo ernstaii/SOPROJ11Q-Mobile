@@ -85,6 +85,14 @@ namespace Hunted_Mobile.ViewModel {
             _messagesView = new View.Messages(_gameModel.Id);
             _lootRepository = lootRepository;
             _userRepository = userRepository;
+
+            if(_gameModel.Status == "paused") {
+                PauseGame(null);
+            }
+
+            if(_gameModel.Status == "finished") {
+                EndGame(null);
+            }
         }
 
         private async Task PollLoot() {
