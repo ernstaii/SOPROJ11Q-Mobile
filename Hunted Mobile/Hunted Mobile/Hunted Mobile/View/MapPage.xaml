@@ -91,6 +91,7 @@
 
             <!-- Button for opening the Main Map Menu -->
             <Button Text="X"
+                    IsVisible="{Binding MainMapMenuButtonVisible}"
                     Command="{Binding OpenMainMapMenuCommand}"
                     FontSize="25"
                     CornerRadius="30" 

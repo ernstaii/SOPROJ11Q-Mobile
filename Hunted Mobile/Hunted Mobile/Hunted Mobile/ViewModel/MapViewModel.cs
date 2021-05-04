@@ -47,6 +47,7 @@ namespace Hunted_Mobile.ViewModel {
         private bool gameHasEnded = false;
         private bool isHandlingLoot = false;
         private bool openMainMapMenu = false;
+        private bool mainMapMenuButtonVisible = false;
         private bool hasFinishedHandlingLoot = false;
 
         /// <summary>
@@ -77,10 +78,14 @@ namespace Hunted_Mobile.ViewModel {
         public bool OpenMainMapMenu {
             get => openMainMapMenu;
             set {
+                mainMapMenuButtonVisible = !value;
                 openMainMapMenu = value;
+                OnPropertyChanged("MainMapMenuButtonVisible");
                 OnPropertyChanged("OpenMainMapMenu");
             }
         }
+
+        public bool MainMapMenuButtonVisible => mainMapMenuButtonVisible;
 
         public Loot SelectedLoot {
             get => selectedLoot;
