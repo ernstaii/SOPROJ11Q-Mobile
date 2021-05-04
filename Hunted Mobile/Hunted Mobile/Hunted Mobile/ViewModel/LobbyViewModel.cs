@@ -4,6 +4,8 @@ using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
 using Hunted_Mobile.View;
 
+using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -76,7 +78,7 @@ namespace Hunted_Mobile.ViewModel {
             webSocketService.StartGame += StartGame;
         }
 
-        private async void StartGame() {
+        private async void StartGame(JObject data) {
             GameModel = await gameRepository.GetGame(gameModel.Id);
             NavigateToMapPage();
         }
