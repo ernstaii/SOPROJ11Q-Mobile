@@ -50,6 +50,7 @@ namespace Hunted_Mobile.ViewModel {
         private Timer intervalUpdateTimer;
         private Timer lootTimer;
         private Pin playerPin;
+        private Resource chatIcon;
         private bool isEnabled = true;
         private bool gameHasEnded = false;
         private bool isHandlingLoot = false;
@@ -128,7 +129,13 @@ namespace Hunted_Mobile.ViewModel {
         public bool IsFarFromSelectedLoot => !IsCloseToSelectedLoot;
         public bool VisibleOverlay => !IsEnabled;
         public bool Initialized { get; private set; }
-        public Resource ChatIcon { get; private set; }
+        public Resource ChatIcon {
+            get => chatIcon;
+            private set {
+                chatIcon = value;
+                OnPropertyChanged(nameof(ChatIcon));
+            }
+        }
 
         public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
 
@@ -160,7 +167,6 @@ namespace Hunted_Mobile.ViewModel {
             this.resourceRepository = resourceRepository;
 
             ChatIcon = resourceRepository.GetImage("chat.png");
-            OnPropertyChanged(nameof(ChatIcon));
         }
 
         private void HandlePinClicked(object sender, PinClickedEventArgs args) {
