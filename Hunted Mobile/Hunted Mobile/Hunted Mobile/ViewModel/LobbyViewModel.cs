@@ -78,7 +78,7 @@ namespace Hunted_Mobile.ViewModel {
             webSocketService.StartGame += StartGame;
         }
 
-        private async void StartGame(JObject data) {
+        private async void StartGame() {
             GameModel = await gameRepository.GetGame(gameModel.Id);
             NavigateToMapPage();
         }
