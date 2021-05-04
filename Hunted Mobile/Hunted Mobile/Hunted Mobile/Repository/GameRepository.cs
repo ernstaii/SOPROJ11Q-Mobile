@@ -13,17 +13,15 @@ namespace Hunted_Mobile.Repository {
             HttpClientResponse response = new HttpClientResponse();
             await response.Convert(HttpClientRequestService.Get($"games/{gameId}"));
 
-            string[] location = response.Item.GetValue("police_station_location").ToString().Split(',');
             return new Game() {
                 Id = response.GetNumberValue("id"),
                 Duration = response.GetNumberValue("duration"),
                 Interval = response.GetNumberValue("interval"),
                 TimeLeft = response.GetNumberValue("time_left"),
                 Status = response.GetStringValue("status"),
-                PoliceStationLocation = new Location() {
-                    Latitude = double.Parse(location[0]),
-                    Longitude = double.Parse(location[1])
-                },
+                PoliceStationLocation = new Location(
+                    response.GetStringValue("police_station_location")
+                )
             };
         }
     }
