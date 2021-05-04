@@ -10,9 +10,9 @@ using Xamarin.Forms.Xaml;
 namespace Hunted_Mobile.View {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Lobby : ContentPage {
-        public Lobby(User userModel) {
+        public Lobby(User userModel, bool hasStarted) {
             InitializeComponent();
-            BindingContext = new LobbyViewModel(this, userModel);
+            BindingContext = new LobbyViewModel(this, userModel, hasStarted);
         }
     }
 }

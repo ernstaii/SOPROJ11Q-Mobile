@@ -4,6 +4,7 @@ using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
 using Hunted_Mobile.View;
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -14,6 +15,7 @@ namespace Hunted_Mobile.ViewModel {
     public class EnterUsernameViewModel : BaseViewModel {
         private User _userModel { get; set; }
         private bool _isloading = false;
+        private bool _hasStarted;
         private bool _creatingUserSucceeded { get; set; }
         private UserRepository _userRepository = new UserRepository();
         private EnterUsername _page;
@@ -36,11 +38,12 @@ namespace Hunted_Mobile.ViewModel {
         }
 
 
-        public EnterUsernameViewModel(EnterUsername page, InviteKey key) {
+        public EnterUsernameViewModel(EnterUsername page, InviteKey key, bool hasStarted) {
             _page = page;
             _userModel = new User() {
                 InviteKey = key,
             };
+            _hasStarted = hasStarted;
         }
 
         /// <summary>
@@ -65,7 +68,7 @@ namespace Hunted_Mobile.ViewModel {
                 var Navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
 
                 var previousPage = Navigation.NavigationStack.LastOrDefault();
-                await Navigation.PushAsync(new Lobby(UserModel), true);
+                await Navigation.PushAsync(new Lobby(UserModel, _hasStarted), true);
                 Navigation.RemovePage(previousPage);
             }
 
