@@ -56,7 +56,7 @@ namespace Hunted_Mobile.ViewModel {
             get => new ObservableCollection<User>(Users.Where(user => user.Role == "police").ToList());
         }
 
-        public LobbyViewModel(Lobby page, User currentUser, bool hasStarted) {
+        public LobbyViewModel(Lobby page, User currentUser, string gameStatus) {
             _page = page;
             _currentUser = currentUser;
             _gameModel.Id = _currentUser.InviteKey.GameId;
@@ -66,7 +66,7 @@ namespace Hunted_Mobile.ViewModel {
 
             Task.Run(async () => await LoadUsers());
 
-            if(hasStarted) {
+            if(gameStatus == "on-going" || gameStatus =="paused" || gameStatus == "finished") {
                 StartGame();
             }
         }

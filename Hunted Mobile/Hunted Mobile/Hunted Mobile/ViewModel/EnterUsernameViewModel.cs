@@ -15,7 +15,7 @@ namespace Hunted_Mobile.ViewModel {
     public class EnterUsernameViewModel : BaseViewModel {
         private User _userModel { get; set; }
         private bool _isloading = false;
-        private bool _hasStarted;
+        private string _gameStatus;
         private bool _creatingUserSucceeded { get; set; }
         private UserRepository _userRepository = new UserRepository();
         private EnterUsername _page;
@@ -38,12 +38,12 @@ namespace Hunted_Mobile.ViewModel {
         }
 
 
-        public EnterUsernameViewModel(EnterUsername page, InviteKey key, bool hasStarted) {
+        public EnterUsernameViewModel(EnterUsername page, InviteKey key, string gameStatus) {
             _page = page;
             _userModel = new User() {
                 InviteKey = key,
             };
-            _hasStarted = hasStarted;
+            _gameStatus = gameStatus;
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Hunted_Mobile.ViewModel {
                 var Navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
 
                 var previousPage = Navigation.NavigationStack.LastOrDefault();
-                await Navigation.PushAsync(new Lobby(UserModel, _hasStarted), true);
+                await Navigation.PushAsync(new Lobby(UserModel, _gameStatus), true);
                 Navigation.RemovePage(previousPage);
             }
 

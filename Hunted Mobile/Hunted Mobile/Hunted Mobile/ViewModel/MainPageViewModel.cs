@@ -86,8 +86,8 @@ namespace Hunted_Mobile.ViewModel {
             Game toBeJoined = await _gameRepository.GetGame(InviteKeyModel.GameId);
 
             // Navigate when InviteKey is valid
-            if((IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page) && !IsOverlayVisible) || toBeJoined.Status == "on-going") { 
-                await NavigateToEnterUsernamePage(true);
+            if((IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page) && !IsOverlayVisible) || toBeJoined.Status == "on-going" || toBeJoined.Status == "paused" || toBeJoined.Status == "finished") { 
+                await NavigateToEnterUsernamePage(toBeJoined.Status);
             }
 
             SubmitButtonIsEnable = true;
@@ -111,13 +111,13 @@ namespace Hunted_Mobile.ViewModel {
             if(SelectedPreferenceGame != null) {
                 InviteKeyModel = SelectedPreferenceGame;
 
-                await NavigateToEnterUsernamePage(false);
+                await NavigateToEnterUsernamePage(null);
                 IsOverlayVisible = false;
             }
         });
 
-        public async Task NavigateToEnterUsernamePage(bool hasStarted) {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new EnterUsername(InviteKeyModel, hasStarted));
+        public async Task NavigateToEnterUsernamePage(string gameStatus) {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new EnterUsername(InviteKeyModel, gameStatus));
         }
     }
 }
