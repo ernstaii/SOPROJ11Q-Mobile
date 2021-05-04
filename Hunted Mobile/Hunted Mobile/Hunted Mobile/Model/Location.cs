@@ -14,6 +14,7 @@ namespace Hunted_Mobile.Model {
         /// Horizontal map coordinate
         /// </summary>
         public double Latitude { get; set; }
+
         /// <summary>
         /// Vertical map coordinate
         /// </summary>
@@ -34,9 +35,9 @@ namespace Hunted_Mobile.Model {
             }
         }
 
-        public Location(double Latitude, double Longitude) {
-            this.Latitude = Latitude;
-            this.Longitude = Longitude;
+        public Location(double latitude, double longitude) {
+            this.Latitude = latitude;
+            this.Longitude = longitude;
         }
 
         public Location(Mapsui.UI.Forms.Position position) {

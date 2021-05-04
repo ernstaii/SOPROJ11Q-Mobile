@@ -12,33 +12,32 @@ using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class EnterUsernameViewModel : BaseViewModel {
-        private Player _userModel { get; set; }
-        private bool _isloading = false;
-        private bool _creatingUserSucceeded { get; set; }
-        private UserRepository _userRepository = new UserRepository();
-        private EnterUsername _page;
+        private Player userModel;
+        private bool isloading = false;
+        private readonly UserRepository userRepository = new UserRepository();
+        private readonly EnterUsername page;
+
         public bool IsValid { get; set; }
 
         public Player UserModel {
-            get => _userModel;
+            get => userModel;
             set {
-                _userModel = value;
+                userModel = value;
                 OnPropertyChanged("UserModel");
             }
         }
 
         public bool SubmitButtonIsEnable {
-            get => _isloading;
+            get => isloading;
             set {
-                _isloading = value;
+                isloading = value;
                 OnPropertyChanged("SubmitButtonIsEnable");
             }
         }
 
-
         public EnterUsernameViewModel(EnterUsername page, InviteKey key) {
-            _page = page;
-            _userModel = new Player() {
+            this.page = page;
+            userModel = new Player() {
                 InviteKey = key,
             };
         }
@@ -48,8 +47,8 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         /// <returns></returns>
         public async Task CreateUser() {
-            if(IsValid = ValidationHelper.IsFormValid(UserModel, _page)) {
-                UserModel = await _userRepository.Create(UserModel);
+            if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
+                UserModel = await userRepository.Create(UserModel);
             }
         }
 
@@ -61,7 +60,7 @@ namespace Hunted_Mobile.ViewModel {
             await CreateUser();
 
             // Navigate when InviteKey is valid
-            if(IsValid = ValidationHelper.IsFormValid(UserModel, _page)) {
+            if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
                 if(UserModel is Player) {
                     var Navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
 
