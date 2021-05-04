@@ -47,7 +47,7 @@ namespace Hunted_Mobile.ViewModel {
         private bool gameHasEnded = false;
         private bool isHandlingLoot = false;
         private bool openMainMapMenu = false;
-        private bool mainMapMenuButtonVisible = false;
+        private bool mainMapMenuButtonVisible = true;
         private bool hasFinishedHandlingLoot = false;
 
         /// <summary>
@@ -137,6 +137,17 @@ namespace Hunted_Mobile.ViewModel {
             this.lootRepository = lootRepository;
             this.userRepository = userRepository;
             this.borderMarkerRepository = borderMarkerRepository;
+        }
+
+        private void HandlePinClicked(object sender, PinClickedEventArgs args) {
+            if($"{args.Pin.Tag}" == LOOT_TAG) {
+                var loot = mapModel.FindLoot(new Location(args.Pin.Position));
+
+                if(loot != null) {
+                    SelectedLoot = loot;
+                    IsHandlingLoot = true;
+                }
+            }
         }
 
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
@@ -482,17 +493,6 @@ namespace Hunted_Mobile.ViewModel {
                         Scale = 0.5f,
                         Tag = LOOT_TAG,
                     });
-                }
-            }
-        }
-
-        private void HandlePinClicked(object sender, PinClickedEventArgs args) {
-            if($"{args.Pin.Tag}" == LOOT_TAG) {
-                var loot = mapModel.FindLoot(new Location(args.Pin.Position));
-
-                if(loot != null) {
-                    SelectedLoot = loot;
-                    IsHandlingLoot = true;
                 }
             }
         }
