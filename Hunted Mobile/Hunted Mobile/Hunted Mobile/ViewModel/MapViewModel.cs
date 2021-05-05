@@ -380,7 +380,7 @@ namespace Hunted_Mobile.ViewModel {
             StopIntervalTimer();
         }
 
-        private void ResumeGame() {
+        private void ResumeGame(JObject data) {
             IsEnabled = true;
 
             StartIntervalTimer();
