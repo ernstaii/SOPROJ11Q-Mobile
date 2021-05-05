@@ -62,6 +62,8 @@ namespace Hunted_Mobile.Repository {
                             Role = role
                         },
                         Location = new Location(item.GetValue("location")?.ToString()),
+                        CaughtAt = item.GetValue("caught_at")?.ToString(),
+                        Status = item.GetValue("status")?.ToString(),
                     };
 
                     if(role == "thief")

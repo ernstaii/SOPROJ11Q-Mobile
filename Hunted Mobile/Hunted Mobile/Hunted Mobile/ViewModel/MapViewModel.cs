@@ -22,10 +22,10 @@ using System.Windows.Input;
 using Xamarin.Forms;
 using System.Timers;
 using Newtonsoft.Json.Linq;
+using Hunted_Mobile.Enum;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
-        // TODO: distance of police should be further
         private const int LOOT_PICKUP_TIME_IN_SECONDES = 5,
             ARREST_THIEF_TIME_IN_SECONDES = 5,
             LOOT_PICKUP_MAX_DISTANCE_IN_METERS = 10,
@@ -52,6 +52,7 @@ namespace Hunted_Mobile.ViewModel {
         private Game gameModel;
         private MapView mapView;
         private readonly View.Messages messagesView;
+        private readonly View.PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
         private Timer lootTimer;
         private Timer arrestingTimer;
@@ -65,6 +66,7 @@ namespace Hunted_Mobile.ViewModel {
         private bool hasFinishedHandlingLoot = false;
         private bool hasFinishedArrestingThief = false;
         private bool isArrestingThief = false;
+        private String selectedMainMenuOption = "";
 
         /// <summary>
         /// This property will disable the touch of the user with the mapView
@@ -161,8 +163,15 @@ namespace Hunted_Mobile.ViewModel {
             set {
                 hasFinishedArrestingThief = value;
                 if(value) IsArrestingThief = false;
-
                 OnPropertyChanged("HasFinishedArrestingThief");
+            }
+        }
+        public string SelectedMainMenuOption {
+            get => selectedMainMenuOption;
+            set {
+                selectedMainMenuOption = value;
+
+                OnPropertyChanged("SelectedMainMenuOption");
             }
         }
 
@@ -205,6 +214,7 @@ namespace Hunted_Mobile.ViewModel {
             this.gameModel = gameModel;
             this.gpsService = gpsService;
             messagesView = new View.Messages(this.gameModel.Id);
+            playersOverview = new View.PlayersOverviewPage(this.gameModel);
             this.lootRepository = lootRepository;
             this.userRepository = userRepository;
             this.gameRepository = gameRepository;
@@ -233,6 +243,11 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
             await webSocketService.Disconnect();
+        });
+
+        public ICommand NavigateToPlayersOverviewCommand => new Xamarin.Forms.Command((e) => {
+            SelectedMainMenuOption = MainMenuOptions.DisplayUsersOption;
+            NavigateToPlayersOverview();
         });
 
         public ICommand PickupLootCommand => new Xamarin.Forms.Command((e) => {
@@ -617,6 +632,10 @@ namespace Hunted_Mobile.ViewModel {
             if(!mapView.Pins.Contains(playerPin)) {
                 mapView.Pins.Add(playerPin);
             }
+        }
+
+        private void NavigateToPlayersOverview() {
+            Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(playersOverview);
         }
 
         /// <summary>
