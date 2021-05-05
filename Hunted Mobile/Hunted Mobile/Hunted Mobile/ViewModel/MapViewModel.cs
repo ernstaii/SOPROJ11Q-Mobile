@@ -51,6 +51,7 @@ namespace Hunted_Mobile.ViewModel {
         private Timer lootTimer;
         private Pin playerPin;
         private Resource chatIcon;
+        private Resource policeBadge;
         private bool isEnabled = true;
         private bool gameHasEnded = false;
         private bool isHandlingLoot = false;
@@ -136,6 +137,13 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged(nameof(ChatIcon));
             }
         }
+        public Resource PoliceBadge {
+            get => policeBadge;
+            private set {
+                policeBadge = value;
+                OnPropertyChanged(nameof(PoliceBadge));
+            }
+        }
 
         public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
 
@@ -167,6 +175,7 @@ namespace Hunted_Mobile.ViewModel {
             this.resourceRepository = resourceRepository;
 
             ChatIcon = resourceRepository.GetImage("chat.png");
+            PoliceBadge = resourceRepository.GetImage("police-badge.png");
         }
 
         private void HandlePinClicked(object sender, PinClickedEventArgs args) {
@@ -527,6 +536,8 @@ namespace Hunted_Mobile.ViewModel {
                         Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
                         Scale = 0.5f,
                         Tag = LOOT_TAG,
+                        Icon = PoliceBadge.Data,
+                        Type = PinType.Icon,
                     });
                 }
             }

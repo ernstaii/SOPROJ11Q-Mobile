@@ -8,28 +8,28 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
     public class ResourceRepository {
-        private static readonly Dictionary<Uri, Resource> _existingResources = new Dictionary<Uri, Resource>();
+        private static readonly Dictionary<Uri, Resource> existingResources = new Dictionary<Uri, Resource>();
 
-        private readonly Uri _baseUri;
-        private readonly Uri _imageUri;
+        private readonly Uri baseUri;
+        private readonly Uri imageUri;
 
         public ResourceRepository() {
-            _baseUri = new Uri(HttpClientRequestService.IPAdress);
-            _imageUri = new Uri(_baseUri, "images/");
+            baseUri = new Uri(HttpClientRequestService.IP_ADDRESS);
+            imageUri = new Uri(baseUri, "images/");
         }
 
         public Resource GetImage(string fileNameAndExtension) {
-            Uri uri = new Uri(_imageUri, fileNameAndExtension);
+            Uri uri = new Uri(imageUri, fileNameAndExtension);
 
-            if(_existingResources.ContainsKey(uri)) {
-                return _existingResources[uri];
+            if(existingResources.ContainsKey(uri)) {
+                return existingResources[uri];
             }
             else {
                 WebClient webClient = new WebClient();
 
                 Resource resource = new LazyLoadedResource(uri, new Task<byte[]>(() => webClient.DownloadData(uri)));
 
-                _existingResources.Add(uri, resource);
+                existingResources.Add(uri, resource);
 
                 return resource;
             }

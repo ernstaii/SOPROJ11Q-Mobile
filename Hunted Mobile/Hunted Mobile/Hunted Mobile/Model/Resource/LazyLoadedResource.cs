@@ -7,26 +7,26 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Model.Resource {
     class LazyLoadedResource : Resource {
-        private readonly Uri _uri;
-        private byte[] _data;
-        private readonly Task<byte[]> _dataGetter;
+        private readonly Uri uri;
+        private byte[] data;
+        private readonly Task<byte[]> dataGetter;
 
-        public string AbsolutePath => _uri.AbsoluteUri;
+        public string AbsolutePath => uri.AbsoluteUri;
 
         public byte[] Data {
             get {
-                if(_dataGetter.Status == TaskStatus.Created) {
-                    _dataGetter.Start();
-                    _data = _dataGetter.Result;
-                    return _data;
+                if(dataGetter.Status == TaskStatus.Created) {
+                    dataGetter.Start();
+                    data = dataGetter.Result;
+                    return data;
                 }
-                else return _data;
+                else return data;
             }
         }
 
         public LazyLoadedResource(Uri uriToResource, Task<byte[]> dataGetter) {
-            _uri = uriToResource;
-            _dataGetter = dataGetter;
+            uri = uriToResource;
+            this.dataGetter = dataGetter;
         }
     }
 }
