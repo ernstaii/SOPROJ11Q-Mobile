@@ -51,7 +51,8 @@ namespace Hunted_Mobile.ViewModel {
         private Timer lootTimer;
         private Pin playerPin;
         private Resource chatIcon;
-        private Resource policeBadge;
+        private Resource policeBadgeIcon;
+        private Resource moneyBagIcon;
         private bool isEnabled = true;
         private bool gameHasEnded = false;
         private bool isHandlingLoot = false;
@@ -137,13 +138,6 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged(nameof(ChatIcon));
             }
         }
-        public Resource PoliceBadge {
-            get => policeBadge;
-            private set {
-                policeBadge = value;
-                OnPropertyChanged(nameof(PoliceBadge));
-            }
-        }
 
         public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
 
@@ -174,8 +168,9 @@ namespace Hunted_Mobile.ViewModel {
             this.borderMarkerRepository = borderMarkerRepository;
             this.resourceRepository = resourceRepository;
 
-            ChatIcon = resourceRepository.GetImage("chat.png");
-            PoliceBadge = resourceRepository.GetImage("police-badge.png");
+            ChatIcon = resourceRepository.GetGuiImage("chat.png");
+            policeBadgeIcon = resourceRepository.GetMapImage("police-badge.png");
+            moneyBagIcon = resourceRepository.GetMapImage("money-bag.png");
         }
 
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
@@ -219,7 +214,6 @@ namespace Hunted_Mobile.ViewModel {
                 lootTimer = null;
             }
         });
-
 
         private async Task PollLoot() {
             var lootList = await lootRepository.GetAll(gameModel.Id);
@@ -516,8 +510,6 @@ namespace Hunted_Mobile.ViewModel {
                         Color = Xamarin.Forms.Color.Black,
                         Position = new Mapsui.UI.Forms.Position(user.Location.Latitude, user.Location.Longitude),
                         Scale = 0.666f,
-                        Icon = ChatIcon.Data,
-                        Type = PinType.Icon,
                     });
                 }
             }
@@ -529,12 +521,17 @@ namespace Hunted_Mobile.ViewModel {
                         Label = loot.Name,
                         Color = Xamarin.Forms.Color.Gold,
                         Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
-                        Scale = 0.5f,
                         Tag = LOOT_TAG,
-                        Icon = PoliceBadge.Data,
-                        Type = PinType.Icon,
                     });
                 }
+            }
+
+            // Police station
+            if(gameModel.PoliceStationLocation != null) {
+                mapView.Pins.Add(new Pin(mapView) {
+                    Position = new Mapsui.UI.Forms.Position(gameModel.PoliceStationLocation.Latitude, gameModel.PoliceStationLocation.Longitude),
+                    Color = Xamarin.Forms.Color.Red
+                });
             }
         }
 
