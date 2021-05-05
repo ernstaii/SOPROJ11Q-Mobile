@@ -91,6 +91,7 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
             SubmitButtonIsEnable = false;
+            InviteKeyModel.ErrorMessages = new System.Collections.Generic.Dictionary<string, string>();
             await GetAll();
 
             // Navigate when InviteKey is valid
