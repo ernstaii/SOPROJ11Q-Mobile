@@ -166,6 +166,7 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged("HasFinishedArrestingThief");
             }
         }
+
         public string SelectedMainMenuOption {
             get => selectedMainMenuOption;
             set {

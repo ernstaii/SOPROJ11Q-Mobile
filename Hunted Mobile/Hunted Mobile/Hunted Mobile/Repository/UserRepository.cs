@@ -55,12 +55,12 @@ namespace Hunted_Mobile.Repository {
                     Player user = new Player() {
                         Id = userId,
                         UserName = item.GetValue("username")?.ToString(),
-                        InviteKey = new InviteKey() {
-                            Role = role
-                        },
                         Location = new Location(item.GetValue("location")?.ToString()),
                         CaughtAt = item.GetValue("caught_at")?.ToString(),
                         Status = item.GetValue("status")?.ToString(),
+                        InviteKey = new InviteKey() {
+                            Role = role
+                        },
                     };
 
                     if(role == "thief") result.Add(new Thief(user));

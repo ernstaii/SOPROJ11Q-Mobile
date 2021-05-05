@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.ViewModel {
     public class PlayersOverviewViewModel : BaseViewModel {
-        private List<User> users = new List<User>();
+        private List<Player> users = new List<Player>();
         private Game gameModel = new Game();
         private readonly UserRepository userRepository = new UserRepository();
 
@@ -21,7 +21,7 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public List<User> Users {
+        public List<Player> Users {
             get => users;
             set {
                 users = value;
@@ -30,12 +30,12 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public ObservableCollection<User> Thiefs {
-            get => new ObservableCollection<User>(Users.Where(user => user.Role == "thief").ToList());
+        public ObservableCollection<Player> Thiefs {
+            get => new ObservableCollection<Player>(Users.Where(user => user is Thief).ToList());
         }
 
-        public ObservableCollection<User> Police {
-            get => new ObservableCollection<User>(Users.Where(user => user.Role == "police").ToList());
+        public ObservableCollection<Player> Police {
+            get => new ObservableCollection<Player>(Users.Where(user => user is Police).ToList());
         }
 
         public PlayersOverviewViewModel(Game game) {
