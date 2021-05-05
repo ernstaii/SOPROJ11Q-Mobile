@@ -43,7 +43,9 @@ namespace Hunted_Mobile.Repository {
                     output.Add(new User((int) item.GetValue("id")) {
                         UserName = item.GetValue("username")?.ToString(),
                         Role = item.GetValue("role")?.ToString() ?? "thief",
-                        Location = new Location(item.GetValue("location")?.ToString())
+                        Location = new Location(item.GetValue("location")?.ToString()),
+                        CaughtAt = item.GetValue("caught_at")?.ToString(),
+                        Status = item.GetValue("status")?.ToString(),
                     });
                     ;
                 }

@@ -7,7 +7,7 @@
         <!-- Main layout -->
         <Grid x:Name="mainLayout">
             <Grid.RowDefinitions>
-                <RowDefinition Height="75" />
+                <RowDefinition Height="110" />
                 <RowDefinition Height="40" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
