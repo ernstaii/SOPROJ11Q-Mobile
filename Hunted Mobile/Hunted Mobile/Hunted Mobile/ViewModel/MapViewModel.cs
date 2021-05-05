@@ -22,6 +22,7 @@ using System.Windows.Input;
 using Xamarin.Forms;
 using System.Timers;
 using Newtonsoft.Json.Linq;
+using Hunted_Mobile.Model.Resource;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -53,6 +54,9 @@ namespace Hunted_Mobile.ViewModel {
         private bool gameHasEnded = false;
         private bool isHandlingLoot = false;
         private bool hasFinishedHandlingLoot = false;
+        private Resource chatIcon;
+        private Resource policeBadgeIcon;
+        private Resource moneyBagIcon;
 
         /// <summary>
         /// This property will disable the touch of the user with the mapView
@@ -511,6 +515,15 @@ namespace Hunted_Mobile.ViewModel {
                         Tag = LOOT_TAG,
                     });
                 }
+            }
+
+            // Police station
+            if(gameModel.PoliceStationLocation != null) {
+                mapView.Pins.Add(new Pin(mapView) {
+                    Label = "Politie station",
+                    Position = new Mapsui.UI.Forms.Position(gameModel.PoliceStationLocation.Latitude, gameModel.PoliceStationLocation.Longitude),
+                    Color = Xamarin.Forms.Color.Red
+                });
             }
         }
 

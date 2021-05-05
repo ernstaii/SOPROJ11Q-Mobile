@@ -12,17 +12,15 @@
                 HorizontalOptions="Fill"
                 BackgroundColor="Gray" />
             </StackLayout>
-
-            <Button Text="X"
-                    Command="{Binding ButtonSelectedCommand}"
-                    FontSize="25"
-                    CornerRadius="30" 
-                    BackgroundColor="White"
-                    BorderWidth="1"
-                    BorderColor="RoyalBlue"
-                    TextColor="RoyalBlue"
-                    AbsoluteLayout.LayoutFlags="PositionProportional"  
-                    AbsoluteLayout.LayoutBounds=".98,0.01,60,60" />
+            
+            <ImageButton Source="{Binding ChatIcon.AbsolutePath}"
+                         Command="{Binding ButtonSelectedCommand}"
+                         CornerRadius="30" 
+                         BackgroundColor="White"
+                         BorderWidth="1"
+                         BorderColor="RoyalBlue"
+                         AbsoluteLayout.LayoutFlags="PositionProportional"  
+                         AbsoluteLayout.LayoutBounds=".98,0.01,60,60" />
 
             <!-- Overlay -->
             <!-- <StackLayout IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5"/> -->
