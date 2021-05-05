@@ -24,5 +24,12 @@ namespace Hunted_Mobile.Repository {
                 )
             };
         }
+
+        public async Task<int> GetTimeLeftOfGame(int gameId) {
+            HttpClientResponse response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Get($"games/{gameId}/time_left"));
+
+            return response.GetNumberValue("time_left");
+        }
     }
 }

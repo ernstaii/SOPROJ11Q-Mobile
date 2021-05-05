@@ -16,7 +16,7 @@ namespace Hunted_Mobile.Model {
         public TimeSpan RemainTime {
             get { return _remainTime; }
 
-            private set {
+            set {
                 _remainTime = value;
                 OnPropertyChanged();
             }

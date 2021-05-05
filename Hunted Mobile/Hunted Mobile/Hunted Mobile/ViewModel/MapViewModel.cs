@@ -52,6 +52,7 @@ namespace Hunted_Mobile.ViewModel {
         private int _hours;
         private int _minutes;
         private int _seconds;
+        private bool initialTimerStart = true;
 
         public int Hours {
             get => _hours;
@@ -193,7 +194,13 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public void StartCountdown() {
-            _countdown.EndDate = gameModel.EndTime;
+            if(initialTimerStart) {
+                _countdown.EndDate = gameModel.EndTime;
+                initialTimerStart = false;
+            }
+            else {
+                _countdown.EndDate = DateTime.Now.AddSeconds(300);
+            }
             _countdown.Start();
 
             _countdown.Ticked += OnCountdownTicked;
@@ -348,12 +355,14 @@ namespace Hunted_Mobile.ViewModel {
 
         private void PauseGame(JObject data) {
             IsEnabled = false;
+            StopCountdown();
 
             StopIntervalTimer();
         }
 
         private void ResumeGame() {
             IsEnabled = true;
+            StartCountdown();
 
             StartIntervalTimer();
         }
