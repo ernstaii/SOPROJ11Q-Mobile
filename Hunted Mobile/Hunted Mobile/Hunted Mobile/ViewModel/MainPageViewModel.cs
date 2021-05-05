@@ -91,6 +91,7 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
             SubmitButtonIsEnable = false;
+
             await GetInviteKey();
 
             // Navigate when InviteKey is valid

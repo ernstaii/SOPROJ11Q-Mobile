@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:mapsui="clr-namespace:Mapsui.UI.Forms;assembly=Mapsui.UI.Forms"
+             xmlns:mapsui="clr-namespace:Mapsui.UI.Forms;assembly=Mapsui.UI.Forms" 
+             xmlns:local="clr-namespace:Xamarin.Forms.BehaviorsPack;assembly=Xamarin.Forms.BehaviorsPack"
              x:Class="Hunted_Mobile.MapPage">
     <ContentPage.Content>
         <AbsoluteLayout HorizontalOptions="FillAndExpand">
@@ -39,7 +40,15 @@
 
                     <BoxView VerticalOptions="FillAndExpand" />
 
-                    <Label Text="Houdt de knop ingedrukt om de buit op te pakken."
+                    <Label Text="Houdt de knop 5 secondes ingedrukt om de buit op te pakken."
+                           IsVisible="{Binding IsCloseToSelectedLoot}"
+                           Margin="0,0,0,15"
+                           HorizontalTextAlignment="Center" 
+                           TextColor="Black" 
+                           FontSize="16"/>
+                    
+                    <Label Text="Je bent te ver weg om deze buit op te pakken."
+                           IsVisible="{Binding IsFarFromSelectedLoot}"
                            Margin="0,0,0,15"
                            HorizontalTextAlignment="Center" 
                            TextColor="Black" 
@@ -48,10 +57,16 @@
                     <BoxView VerticalOptions="FillAndExpand" />
 
                     <Button Text="Oppakken"
+                            IsVisible="{Binding IsCloseToSelectedLoot}"
                             BackgroundColor="Green"
                             TextColor="White"
-                            CornerRadius="30" 
-                            Command="{Binding PickupLootCommand}"/>
+                            CornerRadius="30">
+                        <Button.Behaviors>
+                            <local:EventToCommandBehavior EventName="Pressed" Command="{Binding Button_PressedPickupLoot}"/>
+                            <local:EventToCommandBehavior EventName="Released" Command="{Binding Button_ReleasedPickupLoot}"/>
+                        </Button.Behaviors>
+                    </Button>
+                    
                     <Button Text="Terug"
                             CornerRadius="30" 
                             Command="{Binding CancelPickUpLootCommand}"
@@ -175,6 +190,15 @@
                             Margin="0, 20"/>
                 </StackLayout>
             </Frame>
+
+            <Label Text="Score:"
+                   FontSize="40"
+                   Margin="10"
+                   BackgroundColor="White" />
+            <Label Text="{Binding PlayingUserScore}"
+                   FontSize="40"
+                   Margin="130,10,10,10"
+                   BackgroundColor="White" />
         </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>
