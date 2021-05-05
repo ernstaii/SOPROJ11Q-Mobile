@@ -11,17 +11,22 @@
                 VerticalOptions="FillAndExpand"
                 HorizontalOptions="Fill"
                 BackgroundColor="Gray" />
-
-                <ImageButton Source="{Binding ChatIcon.AbsolutePath}"
-                            CornerRadius="30"
-                            Margin="10, 10"
-                            HeightRequest="20"
-                            Command="{Binding ButtonSelectedCommand}"/>
             </StackLayout>
-            
+
+            <ImageButton Source="{Binding ChatIcon.AbsolutePath}"
+                         Command="{Binding ButtonSelectedCommand}"
+                         CornerRadius="30" 
+                         BackgroundColor="White"
+                         BorderWidth="1"
+                         BorderColor="RoyalBlue"
+                         AbsoluteLayout.LayoutFlags="PositionProportional"  
+                         AbsoluteLayout.LayoutBounds=".98,0.01,60,60" />
+
             <!-- Overlay -->
             <!-- <StackLayout IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5"/> -->
-            <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding IsHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+            
+            <!-- Screen for picking up loot -->
+            <Frame CornerRadius="10" OutlineColor="Black" Margin="25,80" BackgroundColor="White" IsVisible="{Binding IsHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
                 <StackLayout>
                     <Label Text="{Binding SelectedLoot.Name}"
                            Padding="5"
@@ -66,7 +71,9 @@
                             Margin="0, 0, 0, 20"/>
                 </StackLayout>
             </Frame>
-            <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding HasFinishedHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+            
+            <!-- Screen when loot has been succesfully picked up -->
+            <Frame CornerRadius="10" OutlineColor="Black" Margin="25,80" BackgroundColor="White" IsVisible="{Binding HasFinishedHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
                 <StackLayout>
                     <Label Text="{Binding SelectedLoot.Name}"
                            Padding="5"
@@ -94,10 +101,9 @@
                             Margin="0, 20"/>
                 </StackLayout>
             </Frame>
-
-
-            <!-- For round corners, then a frame is neccessary -->
-            <Frame CornerRadius="12" OutlineColor="Black" Margin="40,30" BackgroundColor="White" HasShadow="true" IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+            
+            <!-- Screen when game is paused or has ended -->
+            <Frame CornerRadius="10" OutlineColor="Black" Margin="25,80" BackgroundColor="White" IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
                 <StackLayout>
                     <Label Text="{Binding TitleOverlay}"
                            Padding="5"
@@ -118,9 +124,9 @@
                     <BoxView VerticalOptions="FillAndExpand" />
 
                     <Button Text="Terug naar hoofdscherm"
-                            BackgroundColor="Blue"
-                            TextColor="White"
                             CornerRadius="30" 
+                            BackgroundColor="RoyalBlue"
+                            TextColor="White"
                             IsVisible="{Binding GameHasEnded}"
                             Command="{Binding ExitGameCommand}"
                             Margin="0, 20"/>

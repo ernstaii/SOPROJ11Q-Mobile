@@ -178,17 +178,6 @@ namespace Hunted_Mobile.ViewModel {
             PoliceBadge = resourceRepository.GetImage("police-badge.png");
         }
 
-        private void HandlePinClicked(object sender, PinClickedEventArgs args) {
-            if($"{args.Pin.Tag}" == LOOT_TAG) {
-                var loot = mapModel.FindLoot(new Location(args.Pin.Position));
-
-                if(loot != null) {
-                    SelectedLoot = loot;
-                    IsHandlingLoot = true;
-                }
-            }
-        }
-
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(messagesView);
         });
@@ -273,14 +262,21 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public void SetMapView(MapView mapView) {
-            if(mapView != null) {
-                bool initializedBefore = this.mapView != null;
-                this.mapView = mapView;
+            bool initializedBefore = this.mapView != null;
+            this.mapView = mapView;
+            DisableDefaultMapViewOptions();
 
-                if(!initializedBefore) {
-                    InitializeMap();
-                }
+            if(!initializedBefore) {
+                InitializeMap();
             }
+        }
+
+
+        // In the Mockups, these options are not visible, so this method makes sure that the options are hidden
+        private void DisableDefaultMapViewOptions() {
+            mapView.IsZoomButtonVisible = false;
+            mapView.IsNorthingButtonVisible = false;
+            mapView.IsMyLocationButtonVisible = false;
         }
 
         private void InitializeMap() {
@@ -400,7 +396,6 @@ namespace Hunted_Mobile.ViewModel {
         private void CenterMapOnLocation(Location center, double zoomResolution) {
             Mapsui.Geometries.Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
             mapView.Navigator.CenterOn(centerPoint);
-
             mapView.Navigator.NavigateTo(centerPoint, zoomResolution);
         }
 
@@ -561,6 +556,17 @@ namespace Hunted_Mobile.ViewModel {
                     DisplayOtherPins();
                 }
             });
+        }
+
+        private void HandlePinClicked(object sender, PinClickedEventArgs args) {
+            if($"{args.Pin.Tag}" == LOOT_TAG) {
+                var loot = mapModel.FindLoot(new Location(args.Pin.Position));
+
+                if(loot != null) {
+                    SelectedLoot = loot;
+                    IsHandlingLoot = true;
+                }
+            }
         }
     }
 }
