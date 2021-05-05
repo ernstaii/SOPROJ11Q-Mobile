@@ -31,12 +31,9 @@ namespace Hunted_Mobile.Repository {
             };
             newUser.InviteKey.UserId = newUser.Id;
 
-            if(newUser.InviteKey.Role == "thief")
-                return new Thief(newUser);
-            else if(newUser.InviteKey.Role == "police")
-                return new Police(newUser);
-            else
-                return newUser;
+            if(newUser.InviteKey.Role == "thief") return new Thief(newUser);
+            else if(newUser.InviteKey.Role == "police") return new Police(newUser);
+            else return newUser;
         }
 
         // Get all users that are linked to a game
@@ -66,12 +63,9 @@ namespace Hunted_Mobile.Repository {
                         Status = item.GetValue("status")?.ToString(),
                     };
 
-                    if(role == "thief")
-                        result.Add(new Thief(user));
-                    else if(role == "police")
-                        result.Add(new Police(user));
-                    else
-                        result.Add(user);
+                    if(role == "thief") result.Add(new Thief(user));
+                    else if(role == "police") result.Add(new Police(user));
+                    else result.Add(user);
                 }
                 catch(Exception ex) {
                     Console.WriteLine(ex.ToString());
