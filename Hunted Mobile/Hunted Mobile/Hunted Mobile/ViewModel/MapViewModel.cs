@@ -350,14 +350,11 @@ namespace Hunted_Mobile.ViewModel {
                 gameModel = await gameRepository.GetGame(gameModel.Id);
                 gameModel.PoliceScore += ARREST_THIEF_SCORE;
 
-                await gameRepository.UpdatePoliceScore(gameModel.Id, gameModel.PoliceScore);
-                OnPropertyChanged(nameof(PlayingUserScore));
-
-                // TODO: Update status of player
-
-                // TODO: Poll users when an thief has been caught or released
-                await PollUsers();
-                DisplayOtherPins();
+                bool isCaught = await userRepository.CatchThief(ThiefToBeArrested.Id);
+                if(isCaught) {
+                    await gameRepository.UpdatePoliceScore(gameModel.Id, gameModel.PoliceScore);
+                    OnPropertyChanged(nameof(PlayingUserScore));
+                }
             });
         }
 
@@ -487,7 +484,8 @@ namespace Hunted_Mobile.ViewModel {
                 webSocketService.ResumeGame += ResumeGame;
                 webSocketService.PauseGame += PauseGame;
                 webSocketService.EndGame += EndGame;
-
+                webSocketService.ThiefCaught += ThiefStatusChanged;
+                webSocketService.ThiefReleased += ThiefStatusChanged;
                 webSocketService.IntervalEvent += IntervalOfGame;
             }
             catch(Exception ex) {
@@ -512,6 +510,13 @@ namespace Hunted_Mobile.ViewModel {
             IsEnabled = true;
 
             StartIntervalTimer();
+        }
+
+        private void ThiefStatusChanged(JObject data) {
+            Task.Run(async () => {
+                await PollUsers();
+                DisplayOtherPins();
+            });
         }
 
         /// <summary>
