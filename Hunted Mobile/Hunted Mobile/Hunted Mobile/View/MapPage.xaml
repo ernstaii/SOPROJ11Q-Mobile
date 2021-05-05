@@ -22,6 +22,25 @@
                     TextColor="RoyalBlue"
                     AbsoluteLayout.LayoutFlags="PositionProportional"  
                     AbsoluteLayout.LayoutBounds=".98,0.01,60,60" />
+            <Frame CornerRadius="10" OutlineColor="RoyalBlue" Margin="25,80" BackgroundColor="White" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+                <StackLayout Orientation="Horizontal" 
+                             Spacing="0">
+                    <Label 
+                        Text="{Binding Hours, StringFormat='{0:D2}'}"
+                        FontSize="18"/>
+                    <Label
+                        Text=":"
+                        FontSize="18"/>
+                    <Label
+                        Text="{Binding Minutes, StringFormat='{0:D2}'}"
+                        FontSize="18"/>
+                    <Label
+                        Text=":"/>
+                    <Label
+                        Text="{Binding Seconds, StringFormat='{0:D2}'}"
+                        FontSize="18"/>
+                </StackLayout>
+            </Frame>
 
             <!-- Overlay -->
             <!-- <StackLayout IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5"/> -->

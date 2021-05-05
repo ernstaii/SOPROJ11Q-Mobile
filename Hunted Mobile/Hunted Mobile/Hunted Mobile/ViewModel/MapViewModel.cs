@@ -48,6 +48,26 @@ namespace Hunted_Mobile.ViewModel {
         private bool isHandlingLoot = false;
         private bool hasFinishedHandlingLoot = false;
 
+        private Countdown _countdown;
+        private int _hours;
+        private int _minutes;
+        private int _seconds;
+
+        public int Hours {
+            get => _hours;
+            set => SetProperty(ref _hours, value);
+        }
+
+        public int Minutes {
+            get => _minutes;
+            set => SetProperty(ref _minutes, value);
+        }
+
+        public int Seconds {
+            get => _seconds;
+            set => SetProperty(ref _seconds, value);
+        }
+
         /// <summary>
         /// This property will disable the touch of the user with the mapView
         /// </summary>
@@ -124,7 +144,12 @@ namespace Hunted_Mobile.ViewModel {
             this.lootRepository = lootRepository;
             this.userRepository = userRepository;
             this.borderMarkerRepository = borderMarkerRepository;
+            _countdown = new Countdown();
+            test = DateTime.Now;
+            StartCountdown();
         }
+
+        DateTime test;
 
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(messagesView);
@@ -166,6 +191,35 @@ namespace Hunted_Mobile.ViewModel {
             }
             mapModel.SetUsers(userList);
         }
+
+        public void StartCountdown() {
+            _countdown.EndDate = gameModel.EndTime;
+            _countdown.Start();
+
+            _countdown.Ticked += OnCountdownTicked;
+            _countdown.Completed += OnCountdownCompleted;
+        }
+
+        public void StopCountdown() {
+            _countdown.Ticked -= OnCountdownTicked;
+            _countdown.Completed -= OnCountdownCompleted;
+        }
+
+        void OnCountdownTicked() {
+            Hours = _countdown.RemainTime.Hours;
+            Minutes = _countdown.RemainTime.Minutes;
+            Seconds = _countdown.RemainTime.Seconds;
+
+            var totalSeconds = (gameModel.EndTime - test).TotalSeconds;
+            var remainSeconds = _countdown.RemainTime.TotalSeconds;
+        }
+
+        void OnCountdownCompleted() {
+            Hours = 0;
+            Minutes = 0;
+            Seconds = 0;
+        }
+
 
         private void IntervalOfGame(JObject data) {
             StartIntervalTimer();

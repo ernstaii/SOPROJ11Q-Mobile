@@ -8,7 +8,7 @@ namespace Hunted_Mobile.Model {
         public int Duration { get; set; }
         public string Status { get; set; }
         public int Interval { get; set; }
-        public int TimeLeft { get; set; }
+        public DateTime EndTime { get; set; }
         public Location PoliceStationLocation { get; set; }
     }
 }

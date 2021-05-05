@@ -17,7 +17,7 @@ namespace Hunted_Mobile.Repository {
                 Id = response.GetNumberValue("id"),
                 Duration = response.GetNumberValue("duration"),
                 Interval = response.GetNumberValue("interval"),
-                TimeLeft = response.GetNumberValue("time_left"),
+                EndTime = DateTime.Now.AddSeconds(response.GetNumberValue("time_left")),
                 Status = response.GetStringValue("status"),
                 PoliceStationLocation = new Location(
                     response.GetStringValue("police_station_location")
