@@ -29,7 +29,9 @@ namespace Hunted_Mobile.ViewModel {
         private const int LOOT_PICKUP_TIME_IN_SECONDES = 5,
             ARREST_THIEF_TIME_IN_SECONDES = 5,
             LOOT_PICKUP_MAX_DISTANCE_IN_METERS = 10,
-            POLICE_ARREST_DISTANCE_IN_METERS = 10;
+            POLICE_ARREST_DISTANCE_IN_METERS = 10,
+            PICK_UP_LOOT_SCORE = 50,
+            ARREST_THIEF_SCORE = 200;
 
         const string PAUSE_TITLE = "Gepauzeerd",
             END_TITLE = "Het spel is afgelopen!",
@@ -192,12 +194,7 @@ namespace Hunted_Mobile.ViewModel {
         public int PlayingUserScore {
             get {
                 if(mapModel != null && gameModel != null) {
-                    if(mapModel.PlayingUser is Thief) {
-                        return gameModel.ThievesScore;
-                    }
-                    else if(mapModel.PlayingUser is Police) {
-                        return gameModel.PoliceScore;
-                    }
+                    return mapModel.PlayingUser is Thief ? gameModel.ThievesScore : gameModel.PoliceScore;
                 }
                 return 0;
             }
@@ -311,13 +308,15 @@ namespace Hunted_Mobile.ViewModel {
             HasFinishedHandlingLoot = true;
 
             Task.Run(async () => {
-                Game game = await gameRepository.GetGame(gameModel.Id);
+                // Get latest score of game (in feature this should be replaced with socket event)
+                gameModel = await gameRepository.GetGame(gameModel.Id);
+                gameModel.ThievesScore += PICK_UP_LOOT_SCORE;
 
                 // User should be a thief here since a police can't open the dialog
                 bool deleted = await lootRepository.Delete(SelectedLoot.Id);
                 if(deleted) {
-                    await gameRepository.UpdateThievesScore(game.Id, game.ThievesScore + 50);
-                    gameModel = await gameRepository.GetGame(gameModel.Id);
+                    await gameRepository.UpdateThievesScore(gameModel.Id, gameModel.ThievesScore);
+
                     OnPropertyChanged(nameof(PlayingUserScore));
                     await PollLoot();
                     DisplayOtherPins();
@@ -331,11 +330,15 @@ namespace Hunted_Mobile.ViewModel {
             HasFinishedArrestingThief = true;
 
             Task.Run(async () => {
-                // TODO: Some logic
+                // Get latest score of game (in feature this should be replaced with socket event)
+                gameModel = await gameRepository.GetGame(gameModel.Id);
+                gameModel.PoliceScore += ARREST_THIEF_SCORE;
 
-                // User should be a thief here since a police can't open the dialog
-                /*await PollLoot();
-                DisplayOtherPins();*/
+                await gameRepository.UpdatePoliceScore(gameModel.Id, gameModel.PoliceScore);
+                OnPropertyChanged(nameof(PlayingUserScore));
+
+                await PollUsers();
+                DisplayOtherPins();
             });
         }
 
@@ -629,6 +632,8 @@ namespace Hunted_Mobile.ViewModel {
             //TODO: the null checks here should probably be resolved elsewhere
             // Players
             foreach(var user in mapModel.GetUsers()) {
+
+                // TODO: Check if user has been caught
                 if(user.Location != null && user.UserName != null) {
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = user.UserName,
