@@ -562,16 +562,5 @@ namespace Hunted_Mobile.ViewModel {
                 }
             });
         }
-
-        private void HandlePinClicked(object sender, PinClickedEventArgs args) {
-            if($"{args.Pin.Tag}" == LOOT_TAG) {
-                var loot = mapModel.FindLoot(new Location(args.Pin.Position));
-
-                if(loot != null) {
-                    SelectedLoot = loot;
-                    IsHandlingLoot = true;
-                }
-            }
-        }
     }
 }
