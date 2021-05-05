@@ -353,6 +353,9 @@ namespace Hunted_Mobile.ViewModel {
                 await gameRepository.UpdatePoliceScore(gameModel.Id, gameModel.PoliceScore);
                 OnPropertyChanged(nameof(PlayingUserScore));
 
+                // TODO: Update status of player
+
+                // TODO: Poll users when an thief has been caught or released
                 await PollUsers();
                 DisplayOtherPins();
             });
@@ -652,9 +655,7 @@ namespace Hunted_Mobile.ViewModel {
             //TODO: the null checks here should probably be resolved elsewhere
             // Players
             foreach(var user in mapModel.GetUsers()) {
-
-                // TODO: Check if user has been caught
-                if(user.Location != null && user.UserName != null) {
+                if(user.Location != null && user.UserName != null && !user.IsCaught) {
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = user.UserName,
                         Color = Xamarin.Forms.Color.Black,
