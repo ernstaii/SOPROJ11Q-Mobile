@@ -4,6 +4,7 @@ using Mapsui.Geometries;
 using Mapsui.UI.Forms;
 using Mapsui.UI.Objects;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -49,6 +50,10 @@ namespace Hunted_Mobile.Model {
 
         public Loot FindLoot(Location location) {
             return loot.FirstOrDefault(loot => loot.Location.Equals(location));
+        }
+
+        internal Thief FindThief(Location location) {
+            return users.Select(user => new Thief(user)).FirstOrDefault(user => user.Location.Equals(location));
         }
     }
 }
