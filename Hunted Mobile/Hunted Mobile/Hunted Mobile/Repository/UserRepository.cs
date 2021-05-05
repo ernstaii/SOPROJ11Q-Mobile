@@ -47,7 +47,6 @@ namespace Hunted_Mobile.Repository {
                         CaughtAt = item.GetValue("caught_at")?.ToString(),
                         Status = item.GetValue("status")?.ToString(),
                     });
-                    ;
                 }
                 catch(Exception ex) {
                     Console.WriteLine(ex.ToString());
