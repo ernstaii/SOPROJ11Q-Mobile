@@ -35,6 +35,8 @@ namespace Hunted_Mobile.ViewModel {
             END_DESCRIPTION = "Ga terug naar de spelleider!",
             LOOT_TAG = "loot";
 
+        private readonly Xamarin.Forms.Color policePinColor= Xamarin.Forms.Color.FromRgb(39, 96, 203);
+        private readonly Xamarin.Forms.Color thiefPinColor = Xamarin.Forms.Color.Black;
         private readonly Model.Map mapModel;
         private readonly LootRepository lootRepository;
         private readonly UserRepository userRepository;
@@ -55,8 +57,8 @@ namespace Hunted_Mobile.ViewModel {
         private bool isHandlingLoot = false;
         private bool hasFinishedHandlingLoot = false;
         private Resource chatIcon;
-        private Resource policeBadgeIcon;
-        private Resource moneyBagIcon;
+        private readonly Resource policeBadgeIcon;
+        private readonly Resource moneyBagIcon;
 
         /// <summary>
         /// This property will disable the touch of the user with the mapView
@@ -150,7 +152,15 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository, InviteKeyRepository inviteKeyRepository, BorderMarkerRepository borderMarkerRepository) {
+        public Resource ChatIcon {
+            get => chatIcon;
+            private set {
+                chatIcon = value;
+                OnPropertyChanged(nameof(ChatIcon));
+            }
+        }
+
+        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository, InviteKeyRepository inviteKeyRepository, BorderMarkerRepository borderMarkerRepository, ResourceRepository resourceRepository) {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
             this.gpsService = gpsService;
@@ -160,6 +170,10 @@ namespace Hunted_Mobile.ViewModel {
             this.gameRepository = gameRepository;
             this.inviteKeyRepository = inviteKeyRepository;
             this.borderMarkerRepository = borderMarkerRepository;
+
+            ChatIcon = resourceRepository.GetGuiImage("chat.png");
+            policeBadgeIcon = resourceRepository.GetMapImage("police-badge.png");
+            moneyBagIcon = resourceRepository.GetMapImage("money-bag.png");
         }
 
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
@@ -231,7 +245,13 @@ namespace Hunted_Mobile.ViewModel {
 
                 if(userId != mapModel.PlayingUser.Id) {
                     Location location = new Location((string) user.GetValue("location"));
+                    bool wasThief = mapModel.GetUserById(userId) is Thief;
                     Player newUser = new Player();
+                    if(wasThief) {
+                        newUser = new Thief(newUser);
+                    }
+                    else newUser = new Police(newUser);
+
                     newUser.Id = userId;
                     newUser.UserName = ((string) user.GetValue("username"));
                     newUser.Location = location;
@@ -466,11 +486,16 @@ namespace Hunted_Mobile.ViewModel {
             };
         }
 
+        private Xamarin.Forms.Color GetPlayerPinColor() {
+            var color = mapModel.PlayingUser is Thief ? thiefPinColor : policePinColor;
+            return color.AddLuminosity(0.33);
+        }
+
         private void DisplayPlayerPin() {
             if(playerPin == null) {
                 playerPin = new Pin(mapView) {
                     Label = mapModel.PlayingUser.UserName,
-                    Color = Xamarin.Forms.Color.FromRgb(39, 96, 203)
+                    Color = GetPlayerPinColor()
                 };
             }
 
@@ -497,9 +522,9 @@ namespace Hunted_Mobile.ViewModel {
                 if(user.Location != null && user.UserName != null) {
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = user.UserName,
-                        Color = Xamarin.Forms.Color.Black,
+                        Color = user is Thief ? thiefPinColor : policePinColor,
                         Position = new Mapsui.UI.Forms.Position(user.Location.Latitude, user.Location.Longitude),
-                        Scale = 0.666f,
+                        Scale = 0.75f,
                     });
                 }
             }
@@ -509,10 +534,11 @@ namespace Hunted_Mobile.ViewModel {
                 if(loot.Name != null && loot.Location != null) {
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = loot.Name,
-                        Color = Xamarin.Forms.Color.Gold,
                         Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
-                        Scale = 0.5f,
+                        Scale = 1.0f,
                         Tag = LOOT_TAG,
+                        Icon = moneyBagIcon.Data,
+                        Type = PinType.Icon,
                     });
                 }
             }
@@ -522,7 +548,9 @@ namespace Hunted_Mobile.ViewModel {
                 mapView.Pins.Add(new Pin(mapView) {
                     Label = "Politie station",
                     Position = new Mapsui.UI.Forms.Position(gameModel.PoliceStationLocation.Latitude, gameModel.PoliceStationLocation.Longitude),
-                    Color = Xamarin.Forms.Color.Red
+                    Scale = 1.0f,
+                    Icon = policeBadgeIcon.Data,
+                    Type = PinType.Icon,
                 });
             }
         }
