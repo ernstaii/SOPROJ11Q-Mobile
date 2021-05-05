@@ -75,6 +75,13 @@ namespace Hunted_Mobile.Repository {
             return result;
         }
 
+        public async Task<bool> CatchThief(int userId) {
+            var response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Put($"users/{userId}/catch"));
+
+            return response.IsSuccessful;
+        }
+
         public async Task<bool> Update(int userId, Location location) {
             var response = new HttpClientResponse();
 
