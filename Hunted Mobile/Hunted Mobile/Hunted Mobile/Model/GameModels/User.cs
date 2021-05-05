@@ -14,6 +14,7 @@ namespace Hunted_Mobile.Model.GameModels {
         [MaxLength(50, ErrorMessage = "De gebruikersnam geeft een maximale lengte van 50 karaktes")]
         public string UserName { get; set; }
         public string Role { get; set; }
+        public bool IsCaught { get; set; }
 
         public User(int id) {
             Id = id;

@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Hunted_Mobile.ViewModel"
+             x:Class="Hunted_Mobile.View.PlayersOverviewPage">
+    <AbsoluteLayout>
+        <!-- Main layout -->
+        <Grid x:Name="mainLayout">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="75" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Label Text="SPELERS"
+                   Margin="0, 25" 
+                   HorizontalTextAlignment="Center" 
+                   TextColor="RoyalBlue" 
+                   FontAttributes="Bold"
+                   FontSize="36"/>
+
+            <!-- Layout Team 1 -->
+            <Label Text="Agenten"
+                   Grid.Row="1"
+                   Padding="5" 
+                   HorizontalTextAlignment="Center" 
+                   TextColor="Black" 
+                   FontAttributes="Bold" 
+                   FontSize="20"/>
+            <ListView Grid.Row="2" ItemsSource="{Binding Police}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Padding="10">
+                                <Label Text="{Binding UserName}" HorizontalTextAlignment="Center"/>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <!-- Layout Team 2 -->
+            <Label Text="Boeven" 
+                   Padding="5" 
+                   HorizontalTextAlignment="Center"
+                   TextColor="Black"
+                   FontAttributes="Bold" 
+                   FontSize="20"
+                   Grid.Column="1"
+                   Grid.Row="1"/>
+            <ListView Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Thiefs}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Padding="10">
+                                <Label Text="{Binding UserName}" HorizontalTextAlignment="Center" />
+                                <Label Text="Gevangen" HorizontalTextAlignment="Center" TextColor="Red" IsVisible="{Binding IsCaught}"/>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </AbsoluteLayout>
+</ContentPage>
