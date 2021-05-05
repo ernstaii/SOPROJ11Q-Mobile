@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Hunted_Mobile.Repository {
     public class GameRepository {
         public async Task<Game> GetGame(int gameId) {
-            var response = new HttpClientResponse();
+            HttpClientResponse response = new HttpClientResponse();
             await response.Convert(HttpClientRequestService.Get($"games/{gameId}"));
 
             return new Game() {
@@ -21,6 +21,9 @@ namespace Hunted_Mobile.Repository {
                 Status = response.GetStringValue("status"),
                 ThievesScore = response.GetNumberValue("thieves_score"),
                 PoliceScore = response.GetNumberValue("police_score"),
+                PoliceStationLocation = new Location(
+                    response.GetStringValue("police_station_location")
+                )
             };
         }
 

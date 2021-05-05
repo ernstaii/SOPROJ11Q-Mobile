@@ -11,5 +11,6 @@ namespace Hunted_Mobile.Model {
         public int TimeLeft { get; set; }
         public int ThievesScore { get; set; }
         public int PoliceScore { get; set; }
+        public Location PoliceStationLocation { get; set; }
     }
 }
