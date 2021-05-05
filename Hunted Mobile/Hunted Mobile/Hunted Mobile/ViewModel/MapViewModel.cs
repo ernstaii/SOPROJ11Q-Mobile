@@ -35,7 +35,7 @@ namespace Hunted_Mobile.ViewModel {
             END_DESCRIPTION = "Ga terug naar de spelleider!",
             LOOT_TAG = "loot";
 
-        private readonly Xamarin.Forms.Color policePinColor= Xamarin.Forms.Color.FromRgb(39, 96, 203);
+        private readonly Xamarin.Forms.Color policePinColor = Xamarin.Forms.Color.FromRgb(39, 96, 203);
         private readonly Xamarin.Forms.Color thiefPinColor = Xamarin.Forms.Color.Black;
         private readonly Model.Map mapModel;
         private readonly LootRepository lootRepository;
@@ -486,16 +486,11 @@ namespace Hunted_Mobile.ViewModel {
             };
         }
 
-        private Xamarin.Forms.Color GetPlayerPinColor() {
-            var color = mapModel.PlayingUser is Thief ? thiefPinColor : policePinColor;
-            return color.AddLuminosity(0.33);
-        }
-
         private void DisplayPlayerPin() {
             if(playerPin == null) {
                 playerPin = new Pin(mapView) {
                     Label = mapModel.PlayingUser.UserName,
-                    Color = GetPlayerPinColor()
+                    Color = mapModel.PlayingUser is Thief ? thiefPinColor : policePinColor,
                 };
             }
 
@@ -525,6 +520,7 @@ namespace Hunted_Mobile.ViewModel {
                         Color = user is Thief ? thiefPinColor : policePinColor,
                         Position = new Mapsui.UI.Forms.Position(user.Location.Latitude, user.Location.Longitude),
                         Scale = 0.75f,
+                        Transparency = 0.25f,
                     });
                 }
             }
