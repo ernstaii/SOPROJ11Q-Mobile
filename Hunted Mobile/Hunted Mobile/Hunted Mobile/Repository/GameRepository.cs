@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Hunted_Mobile.Repository {
     public class GameRepository {
         public async Task<Game> GetGame(int gameId) {
-            var response = new HttpClientResponse();
+            HttpClientResponse response = new HttpClientResponse();
             await response.Convert(HttpClientRequestService.Get($"games/{gameId}"));
 
             return new Game() {
@@ -19,6 +19,9 @@ namespace Hunted_Mobile.Repository {
                 Interval = response.GetNumberValue("interval"),
                 TimeLeft = response.GetNumberValue("time_left"),
                 Status = response.GetStringValue("status"),
+                PoliceStationLocation = new Location(
+                    response.GetStringValue("police_station_location")
+                )
             };
         }
     }
