@@ -31,17 +31,15 @@
                    TextColor="Black" 
                    FontAttributes="Bold" 
                    FontSize="20"/>
-            <ListView Grid.Row="2" ItemsSource="{Binding Police}">
-                <ListView.ItemTemplate>
+            <CollectionView Grid.Row="2" ItemsSource="{Binding Police}">
+                <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <ViewCell>
-                            <StackLayout Padding="10">
-                                <Label Text="{Binding UserName}" HorizontalTextAlignment="Center"/>
-                            </StackLayout>
-                        </ViewCell>
+                        <StackLayout Padding="10">
+                            <Label Text="{Binding UserName}" HorizontalTextAlignment="Center"/>
+                        </StackLayout>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
             <!-- Layout Team 2 -->
             <Label Text="Boeven" 
