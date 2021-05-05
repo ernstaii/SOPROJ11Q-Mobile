@@ -1,42 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewModels="clr-namespace:Hunted_Mobile.ViewModel"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodel="clr-namespace:Hunted_Mobile.ViewModel" x:DataType="viewmodel:MessageViewModel"
              x:Class="Hunted_Mobile.View.Messages">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="ALGEMEEN"
-                   Margin="0, 25" 
-                   HorizontalTextAlignment="Center" 
-                   TextColor="RoyalBlue" 
-                   FontAttributes="Bold"
-                   FontSize="36"/>
-
-            <CollectionView ItemsSource="{Binding ChatMessages}" Margin="15" x:Name="ChatMessages_Collection">
-                <CollectionView.ItemTemplate>
-                    <!-- Custom layout of item -->
-                    <DataTemplate>
-                        <StackLayout Margin="0,5">
-                            <Frame CornerRadius="10" OutlineColor="Black" BackgroundColor="White" Padding="10,5">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="15" />
-                                        <RowDefinition Height="auto" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="35" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <Label Text="{Binding UserName}" FontSize="12" FontAttributes="Bold" TextColor="Purple"/>
-                                    <Label Text="{Binding Time}" FontSize="12" FontAttributes="Italic" TextColor="LightSlateGray" Grid.Column="1"/>
-                                    <Label Text="{Binding Message}" FontSize="15" TextColor="Black" Grid.Row="1" Grid.ColumnSpan="2"/>
-                                </Grid>
-                            </Frame>
-                        </StackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+            <Label Text="Messages:"
+                   Margin="20, 0"/>
+            <CollectionView ItemsSource="{Binding Messages}"
+                            Margin="20, 20"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

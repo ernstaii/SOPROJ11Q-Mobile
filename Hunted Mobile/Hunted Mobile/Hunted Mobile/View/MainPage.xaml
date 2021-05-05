@@ -6,12 +6,12 @@
     <AbsoluteLayout>
         <StackLayout AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="24">
             <Label Text="HUNTED" 
-                   Padding="24" 
-                   Margin="0, 50" 
-                   HorizontalTextAlignment="Center" 
-                   TextColor="Black" 
-                   FontAttributes="Bold" 
-                   FontSize="36"/>
+               Padding="24" 
+               Margin="0, 50" 
+               HorizontalTextAlignment="Center" 
+               TextColor="Black" 
+               FontAttributes="Bold" 
+               FontSize="36"/>
 
             <BoxView VerticalOptions="FillAndExpand" />
 
@@ -47,10 +47,10 @@
                         SelectedItem="{Binding SelectedPreferenceGame}"
                         ItemDisplayBinding="{Binding GameLabel}"/>
 
-                <Button Text="Deelnemen"
-                        CornerRadius="30" 
-                        BackgroundColor="RoyalBlue"
+                <Button Text="Deelnemen" 
+                        BackgroundColor="Blue"
                         TextColor="White"
+                        CornerRadius="30"
                         Command="{Binding EnterGamePreference}"
                         Margin="0, 40"/>
             </StackLayout>
