@@ -11,7 +11,6 @@ namespace Hunted_Mobile.ViewModel {
     public class PlayersOverviewViewModel : BaseViewModel {
         private List<User> users = new List<User>();
         private Game gameModel = new Game();
-        private readonly User currentUser;
         private readonly UserRepository userRepository = new UserRepository();
 
         public Game GameModel {
@@ -39,8 +38,7 @@ namespace Hunted_Mobile.ViewModel {
             get => new ObservableCollection<User>(Users.Where(user => user.Role == "police").ToList());
         }
 
-        public PlayersOverviewViewModel(User currentUser, Game game) {
-            this.currentUser = currentUser;
+        public PlayersOverviewViewModel(Game game) {
             gameModel = game;
 
             Task.Run(async () => await LoadUsers());

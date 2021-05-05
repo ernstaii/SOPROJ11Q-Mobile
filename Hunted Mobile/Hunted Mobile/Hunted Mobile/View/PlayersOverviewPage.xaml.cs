@@ -8,9 +8,9 @@ using Xamarin.Forms.Xaml;
 namespace Hunted_Mobile.View {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class PlayersOverviewPage : ContentPage {
-        public PlayersOverviewPage(User currentUser, Game game) {
+        public PlayersOverviewPage(Game game) {
             InitializeComponent();
-            BindingContext = new PlayersOverviewViewModel(currentUser, game);
+            BindingContext = new PlayersOverviewViewModel(game);
         }
     }
 }

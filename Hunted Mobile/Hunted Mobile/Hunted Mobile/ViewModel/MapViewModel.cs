@@ -22,6 +22,7 @@ using System.Windows.Input;
 using Xamarin.Forms;
 using System.Timers;
 using Newtonsoft.Json.Linq;
+using Hunted_Mobile.Enum;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -41,6 +42,7 @@ namespace Hunted_Mobile.ViewModel {
         private Loot selectedLoot = new Loot(0);
         private MapView mapView;
         private readonly View.Messages messagesView;
+        private readonly View.PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
         private Pin playerPin;
         private bool isEnabled = true;
@@ -145,6 +147,7 @@ namespace Hunted_Mobile.ViewModel {
             this.gameModel = gameModel;
             this.gpsService = gpsService;
             messagesView = new View.Messages(this.gameModel.Id);
+            playersOverview = new View.PlayersOverviewPage(this.gameModel);
             this.lootRepository = lootRepository;
             this.userRepository = userRepository;
             this.borderMarkerRepository = borderMarkerRepository;
@@ -194,6 +197,11 @@ namespace Hunted_Mobile.ViewModel {
 
         public ICommand CloseMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
             OpenMainMapMenu = false;
+        });
+
+        public ICommand NavigateToPlayersOverviewCommand => new Xamarin.Forms.Command((e) => {
+            SelectedMainMenuOption = MainMenuOptions.DisplayUsersOption;
+            NavigateToPlayersOverview();
         });
 
 
@@ -469,6 +477,10 @@ namespace Hunted_Mobile.ViewModel {
             if(!mapView.Pins.Contains(playerPin)) {
                 mapView.Pins.Add(playerPin);
             }
+        }
+
+        private void NavigateToPlayersOverview() {
+            Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(playersOverview);
         }
 
         /// <summary>
