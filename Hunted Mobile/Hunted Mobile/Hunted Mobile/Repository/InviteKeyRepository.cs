@@ -40,5 +40,31 @@ namespace Hunted_Mobile.Repository {
 
             return result;
         }
+
+        public async Task<List<InviteKey>> GetAll(int gameId) {
+            var response = new HttpClientResponse();
+            response.HasMultipleResults = true;
+
+            await response.Convert(HttpClientRequestService.GetAll($"games/{gameId}/invite-keys"));
+
+            List<InviteKey> inviteKeys = new List<InviteKey>();
+
+            foreach(JObject item in response.Items) {
+                string role = item.GetValue("role")?.ToString();
+                var userId = item.GetValue("user_id");
+                if(!userId.HasValues) {
+                    userId = -1;
+                }
+                string value = item.GetValue("value")?.ToString();
+                inviteKeys.Add(new InviteKey() {
+                    GameId = gameId,
+                    Role = role,
+                    UserId = (int) userId,
+                    Value = value
+                });
+            }
+
+            return inviteKeys;
+        }
     }
 }
