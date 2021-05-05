@@ -52,6 +52,8 @@ namespace Hunted_Mobile.ViewModel {
         private bool isEnabled = true;
         private bool gameHasEnded = false;
         private bool isHandlingLoot = false;
+        private bool openMainMapMenu = false;
+        private bool mainMapMenuButtonVisible = true;
         private bool hasFinishedHandlingLoot = false;
 
         /// <summary>
@@ -79,6 +81,17 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged("GameHasEnded");
             }
         }
+        public bool OpenMainMapMenu {
+            get => openMainMapMenu;
+            set {
+                mainMapMenuButtonVisible = !value;
+                openMainMapMenu = value;
+                OnPropertyChanged("MainMapMenuButtonVisible");
+                OnPropertyChanged("OpenMainMapMenu");
+            }
+        }
+
+        public bool MainMapMenuButtonVisible => mainMapMenuButtonVisible;
 
         public Loot SelectedLoot {
             get => selectedLoot;
@@ -158,6 +171,17 @@ namespace Hunted_Mobile.ViewModel {
             this.borderMarkerRepository = borderMarkerRepository;
         }
 
+        private void HandlePinClicked(object sender, PinClickedEventArgs args) {
+            if($"{args.Pin.Tag}" == LOOT_TAG) {
+                var loot = mapModel.FindLoot(new Location(args.Pin.Position));
+
+                if(loot != null) {
+                    SelectedLoot = loot;
+                    IsHandlingLoot = true;
+                }
+            }
+        }
+
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(messagesView);
         });
@@ -182,6 +206,15 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand CancelPickUpLootCommand => new Xamarin.Forms.Command((e) => {
             HasFinishedHandlingLoot = false;
             IsHandlingLoot = false;
+        });
+
+        public ICommand OpenMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
+            HasFinishedHandlingLoot = false;
+            OpenMainMapMenu = true;
+        });
+
+        public ICommand CloseMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
+            OpenMainMapMenu = false;
         });
 
         public ICommand Button_PressedPickupLoot => new Xamarin.Forms.Command((e) => {
@@ -532,17 +565,6 @@ namespace Hunted_Mobile.ViewModel {
                     DisplayOtherPins();
                 }
             });
-        }
-
-        private void HandlePinClicked(object sender, PinClickedEventArgs args) {
-            if($"{args.Pin.Tag}" == LOOT_TAG) {
-                var loot = mapModel.FindLoot(new Location(args.Pin.Position));
-
-                if(loot != null) {
-                    SelectedLoot = loot;
-                    IsHandlingLoot = true;
-                }
-            }
         }
     }
 }
