@@ -28,7 +28,7 @@ namespace Hunted_Mobile.Model {
             return users.AsReadOnly();
         }
         public void SetUsers(IEnumerable<Player> users) {
-            users = new List<Player>(users);
+            this.users = new List<Player>(users);
         }
 
         public void AddLoot(Loot loot) {
