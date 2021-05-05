@@ -47,6 +47,7 @@ namespace Hunted_Mobile.ViewModel {
         private bool gameHasEnded = false;
         private bool isHandlingLoot = false;
         private bool hasFinishedHandlingLoot = false;
+        private String selectedMainMenuOption = "";
 
         /// <summary>
         /// This property will disable the touch of the user with the mapView
@@ -104,6 +105,16 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged("HasFinishedHandlingLoot");
             }
         }
+
+        public string SelectedMainMenuOption {
+            get => selectedMainMenuOption;
+            set {
+                selectedMainMenuOption = value;
+
+                OnPropertyChanged("SelectedMainMenuOption");
+            }
+        }
+
 
         /// <summary>
         /// The oposite of the enable-state
