@@ -47,6 +47,7 @@ namespace Hunted_Mobile.Service {
 
         public delegate void SocketEvent();
         public delegate void SocketEvent<T>(T data);
+
         public event SocketEvent StartGame;
         public event SocketEvent<JObject> PauseGame;
         public event SocketEvent<JObject> ResumeGame;
@@ -59,6 +60,7 @@ namespace Hunted_Mobile.Service {
             pusher.SubscribeAsync("game." + gameId);
 
             string gameIdStr = gameId.ToString();
+
             Bind("game.start", () => StartGame(), gameIdStr);
             Bind<JObject>("game.pause", (data) => PauseGame(data), gameIdStr);
             Bind<JObject>("game.resume", (data) => ResumeGame(data), gameIdStr);
