@@ -23,6 +23,7 @@ using Xamarin.Forms;
 using System.Timers;
 using Newtonsoft.Json.Linq;
 using Hunted_Mobile.Enum;
+using System.Linq;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -42,12 +43,12 @@ namespace Hunted_Mobile.ViewModel {
         private readonly BorderMarkerRepository borderMarkerRepository;
         private readonly GameRepository gameRepository;
         private readonly GpsService gpsService;
-        private WebSocketService webSocketService;
+        private readonly WebSocketService webSocketService;
         private Loot selectedLoot = new Loot(0);
         private Game gameModel;
         private MapView mapView;
         private readonly View.Messages messagesView;
-        private readonly View.PlayersOverviewPage playersOverview;
+        private View.PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
         private Timer lootTimer;
         private Pin playerPin;
@@ -176,7 +177,8 @@ namespace Hunted_Mobile.ViewModel {
             this.gameModel = gameModel;
             this.gpsService = gpsService;
             messagesView = new View.Messages(this.gameModel.Id);
-            playersOverview = new View.PlayersOverviewPage(this.gameModel);
+            webSocketService = new WebSocketService(gameModel.Id);
+            playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
             this.lootRepository = lootRepository;
             this.userRepository = userRepository;
             this.gameRepository = gameRepository;
@@ -189,7 +191,8 @@ namespace Hunted_Mobile.ViewModel {
 
             if(gameModel.Status == GameStatus.Finished) {
                 EndGame(null);
-                }
+            }
+            RemovePreviousNavigation();
         }
 
         private void HandlePinClicked(object sender, PinClickedEventArgs args) {
@@ -273,6 +276,13 @@ namespace Hunted_Mobile.ViewModel {
                 }
             }
             mapModel.SetUsers(userList);
+
+            playersOverview = new View.PlayersOverviewPage(
+                new PlayersOverviewViewModel(
+                    new List<Player>(userList) { mapModel.PlayingUser },
+                    webSocketService
+                )
+            );
         }
 
         private void IntervalOfGame(JObject data) {
@@ -318,6 +328,13 @@ namespace Hunted_Mobile.ViewModel {
             mapView.IsMyLocationButtonVisible = false;
         }
 
+        private void RemovePreviousNavigation() {
+            var navigation = Application.Current.MainPage.Navigation;
+            while(navigation.NavigationStack.Count > 1) {
+                navigation.RemovePage(navigation.NavigationStack.First());
+            }
+        }
+
         private void InitializeMap() {
             AddOsmLayerToMapView();
 
@@ -349,6 +366,8 @@ namespace Hunted_Mobile.ViewModel {
                 initialPlayerUpdateTimer.Start();
 
                 mapView.PinClicked += HandlePinClicked;
+
+                RemovePreviousNavigation();
             });
         }
 
@@ -377,7 +396,6 @@ namespace Hunted_Mobile.ViewModel {
 
         private async Task StartSocket() {
             try {
-                webSocketService = new WebSocketService(gameModel.Id);
                 if(!WebSocketService.Connected) {
                     await webSocketService.Connect();
                 }
