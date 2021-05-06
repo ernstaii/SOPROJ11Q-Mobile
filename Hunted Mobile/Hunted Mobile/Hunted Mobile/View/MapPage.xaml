@@ -202,8 +202,8 @@
             </Frame>
 
             <!-- Screen when game is paused or has ended -->
-                <Frame CornerRadius="10" OutlineColor="Black" Margin="25,80" BackgroundColor="White" IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
-                    <StackLayout>
+            <Frame CornerRadius="10" OutlineColor="Black" Margin="25,80" BackgroundColor="White" IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+                <StackLayout>
                     <Label Text="{Binding TitleOverlay}"
                            Padding="5"
                            Margin="0,25,0,0" 
