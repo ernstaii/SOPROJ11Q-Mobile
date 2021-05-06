@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:mapsui="clr-namespace:Mapsui.UI.Forms;assembly=Mapsui.UI.Forms"
+             xmlns:mapsui="clr-namespace:Mapsui.UI.Forms;assembly=Mapsui.UI.Forms" 
+             xmlns:local="clr-namespace:Xamarin.Forms.BehaviorsPack;assembly=Xamarin.Forms.BehaviorsPack"
              x:Class="Hunted_Mobile.MapPage">
     <ContentPage.Content>
-        <AbsoluteLayout>
+        <AbsoluteLayout HorizontalOptions="FillAndExpand">
             <StackLayout AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
                 <mapsui:MapView x:Name="mapView"
                 VerticalOptions="FillAndExpand"
@@ -51,9 +52,6 @@
                 </StackLayout>
             </Frame>
 
-            <!-- Overlay -->
-            <!-- <StackLayout IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5"/> -->
-            
             <!-- Screen for picking up loot -->
             <Frame CornerRadius="10" OutlineColor="Black" Margin="25,80" BackgroundColor="White" IsVisible="{Binding IsHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
                 <StackLayout>
@@ -67,7 +65,15 @@
 
                     <BoxView VerticalOptions="FillAndExpand" />
 
-                    <Label Text="Houdt de knop ingedrukt om de buit op te pakken."
+                    <Label Text="Houdt de knop 5 secondes ingedrukt om de buit op te pakken."
+                           IsVisible="{Binding IsCloseToSelectedLoot}"
+                           Margin="0,0,0,15"
+                           HorizontalTextAlignment="Center" 
+                           TextColor="Black" 
+                           FontSize="16"/>
+                    
+                    <Label Text="Je bent te ver weg om deze buit op te pakken."
+                           IsVisible="{Binding IsFarFromSelectedLoot}"
                            Margin="0,0,0,15"
                            HorizontalTextAlignment="Center" 
                            TextColor="Black" 
@@ -76,10 +82,16 @@
                     <BoxView VerticalOptions="FillAndExpand" />
 
                     <Button Text="Oppakken"
+                            IsVisible="{Binding IsCloseToSelectedLoot}"
                             BackgroundColor="Green"
                             TextColor="White"
-                            CornerRadius="30" 
-                            Command="{Binding PickupLootCommand}"/>
+                            CornerRadius="30">
+                        <Button.Behaviors>
+                            <local:EventToCommandBehavior EventName="Pressed" Command="{Binding Button_PressedPickupLoot}"/>
+                            <local:EventToCommandBehavior EventName="Released" Command="{Binding Button_ReleasedPickupLoot}"/>
+                        </Button.Behaviors>
+                    </Button>
+                    
                     <Button Text="Terug"
                             CornerRadius="30" 
                             Command="{Binding CancelPickUpLootCommand}"
@@ -116,10 +128,82 @@
                             Margin="0, 20"/>
                 </StackLayout>
             </Frame>
-            
+
+            <!-- Button for opening the Main Map Menu -->
+            <Button Text="X"
+                    IsVisible="{Binding MainMapMenuButtonVisible}"
+                    Command="{Binding OpenMainMapMenuCommand}"
+                    FontSize="25"
+                    CornerRadius="30" 
+                    BackgroundColor="White"
+                    BorderWidth="1"
+                    BorderColor="LightGray"
+                    TextColor="RoyalBlue"
+                    AbsoluteLayout.LayoutFlags="PositionProportional"  
+                    AbsoluteLayout.LayoutBounds=".5,0.98,60,60" />
+
+            <!-- The Main Map menu -->
+            <Frame CornerRadius="10" OutlineColor="Black" BackgroundColor="White" IsVisible="{Binding OpenMainMapMenu}" AbsoluteLayout.LayoutBounds="0.5, 1, 1, 260" AbsoluteLayout.LayoutFlags="WidthProportional,PositionProportional" Padding="15">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="15" />
+                        <RowDefinition Height="60" />
+                        <RowDefinition Height="15" />
+                        <RowDefinition Height="60" />
+                        <RowDefinition Height="60" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Notify user functionality -->
+                    <Label Text="AUT. TRILLEN" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" HorizontalTextAlignment="Center"/>
+                    <Label Text="TRILLEN" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Column="1" HorizontalTextAlignment="Center"/>
+
+                    <!-- Other functionality -->
+                    <Label Text="BUIT" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Row="2" HorizontalTextAlignment="Center"/>
+                    <Label Text="SPELERS" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Row="2" Grid.Column="1" HorizontalTextAlignment="Center"/>
+                    <Label Text="GADGETS" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Row="2" Grid.Column="2" HorizontalTextAlignment="Center"/>
+
+                    <!-- Navigation to players overview -->
+                    <Button Text="P"
+                            Command="{Binding NavigateToPlayersOverviewCommand}"
+                            HorizontalOptions="Center"
+                            FontSize="25"
+                            CornerRadius="30"
+                            WidthRequest="60"
+                            HeightRequest="60"
+                            BackgroundColor="White"
+                            FontAttributes="Bold"
+                            BorderWidth="1"
+                            BorderColor="RoyalBlue"
+                            TextColor="RoyalBlue"
+                            Grid.Row="3"
+                            Grid.Column="1"/>
+
+                    <!-- Close menu functionality -->
+                    <Button Text="X"
+                            Command="{Binding CloseMainMapMenuCommand}"
+                            HorizontalOptions="Center"
+                            FontSize="25"
+                            CornerRadius="30"
+                            WidthRequest="60"
+                            HeightRequest="60"
+                            BackgroundColor="White"
+                            FontAttributes="Bold"
+                            BorderWidth="1"
+                            BorderColor="RoyalBlue"
+                            TextColor="RoyalBlue"
+                            Grid.Row="4"
+                            Grid.ColumnSpan="3"/>
+                </Grid>
+            </Frame>
+
             <!-- Screen when game is paused or has ended -->
-            <Frame CornerRadius="10" OutlineColor="Black" Margin="25,80" BackgroundColor="White" IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
-                <StackLayout>
+                <Frame CornerRadius="10" OutlineColor="Black" Margin="25,80" BackgroundColor="White" IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+                    <StackLayout>
                     <Label Text="{Binding TitleOverlay}"
                            Padding="5"
                            Margin="0,25,0,0" 
@@ -147,6 +231,15 @@
                             Margin="0, 20"/>
                 </StackLayout>
             </Frame>
+
+            <Label Text="Score:"
+                   FontSize="40"
+                   Margin="10"
+                   BackgroundColor="White" />
+            <Label Text="{Binding PlayingUserScore}"
+                   FontSize="40"
+                   Margin="130,10,10,10"
+                   BackgroundColor="White" />
         </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>

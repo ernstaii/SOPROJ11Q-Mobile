@@ -52,6 +52,8 @@ namespace Hunted_Mobile.Service {
         public event SocketEvent<JObject> ResumeGame;
         public event SocketEvent<JObject> EndGame;
         public event SocketEvent<JObject> IntervalEvent;
+        public event SocketEvent<JObject> ThiefCaught;
+        public event SocketEvent<JObject> ThiefReleased;
 
         public WebSocketService(int gameId) {
             pusher.SubscribeAsync("game." + gameId);
@@ -62,6 +64,8 @@ namespace Hunted_Mobile.Service {
             Bind<JObject>("game.resume", (data) => ResumeGame(data), gameIdStr);
             Bind<JObject>("game.end", (data) => EndGame(data), gameIdStr);
             Bind<JObject>("game.interval", (data) => IntervalEvent(data), gameIdStr);
+            Bind<JObject>("thief.caught", (data) => ThiefCaught(data), gameIdStr);
+            Bind<JObject>("thief.released", (data) => ThiefReleased(data), gameIdStr);
         }
 
         private void Bind(string eventName, Action action, string gameIdStr) {

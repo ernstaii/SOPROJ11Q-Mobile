@@ -11,54 +11,74 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
     public class UserRepository {
-        public async Task<User> Create(InviteKey inviteKey, string username) {
+        public async Task<Player> Create(Player player) {
             var response = new HttpClientResponse();
             await response.Convert(HttpClientRequestService.Create("users", new {
-                username = username,
-                invite_key = inviteKey.Value,
+                username = player.UserName,
+                invite_key = player.InviteKey.Value,
             }));
 
             var responseLoc = response.GetStringValue("location");
 
-            return new User((int) response.GetNumberValue("id")) {
-                UserName = username,
-                InviteKey = inviteKey,
+            Type t = typeof(Thief);
+
+            Player newUser = new Player() {
+                Id = response.GetNumberValue("id"),
+                InviteKey = player.InviteKey,
+                UserName = player.UserName,
                 ErrorMessages = response.ErrorMessages,
                 Location = string.IsNullOrWhiteSpace(responseLoc) ? null : new Location(responseLoc)
             };
+            newUser.InviteKey.UserId = newUser.Id;
+
+            if(newUser.InviteKey.Role == "thief") return new Thief(newUser);
+            else if(newUser.InviteKey.Role == "police") return new Police(newUser);
+            else return newUser;
         }
 
         // Get all users that are linked to a game
-        public async Task<List<User>> GetAll(int gameId) {
-            var response = new HttpClientResponse() {
+        public async Task<List<Player>> GetAll(int gameId) {
+            var usersResponse = new HttpClientResponse() {
                 HasMultipleResults = true,
             };
-            await response.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users-with-role"));
 
-            var output = new List<User>();
+            await usersResponse.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users-with-role"));
+
+            var result = new List<Player>();
 
             // Looping through the result
-            foreach(JObject item in response.Items) {
+            foreach(JObject item in usersResponse.Items) {
                 try {
-                    output.Add(new User((int) item.GetValue("id")) {
+                    string role = item.GetValue("role")?.ToString();
+                    int userId = (int) item.GetValue("id");
+
+                    Player user = new Player() {
+                        Id = userId,
                         UserName = item.GetValue("username")?.ToString(),
-                        Role = item.GetValue("role")?.ToString() ?? "thief",
-                        Location = new Location(item.GetValue("location")?.ToString())
-                    });
-                    ;
+                        Location = new Location(item.GetValue("location")?.ToString()),
+                        CaughtAt = item.GetValue("caught_at")?.ToString(),
+                        Status = item.GetValue("status")?.ToString(),
+                        InviteKey = new InviteKey() {
+                            Role = role
+                        },
+                    };
+
+                    if(role == "thief") result.Add(new Thief(user));
+                    else if(role == "police") result.Add(new Police(user));
+                    else  result.Add(user);
                 }
                 catch(Exception ex) {
                     Console.WriteLine(ex.ToString());
                 }
             }
 
-            return output;
+            return result;
         }
 
         public async Task<bool> Update(int userId, Location location) {
             var response = new HttpClientResponse();
 
-            await response.Convert(HttpClientRequestService.Update($"users/{userId}", new {
+            await response.Convert(HttpClientRequestService.Put($"users/{userId}", new {
                 location = location.ToCsvString()
             }));
 

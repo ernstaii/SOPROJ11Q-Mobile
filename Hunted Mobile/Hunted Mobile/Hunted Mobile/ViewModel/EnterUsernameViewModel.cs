@@ -12,15 +12,14 @@ using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class EnterUsernameViewModel : BaseViewModel {
-        private User userModel;
+        private Player userModel;
         private bool isloading = false;
         private readonly UserRepository userRepository = new UserRepository();
         private readonly EnterUsername page;
-        private readonly bool creatingUserSucceeded;
 
         public bool IsValid { get; set; }
 
-        public User UserModel {
+        public Player UserModel {
             get => userModel;
             set {
                 userModel = value;
@@ -38,7 +37,7 @@ namespace Hunted_Mobile.ViewModel {
 
         public EnterUsernameViewModel(EnterUsername page, InviteKey key) {
             this.page = page;
-            userModel = new User() {
+            userModel = new Player() {
                 InviteKey = key,
             };
         }
@@ -49,7 +48,7 @@ namespace Hunted_Mobile.ViewModel {
         /// <returns></returns>
         public async Task CreateUser() {
             if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
-                UserModel = await userRepository.Create(UserModel.InviteKey, this.UserModel.UserName);
+                UserModel = await userRepository.Create(UserModel);
             }
         }
 
@@ -62,11 +61,13 @@ namespace Hunted_Mobile.ViewModel {
 
             // Navigate when InviteKey is valid
             if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
-                var navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
+                if(UserModel is Player) {
+                    var Navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
 
-                var previousPage = navigation.NavigationStack.LastOrDefault();
-                await navigation.PushAsync(new Lobby(UserModel), true);
-                navigation.RemovePage(previousPage);
+                    var previousPage = Navigation.NavigationStack.LastOrDefault();
+                    await Navigation.PushAsync(new Lobby((Player) UserModel), true);
+                    Navigation.RemovePage(previousPage);
+                }
             }
 
             SubmitButtonIsEnable = true;
