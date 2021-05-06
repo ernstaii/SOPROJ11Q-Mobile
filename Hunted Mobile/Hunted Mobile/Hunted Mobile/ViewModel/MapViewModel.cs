@@ -22,9 +22,13 @@ using System.Windows.Input;
 using Xamarin.Forms;
 using System.Timers;
 using Newtonsoft.Json.Linq;
+using Hunted_Mobile.Enum;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
+        private const int LOOT_PICKUP_TIME_IN_SECONDES = 5,
+            LOOT_PICKUP_MAX_DISTANCE_IN_METERS = 10;
+
         const string PAUSE_TITLE = "Gepauzeerd",
             END_TITLE = "Het spel is afgelopen!",
             PAUSE_DESCRIPTION = "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.",
@@ -32,22 +36,28 @@ namespace Hunted_Mobile.ViewModel {
             LOOT_TAG = "loot";
 
         private readonly Model.Map mapModel;
-        private readonly Game gameModel;
         private readonly LootRepository lootRepository;
         private readonly UserRepository userRepository;
-        private readonly GameRepository gameRepository;
+        private readonly InviteKeyRepository inviteKeyRepository;
         private readonly BorderMarkerRepository borderMarkerRepository;
+        private readonly GameRepository gameRepository;
         private readonly GpsService gpsService;
         private WebSocketService webSocketService;
         private Loot selectedLoot = new Loot(0);
+        private Game gameModel;
         private MapView mapView;
         private readonly View.Messages messagesView;
+        private readonly View.PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
+        private Timer lootTimer;
         private Pin playerPin;
         private bool isEnabled = true;
         private bool gameHasEnded = false;
         private bool isHandlingLoot = false;
+        private bool openMainMapMenu = false;
+        private bool mainMapMenuButtonVisible = true;
         private bool hasFinishedHandlingLoot = false;
+        private String selectedMainMenuOption = "";
 
         private Countdown _countdown;
         private int _hours;
@@ -96,6 +106,17 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged("GameHasEnded");
             }
         }
+        public bool OpenMainMapMenu {
+            get => openMainMapMenu;
+            set {
+                mainMapMenuButtonVisible = !value;
+                openMainMapMenu = value;
+                OnPropertyChanged("MainMapMenuButtonVisible");
+                OnPropertyChanged("OpenMainMapMenu");
+            }
+        }
+
+        public bool MainMapMenuButtonVisible => mainMapMenuButtonVisible;
 
         public Loot SelectedLoot {
             get => selectedLoot;
@@ -103,6 +124,8 @@ namespace Hunted_Mobile.ViewModel {
                 selectedLoot = value;
 
                 OnPropertyChanged("SelectedLoot");
+                OnPropertyChanged(nameof(IsCloseToSelectedLoot));
+                OnPropertyChanged(nameof(IsFarFromSelectedLoot));
             }
         }
 
@@ -114,6 +137,8 @@ namespace Hunted_Mobile.ViewModel {
                     HasFinishedHandlingLoot = false;
 
                 OnPropertyChanged("IsHandlingLoot");
+                OnPropertyChanged(nameof(IsCloseToSelectedLoot));
+                OnPropertyChanged(nameof(IsFarFromSelectedLoot));
             }
         }
 
@@ -128,29 +153,71 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        /// <summary>
-        /// The oposite of the enable-state
-        /// </summary>
-        public bool VisibleOverlay => !IsEnabled;
+        public string SelectedMainMenuOption {
+            get => selectedMainMenuOption;
+            set {
+                selectedMainMenuOption = value;
 
+                OnPropertyChanged("SelectedMainMenuOption");
+            }
+        }
+
+        public bool IsCloseToSelectedLoot {
+            get {
+                if(IsHandlingLoot && mapModel != null && mapModel.PlayingUser != null && mapModel.PlayingUser.Location != null && SelectedLoot != null && SelectedLoot.Location != null) {
+                    return mapModel.PlayingUser.Location.DistanceToOtherInMeters(SelectedLoot.Location) <= LOOT_PICKUP_MAX_DISTANCE_IN_METERS;
+                }
+                else return false;
+            }
+        }
+
+        public bool IsFarFromSelectedLoot => !IsCloseToSelectedLoot;
+        public bool VisibleOverlay => !IsEnabled;
         public bool Initialized { get; private set; }
 
         public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
 
         public string DescriptionOverlay => GameHasEnded ? END_DESCRIPTION : PAUSE_DESCRIPTION;
 
-        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, BorderMarkerRepository borderMarkerRepository) {
+        public int PlayingUserScore {
+            get {
+                if(mapModel != null && gameModel != null) {
+                    if(mapModel.PlayingUser is Thief) {
+                        return gameModel.ThievesScore;
+                    }
+                    else if(mapModel.PlayingUser is Police) {
+                        return gameModel.PoliceScore;
+                    }
+                }
+                return 0;
+            }
+        }
+
+        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository, InviteKeyRepository inviteKeyRepository, BorderMarkerRepository borderMarkerRepository) {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
             this.gpsService = gpsService;
             messagesView = new View.Messages(this.gameModel.Id);
+            playersOverview = new View.PlayersOverviewPage(this.gameModel);
             this.lootRepository = lootRepository;
             this.userRepository = userRepository;
-            this.gameRepository =  new GameRepository();
+            this.gameRepository = gameRepository;
+            this.inviteKeyRepository = inviteKeyRepository;
             this.borderMarkerRepository = borderMarkerRepository;
             _countdown = new Countdown();
             dateTimeNow = DateTime.Now;
             StartCountdown(0);
+        }
+
+        private void HandlePinClicked(object sender, PinClickedEventArgs args) {
+            if($"{args.Pin.Tag}" == LOOT_TAG) {
+                var loot = mapModel.FindLoot(new Location(args.Pin.Position));
+
+                if(loot != null) {
+                    SelectedLoot = loot;
+                    IsHandlingLoot = true;
+                }
+            }
         }
 
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
@@ -163,6 +230,11 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
             await webSocketService.Disconnect();
+        });
+
+        public ICommand NavigateToPlayersOverviewCommand => new Xamarin.Forms.Command((e) => {
+            SelectedMainMenuOption = MainMenuOptions.DisplayUsersOption;
+            NavigateToPlayersOverview();
         });
 
         public ICommand PickupLootCommand => new Xamarin.Forms.Command((e) => {
@@ -179,14 +251,40 @@ namespace Hunted_Mobile.ViewModel {
             IsHandlingLoot = false;
         });
 
+        public ICommand OpenMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
+            HasFinishedHandlingLoot = false;
+            OpenMainMapMenu = true;
+        });
+
+        public ICommand CloseMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
+            OpenMainMapMenu = false;
+        });
+
+        public ICommand Button_PressedPickupLoot => new Xamarin.Forms.Command((e) => {
+            lootTimer = new Timer();
+
+            // Interval is set with milisecondes
+            lootTimer.Interval = LOOT_PICKUP_TIME_IN_SECONDES * 1000;
+            lootTimer.Elapsed += SuccessfullyPickedUpLoot;
+            lootTimer.Start();
+        });
+
+        public ICommand Button_ReleasedPickupLoot => new Xamarin.Forms.Command((e) => {
+            if(lootTimer != null) {
+                lootTimer.Stop();
+                lootTimer = null;
+            }
+        });
+
+
         private async Task PollLoot() {
             var lootList = await lootRepository.GetAll(gameModel.Id);
             mapModel.SetLoot(lootList);
         }
 
         private async Task PollUsers() {
-            var userList = new List<User>();
-            foreach(User user in await userRepository.GetAll(gameModel.Id)) {
+            var userList = new List<Player>();
+            foreach(Player user in await userRepository.GetAll(gameModel.Id)) {
                 if(user.Id != mapModel.PlayingUser.Id) {
                     userList.Add(user);
                 }
@@ -232,21 +330,21 @@ namespace Hunted_Mobile.ViewModel {
         private void IntervalOfGame(JObject data) {
             StartIntervalTimer();
 
-            List<User> userList = new List<User>();
+            List<Player> userList = new List<Player>();
 
             foreach(JObject user in data.GetValue("users")) {
-
-                Location location = new Location((string) user.GetValue("location"));
                 int userId = -1;
                 int.TryParse((string) user.GetValue("id"), out userId);
 
-                User newUser = new User();
-                newUser.Id = userId;
-                newUser.UserName = ((string) user.GetValue("username"));
-                newUser.Location = location;
-                newUser.Role = ((string) user.GetValue("role"));
+                if(userId != mapModel.PlayingUser.Id) {
+                    Location location = new Location((string) user.GetValue("location"));
+                    Player newUser = new Player();
+                    newUser.Id = userId;
+                    newUser.UserName = ((string) user.GetValue("username"));
+                    newUser.Location = location;
 
-                userList.Add(newUser);
+                    userList.Add(newUser);
+                }
             }
 
             mapModel.SetUsers(userList);
@@ -274,15 +372,15 @@ namespace Hunted_Mobile.ViewModel {
 
         private void InitializeMap() {
             AddOsmLayerToMapView();
+
             Task.Run(async () => {
                 await AddGameBoundary();
                 LimitViewportToGame();
-            });
 
-            Task.Run(async () => {
                 if(!gpsService.GpsHasStarted()) {
                     await gpsService.StartGps();
                 }
+
                 gpsService.LocationChanged += MyLocationUpdated;
 
                 await PollLoot();
@@ -380,6 +478,9 @@ namespace Hunted_Mobile.ViewModel {
 
             DisplayPlayerPin();
 
+            OnPropertyChanged(nameof(IsCloseToSelectedLoot));
+            OnPropertyChanged(nameof(IsFarFromSelectedLoot));
+
             if(!Initialized) {
                 await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
             }
@@ -452,7 +553,6 @@ namespace Hunted_Mobile.ViewModel {
                 boundary.Points.Add(location);
 
             mapModel.GameBoundary = boundary;
-
             mapView.Map.Layers.Add(CreateBoundaryLayer());
         }
 
@@ -488,6 +588,10 @@ namespace Hunted_Mobile.ViewModel {
             if(!mapView.Pins.Contains(playerPin)) {
                 mapView.Pins.Add(playerPin);
             }
+        }
+
+        private void NavigateToPlayersOverview() {
+            Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(playersOverview);
         }
 
         /// <summary>
@@ -527,15 +631,24 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private void HandlePinClicked(object sender, PinClickedEventArgs args) {
-            if($"{args.Pin.Tag}" == LOOT_TAG) {
-                var loot = mapModel.FindLoot(new Location(args.Pin.Position));
+        private void SuccessfullyPickedUpLoot(object sender, EventArgs e) {
+            lootTimer.Stop();
+            lootTimer = null;
+            HasFinishedHandlingLoot = true;
 
-                if(loot != null) {
-                    SelectedLoot = loot;
-                    IsHandlingLoot = true;
+            Task.Run(async () => {
+                Game game = await gameRepository.GetGame(gameModel.Id);
+
+                // User should be a thief here since a police can't open the dialog
+                bool deleted = await lootRepository.Delete(SelectedLoot.Id);
+                if(deleted) {
+                    await gameRepository.UpdateThievesScore(game.Id, game.ThievesScore + 50);
+                    gameModel = await gameRepository.GetGame(gameModel.Id);
+                    OnPropertyChanged(nameof(PlayingUserScore));
+                    await PollLoot();
+                    DisplayOtherPins();
                 }
-            }
+            });
         }
     }
 }

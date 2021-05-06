@@ -67,7 +67,7 @@ namespace Hunted_Mobile.ViewModel {
         /// Getting InviteKey based on the Value
         /// </summary>
         /// <returns></returns>
-        public async Task GetAll() {
+        public async Task GetInviteKey() {
             if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, page)) {
                 var result = await inviteKeyRepository.GetAll(InviteKeyModel.Value);
                 IsOverlayVisible = false;
@@ -91,7 +91,8 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
             SubmitButtonIsEnable = false;
-            await GetAll();
+
+            await GetInviteKey();
 
             // Navigate when InviteKey is valid
             if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, page) && !IsOverlayVisible) { 
