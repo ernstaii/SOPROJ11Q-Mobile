@@ -35,6 +35,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Game gameModel;
         private readonly LootRepository lootRepository;
         private readonly UserRepository userRepository;
+        private readonly GameRepository gameRepository;
         private readonly BorderMarkerRepository borderMarkerRepository;
         private readonly GpsService gpsService;
         private WebSocketService webSocketService;
@@ -53,6 +54,7 @@ namespace Hunted_Mobile.ViewModel {
         private int _minutes;
         private int _seconds;
         private bool initialTimerStart = true;
+        private DateTime dateTimeNow;
 
         public int Hours {
             get => _hours;
@@ -144,13 +146,12 @@ namespace Hunted_Mobile.ViewModel {
             messagesView = new View.Messages(this.gameModel.Id);
             this.lootRepository = lootRepository;
             this.userRepository = userRepository;
+            this.gameRepository =  new GameRepository();
             this.borderMarkerRepository = borderMarkerRepository;
             _countdown = new Countdown();
-            test = DateTime.Now;
-            StartCountdown();
+            dateTimeNow = DateTime.Now;
+            StartCountdown(0);
         }
-
-        DateTime test;
 
         public ICommand ButtonSelectedCommand => new Command(async (e) => {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(messagesView);
@@ -193,13 +194,13 @@ namespace Hunted_Mobile.ViewModel {
             mapModel.SetUsers(userList);
         }
 
-        public void StartCountdown() {
+        public void StartCountdown(double timeLeft) {
             if(initialTimerStart) {
                 _countdown.EndDate = gameModel.EndTime;
                 initialTimerStart = false;
             }
             else {
-                _countdown.EndDate = DateTime.Now.AddSeconds(300);
+                _countdown.EndDate = DateTime.Now.AddSeconds(timeLeft);
             }
             _countdown.Start();
 
@@ -217,7 +218,7 @@ namespace Hunted_Mobile.ViewModel {
             Minutes = _countdown.RemainTime.Minutes;
             Seconds = _countdown.RemainTime.Seconds;
 
-            var totalSeconds = (gameModel.EndTime - test).TotalSeconds;
+            var totalSeconds = (gameModel.EndTime - dateTimeNow).TotalSeconds;
             var remainSeconds = _countdown.RemainTime.TotalSeconds;
         }
 
@@ -360,9 +361,9 @@ namespace Hunted_Mobile.ViewModel {
             StopIntervalTimer();
         }
 
-        private void ResumeGame() {
+        private void ResumeGame(JObject data) {
             IsEnabled = true;
-            StartCountdown();
+            StartCountdown(Convert.ToDouble(data.GetValue("timeLeft")));
 
             StartIntervalTimer();
         }

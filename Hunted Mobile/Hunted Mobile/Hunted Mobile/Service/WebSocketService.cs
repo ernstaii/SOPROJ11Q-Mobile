@@ -49,7 +49,7 @@ namespace Hunted_Mobile.Service {
         public delegate void SocketEvent<T>(T data);
         public event SocketEvent StartGame;
         public event SocketEvent<JObject> PauseGame;
-        public event SocketEvent ResumeGame;
+        public event SocketEvent<JObject> ResumeGame;
         public event SocketEvent<JObject> EndGame;
         public event SocketEvent<JObject> IntervalEvent;
 
@@ -59,7 +59,7 @@ namespace Hunted_Mobile.Service {
             string gameIdStr = gameId.ToString();
             Bind("game.start", () => StartGame(), gameIdStr);
             Bind<JObject>("game.pause", (data) => PauseGame(data), gameIdStr);
-            Bind("game.resume", () => ResumeGame(), gameIdStr);
+            Bind<JObject>("game.resume", (data) => ResumeGame(data), gameIdStr);
             Bind<JObject>("game.end", (data) => EndGame(data), gameIdStr);
             Bind<JObject>("game.interval", (data) => IntervalEvent(data), gameIdStr);
         }
