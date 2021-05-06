@@ -14,7 +14,6 @@ using Xamarin.Forms;
 namespace Hunted_Mobile.ViewModel {
     public class EnterUsernameViewModel : BaseViewModel {
 
-        private string _gameStatus;
         private UserRepository _userRepository = new UserRepository();
         private EnterUsername _page;
         private Player userModel;
@@ -39,12 +38,11 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public EnterUsernameViewModel(EnterUsername page, InviteKey key, string gameStatus) {
+        public EnterUsernameViewModel(EnterUsername page, InviteKey key) {
             this.page = page;
             userModel = new Player() {
                 InviteKey = key,
             };
-            _gameStatus = gameStatus;
         }
 
         /// <summary>
@@ -69,7 +67,7 @@ namespace Hunted_Mobile.ViewModel {
                 if(UserModel is Player) {
                     var Navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
                     var previousPage = Navigation.NavigationStack.LastOrDefault();
-                    await Navigation.PushAsync(new Lobby((Player) UserModel, _gameStatus), true);
+                    await Navigation.PushAsync(new Lobby((Player) UserModel), true);
                     Navigation.RemovePage(previousPage);
                 }
 

@@ -60,7 +60,7 @@ namespace Hunted_Mobile.ViewModel {
             get => new ObservableCollection<Player>(Users.Where(user => user is Police).ToList());
         }
 
-        public LobbyViewModel(Lobby page, Player currentUser, string gameStatus) {
+        public LobbyViewModel(Lobby page, Player currentUser) {
             this.page = page;
             this.currentUser = currentUser;
             gameModel.Id = this.currentUser.InviteKey.GameId;
