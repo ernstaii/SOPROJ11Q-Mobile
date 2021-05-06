@@ -29,10 +29,10 @@ namespace Hunted_Mobile.Service {
         // Static initializer, executed once during the first usage of the class
         static WebSocketService() {
             pusher.ConnectionStateChanged += ConnectionStateChanged;
-            pusher.Error += ErrorOccured;
+            pusher.Error += ErrorOccurred;
         }
 
-        private static void ErrorOccured(object sender, PusherException error) {
+        private static void ErrorOccurred(object sender, PusherException error) {
             throw error;
         }
 
@@ -57,9 +57,12 @@ namespace Hunted_Mobile.Service {
         public event SocketEvent<JObject> ThiefReleased;
 
         public WebSocketService(int gameId) {
-            pusher.SubscribeAsync("game." + gameId);
-
             string gameIdStr = gameId.ToString();
+            string channelName = "game." + gameIdStr;
+
+            if(!pusher.GetChannel(channelName).IsSubscribed) {
+                pusher.SubscribeAsync(channelName);
+            }
 
             Bind("game.start", () => StartGame(), gameIdStr);
             Bind<JObject>("game.pause", (data) => PauseGame(data), gameIdStr);

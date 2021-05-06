@@ -45,6 +45,10 @@ namespace Hunted_Mobile.ViewModel {
             if(!WebSocketService.Connected) {
                 await socketService.Connect();
             }
+            socketService.ThiefCaught -= UpdateUserState;
+            socketService.ThiefReleased -= UpdateUserState;
+            socketService.IntervalEvent -= UpdateUsers;
+
             socketService.ThiefCaught += UpdateUserState;
             socketService.ThiefReleased += UpdateUserState;
             socketService.IntervalEvent += UpdateUsers;
@@ -58,17 +62,11 @@ namespace Hunted_Mobile.ViewModel {
                     UserName = jUser.GetValue("username")?.ToString(),
                     CaughtAt = jUser.GetValue("caught_at")?.ToString(),
                 };
-                foreach(Player existingPlayer in Users) {
-                    if(existingPlayer.Id == newUser.Id) {
-                        if(existingPlayer is Thief) {
-                            updatedUsers.Add(new Thief(newUser));
-                        }
-                        else if(existingPlayer is Police) {
-                            updatedUsers.Add(new Police(newUser));
-                        }
-                        break;
-                    }
+                string role = jUser.GetValue("role")?.ToString();
+                if(role == "thief") {
+                    updatedUsers.Add(new Thief(newUser));
                 }
+                else updatedUsers.Add(new Police(newUser));
             }
             Users = updatedUsers;
         }
