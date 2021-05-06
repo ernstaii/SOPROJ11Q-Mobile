@@ -13,7 +13,7 @@
                 BackgroundColor="Gray" />
             </StackLayout>
             
-            <ImageButton Source="{Binding ChatIcon.AbsolutePath}"
+            <ImageButton Source="{Binding ChatIcon}"
                          Command="{Binding ButtonSelectedCommand}"
                          CornerRadius="30" 
                          BackgroundColor="White"

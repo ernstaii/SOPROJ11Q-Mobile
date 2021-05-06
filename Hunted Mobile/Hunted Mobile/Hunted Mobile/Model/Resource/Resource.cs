@@ -1,6 +1,8 @@
-﻿namespace Hunted_Mobile.Model.Resource {
+﻿using System;
+
+namespace Hunted_Mobile.Model.Resource {
     public interface Resource {
-        string AbsolutePath { get; }
+        Uri Uri { get; }
         byte[] Data { get; }
     }
 }

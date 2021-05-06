@@ -4,11 +4,10 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Model.Resource {
     class LazyLoadedResource : Resource {
-        private readonly Uri uri;
         private byte[] data;
         private readonly Task<byte[]> dataGetter;
 
-        public string AbsolutePath => uri.AbsoluteUri;
+        public Uri Uri { get; }
 
         public byte[] Data {
             get {
@@ -22,7 +21,7 @@ namespace Hunted_Mobile.Model.Resource {
         }
 
         public LazyLoadedResource(Uri uriToResource, Task<byte[]> dataGetter) {
-            uri = uriToResource;
+            Uri = uriToResource;
             this.dataGetter = dataGetter;
         }
     }

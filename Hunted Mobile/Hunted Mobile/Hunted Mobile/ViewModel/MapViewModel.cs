@@ -165,12 +165,11 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public Resource ChatIcon {
-            get => chatIcon;
-            private set {
-                chatIcon = value;
-                OnPropertyChanged(nameof(ChatIcon));
-            }
+        public UriImageSource ChatIcon {
+            get => new UriImageSource() {
+                Uri = chatIcon.Uri,
+                CachingEnabled = false
+            };
         }
 
         public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository, InviteKeyRepository inviteKeyRepository, BorderMarkerRepository borderMarkerRepository, ResourceRepository resourceRepository) {
@@ -184,7 +183,8 @@ namespace Hunted_Mobile.ViewModel {
             this.inviteKeyRepository = inviteKeyRepository;
             this.borderMarkerRepository = borderMarkerRepository;
 
-            ChatIcon = resourceRepository.GetGuiImage("chat.png");
+            chatIcon = resourceRepository.GetGuiImage("chat.png");
+            OnPropertyChanged(nameof(ChatIcon));
             policeBadgeIcon = resourceRepository.GetMapImage("police-badge.png");
             moneyBagIcon = resourceRepository.GetMapImage("money-bag.png");
         }
