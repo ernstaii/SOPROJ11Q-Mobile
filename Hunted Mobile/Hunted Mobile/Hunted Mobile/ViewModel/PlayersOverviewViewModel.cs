@@ -51,33 +51,34 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void UpdateUsers(JObject data) {
-            List<Player> users = new List<Player>();
+            List<Player> updatedUsers = new List<Player>();
             foreach(JObject jUser in data.GetValue("users")) {
                 var newUser = new Player() {
                     Id = int.Parse(jUser.GetValue("id")?.ToString()),
-                    UserName = jUser.GetValue("username")?.ToString()
+                    UserName = jUser.GetValue("username")?.ToString(),
+                    CaughtAt = jUser.GetValue("caught_at")?.ToString(),
                 };
                 foreach(Player existingPlayer in Users) {
                     if(existingPlayer.Id == newUser.Id) {
                         if(existingPlayer is Thief) {
-                            users.Add(new Thief(newUser));
+                            updatedUsers.Add(new Thief(newUser));
                         }
                         else if(existingPlayer is Police) {
-                            users.Add(new Police(newUser));
+                            updatedUsers.Add(new Police(newUser));
                         }
                         break;
                     }
                 }
             }
-            Users = users;
+            Users = updatedUsers;
         }
 
         private void UpdateUserState(Newtonsoft.Json.Linq.JObject data) {
             JObject jUserToUpdate = (JObject) data.GetValue("user");
+            int id = int.Parse(jUserToUpdate.GetValue("id")?.ToString());
             foreach(Player player in Users) {
-                int id = int.Parse(jUserToUpdate.GetValue("id")?.ToString());
                 if(player.Id == id) {
-                    player.Status = jUserToUpdate.GetValue("status")?.ToString();
+                    player.CaughtAt = jUserToUpdate.GetValue("caught_at")?.ToString();
                     break;
                 }
             }
