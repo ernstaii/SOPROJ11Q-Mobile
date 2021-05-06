@@ -269,7 +269,21 @@ namespace Hunted_Mobile.ViewModel {
                 }
             }
 
+            List<Loot> lootList = new List<Loot>();
+
+            foreach(JObject loot in data.GetValue("loot")) {
+                int id = int.Parse(loot.GetValue("id")?.ToString());
+                Location location = new Location(loot.GetValue("location")?.ToString());
+
+                Loot newLoot = new Loot(id);
+                newLoot.Name = loot.GetValue("name")?.ToString();
+                newLoot.Location = location;
+
+                lootList.Add(newLoot);
+            }
+
             mapModel.SetUsers(userList);
+            mapModel.SetLoot(lootList);
 
             DisplayOtherPins();
         }
