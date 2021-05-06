@@ -51,7 +51,7 @@
                    FontSize="20"
                    Grid.Column="1"
                    Grid.Row="1"/>
-            <CollectionView Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Thiefs}">
+            <CollectionView Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Thieves}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Grid Padding="10" HorizontalOptions="Center">
