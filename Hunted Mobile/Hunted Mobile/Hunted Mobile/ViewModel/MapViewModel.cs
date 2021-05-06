@@ -259,14 +259,7 @@ namespace Hunted_Mobile.ViewModel {
                 int userId = -1;
                 int.TryParse((string) user.GetValue("id"), out userId);
 
-                Console.WriteLine("HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                Console.WriteLine(user.GetValue("invite-key"));
-                Console.WriteLine(user.GetValue("inviteKey"));
-                Console.WriteLine(user.GetValue("invite-key.role"));
-                Console.WriteLine(user.GetValue("inviteKey.role"));
-                Console.WriteLine("HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-
-                if(userId != mapModel.PlayingUser.Id && user.GetValue("invite-key.role").ToString() == mapModel.PlayingUser.InviteKey.Role) {
+                if(userId != mapModel.PlayingUser.Id && user.GetValue("role").ToString() == mapModel.PlayingUser.InviteKey.Role) {
                     Location location = new Location((string) user.GetValue("location"));
                     Player newUser = new Player();
                     newUser.Id = userId;
