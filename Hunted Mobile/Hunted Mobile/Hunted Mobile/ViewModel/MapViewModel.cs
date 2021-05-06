@@ -259,7 +259,7 @@ namespace Hunted_Mobile.ViewModel {
                 int userId = -1;
                 int.TryParse((string) user.GetValue("id"), out userId);
 
-                if(userId != mapModel.PlayingUser.Id && user.GetValue("role").ToString() == mapModel.PlayingUser.InviteKey.Role) {
+                if(userId != mapModel.PlayingUser.Id) {
                     Location location = new Location((string) user.GetValue("location"));
                     Player newUser = new Player();
                     newUser.Id = userId;
