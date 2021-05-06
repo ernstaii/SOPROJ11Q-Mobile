@@ -43,12 +43,12 @@ namespace Hunted_Mobile.ViewModel {
         private readonly BorderMarkerRepository borderMarkerRepository;
         private readonly GameRepository gameRepository;
         private readonly GpsService gpsService;
-        private WebSocketService webSocketService;
+        private readonly WebSocketService webSocketService;
         private Loot selectedLoot = new Loot(0);
         private Game gameModel;
         private MapView mapView;
         private readonly View.Messages messagesView;
-        private readonly View.PlayersOverviewPage playersOverview;
+        private View.PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
         private Timer lootTimer;
         private Pin playerPin;
@@ -178,9 +178,7 @@ namespace Hunted_Mobile.ViewModel {
             this.gpsService = gpsService;
             messagesView = new View.Messages(this.gameModel.Id);
             webSocketService = new WebSocketService(gameModel.Id);
-            var users = this.mapModel.GetUsers().ToList();
-            users.Add(this.mapModel.PlayingUser);
-            playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(users, webSocketService));
+            playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
             this.lootRepository = lootRepository;
             this.userRepository = userRepository;
             this.gameRepository = gameRepository;
@@ -271,6 +269,13 @@ namespace Hunted_Mobile.ViewModel {
                 }
             }
             mapModel.SetUsers(userList);
+
+            playersOverview = new View.PlayersOverviewPage(
+                new PlayersOverviewViewModel(
+                    new List<Player>(userList) { mapModel.PlayingUser },
+                    webSocketService
+                )
+            );
         }
 
         private void IntervalOfGame(JObject data) {
