@@ -6,7 +6,7 @@ using Xamarin.Forms;
 
 namespace Hunted_Mobile.Model {
     public class Countdown : BindableObject{
-        TimeSpan _remainTime;
+        public TimeSpan _remainTime;
 
         public event Action Completed;
         public event Action Ticked;
