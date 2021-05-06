@@ -524,7 +524,7 @@ namespace Hunted_Mobile.ViewModel {
             //TODO: the null checks here should probably be resolved elsewhere
             // Players
             foreach(var user in mapModel.GetUsers()) {
-                if(user.Location != null && user.UserName != null) {
+                if(user.Location != null && user.UserName != null && (user.Role == mapModel.PlayingUser.Role)) {
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = user.UserName,
                         Color = Xamarin.Forms.Color.Black,
@@ -534,6 +534,37 @@ namespace Hunted_Mobile.ViewModel {
                 }
             }
 
+            // Closest thief for player
+            List<Player> thiefs = new List<Player>();
+            Player closestThief = new Player();
+            bool firstThief = true;
+
+            if(mapModel.PlayingUser.Role == "police") {
+                foreach(var user in mapModel.GetUsers()) {
+                    if(user.Role == "thief") {
+                        thiefs.Add(user);
+                    }
+                }
+
+                foreach(var thief in thiefs) {
+                    if(firstThief) {
+                        closestThief = thief;
+                        firstThief = false;
+                    }
+
+                    if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
+                        closestThief = thief;
+                    }
+                }
+
+                mapView.Pins.Add(new Pin(mapView) {
+                    Label = closestThief.UserName,
+                    Color = Xamarin.Forms.Color.Red,
+                    Position = new Mapsui.UI.Forms.Position(closestThief.Location.Latitude, closestThief.Location.Longitude),
+                    Scale = 0.666f,
+                });
+            }
+                
             // Loot
             foreach(var loot in mapModel.GetLoot()) {
                 if(loot.Name != null && loot.Location != null) {
