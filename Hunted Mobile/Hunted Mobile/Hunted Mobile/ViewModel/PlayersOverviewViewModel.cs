@@ -1,11 +1,8 @@
-﻿using Hunted_Mobile.Model;
-using Hunted_Mobile.Model.GameModels;
-using Hunted_Mobile.Repository;
+﻿using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Service;
 
 using Newtonsoft.Json.Linq;
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -48,10 +45,29 @@ namespace Hunted_Mobile.ViewModel {
             socketService.ThiefCaught -= UpdateUserState;
             socketService.ThiefReleased -= UpdateUserState;
             socketService.IntervalEvent -= UpdateUsers;
+            socketService.PlayerJoined -= AddUser;
 
             socketService.ThiefCaught += UpdateUserState;
             socketService.ThiefReleased += UpdateUserState;
             socketService.IntervalEvent += UpdateUsers;
+            socketService.PlayerJoined += AddUser;
+        }
+
+        private void AddUser(JObject data) {
+            JObject jUser = (JObject) data.GetValue("user");
+
+            var newUser = new Player() {
+                Id = int.Parse(jUser.GetValue("id")?.ToString()),
+                UserName = jUser.GetValue("username")?.ToString(),
+                CaughtAt = jUser.GetValue("caught_at")?.ToString(),
+            };
+            string role = jUser.GetValue("role")?.ToString();
+            if(role == "thief") {
+                users.Add(new Thief(newUser));
+            }
+            else users.Add(new Police(newUser));
+
+            Users = users;
         }
 
         private void UpdateUsers(JObject data) {
