@@ -22,6 +22,7 @@ using System.Windows.Input;
 using Xamarin.Forms;
 using System.Timers;
 using Newtonsoft.Json.Linq;
+using Hunted_Mobile.Enum;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -46,6 +47,7 @@ namespace Hunted_Mobile.ViewModel {
         private Game gameModel;
         private MapView mapView;
         private readonly View.Messages messagesView;
+        private readonly View.PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
         private Timer lootTimer;
         private Pin playerPin;
@@ -55,6 +57,7 @@ namespace Hunted_Mobile.ViewModel {
         private bool openMainMapMenu = false;
         private bool mainMapMenuButtonVisible = true;
         private bool hasFinishedHandlingLoot = false;
+        private String selectedMainMenuOption = "";
 
         /// <summary>
         /// This property will disable the touch of the user with the mapView
@@ -128,6 +131,15 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
+        public string SelectedMainMenuOption {
+            get => selectedMainMenuOption;
+            set {
+                selectedMainMenuOption = value;
+
+                OnPropertyChanged("SelectedMainMenuOption");
+            }
+        }
+
         public bool IsCloseToSelectedLoot {
             get {
                 if(IsHandlingLoot && mapModel != null && mapModel.PlayingUser != null && mapModel.PlayingUser.Location != null && SelectedLoot != null && SelectedLoot.Location != null) {
@@ -164,6 +176,7 @@ namespace Hunted_Mobile.ViewModel {
             this.gameModel = gameModel;
             this.gpsService = gpsService;
             messagesView = new View.Messages(this.gameModel.Id);
+            playersOverview = new View.PlayersOverviewPage(this.gameModel);
             this.lootRepository = lootRepository;
             this.userRepository = userRepository;
             this.gameRepository = gameRepository;
@@ -192,6 +205,11 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
             await webSocketService.Disconnect();
+        });
+
+        public ICommand NavigateToPlayersOverviewCommand => new Xamarin.Forms.Command((e) => {
+            SelectedMainMenuOption = MainMenuOptions.DisplayUsersOption;
+            NavigateToPlayersOverview();
         });
 
         public ICommand PickupLootCommand => new Xamarin.Forms.Command((e) => {
@@ -508,6 +526,10 @@ namespace Hunted_Mobile.ViewModel {
             if(!mapView.Pins.Contains(playerPin)) {
                 mapView.Pins.Add(playerPin);
             }
+        }
+
+        private void NavigateToPlayersOverview() {
+            Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(playersOverview);
         }
 
         /// <summary>
