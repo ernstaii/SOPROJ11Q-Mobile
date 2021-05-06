@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Service {
     public class HttpClientRequestService {
-        //private const string IPAdress = "http://soproj11q.herokuapp.com";
-        private const string IPAdress = "http://192.168.178.17:8000";
+        private const string IP_ADRESS = "http://soproj11q.herokuapp.com";
 
         public static async Task<HttpResponseMessage> Get(string path) {
             return await GetHttpClient().GetAsync(GetUrl(path));
@@ -23,8 +22,15 @@ namespace Hunted_Mobile.Service {
             return await GetHttpClient().PostAsync(GetUrl(path), GetEncodedParameters(parameters));
         }
 
-        public static async Task<HttpResponseMessage> Update(string path, object parameters) {
+        public static async Task<HttpResponseMessage> Put(string path, object parameters) {
             return await GetHttpClient().PutAsync(GetUrl(path), GetEncodedParameters(parameters));
+        }
+
+        public static async Task<HttpResponseMessage> Patch(string path) {
+            var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), GetUrl(path));
+            // If parameters are ever needed you can add them like this:
+            // requestMessage.Content = GetEncodedParameters(parameters);
+            return await GetHttpClient().SendAsync(requestMessage);
         }
 
         public static async Task<HttpResponseMessage> Delete(string path) {
@@ -37,7 +43,7 @@ namespace Hunted_Mobile.Service {
         /// <param name="path"></param>
         /// <returns></returns>
         protected static string GetUrl(string path) {
-            return $"{IPAdress}/api/{path}";
+            return $"{IP_ADRESS}/api/{path}";
         }
 
         /// <summary>

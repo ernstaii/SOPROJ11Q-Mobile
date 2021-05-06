@@ -13,34 +13,35 @@ using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class EnterUsernameViewModel : BaseViewModel {
-        private User _userModel { get; set; }
-        private bool _isloading = false;
+
         private string _gameStatus;
-        private bool _creatingUserSucceeded { get; set; }
         private UserRepository _userRepository = new UserRepository();
         private EnterUsername _page;
+        private Player userModel;
+        private bool isloading = false;
+        private readonly UserRepository userRepository = new UserRepository();
+        private readonly EnterUsername page;
         public bool IsValid { get; set; }
 
-        public User UserModel {
-            get => _userModel;
+        public Player UserModel {
+            get => userModel;
             set {
-                _userModel = value;
+                userModel = value;
                 OnPropertyChanged("UserModel");
             }
         }
 
         public bool SubmitButtonIsEnable {
-            get => _isloading;
+            get => isloading;
             set {
-                _isloading = value;
+                isloading = value;
                 OnPropertyChanged("SubmitButtonIsEnable");
             }
         }
 
-
         public EnterUsernameViewModel(EnterUsername page, InviteKey key, string gameStatus) {
-            _page = page;
-            _userModel = new User() {
+            this.page = page;
+            userModel = new Player() {
                 InviteKey = key,
             };
             _gameStatus = gameStatus;
@@ -51,8 +52,8 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         /// <returns></returns>
         public async Task CreateUser() {
-            if(IsValid = ValidationHelper.IsFormValid(UserModel, _page)) {
-                UserModel = await _userRepository.Create(UserModel.InviteKey, this.UserModel.UserName);
+            if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
+                UserModel = await userRepository.Create(UserModel);
             }
         }
 
@@ -64,15 +65,17 @@ namespace Hunted_Mobile.ViewModel {
             await CreateUser();
 
             // Navigate when InviteKey is valid
-            if(IsValid = ValidationHelper.IsFormValid(UserModel, _page)) {
-                var Navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
+            if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
+                if(UserModel is Player) {
+                    var Navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
+                    var previousPage = Navigation.NavigationStack.LastOrDefault();
+                    await Navigation.PushAsync(new Lobby((Player) UserModel, _gameStatus), true);
+                    Navigation.RemovePage(previousPage);
+                }
 
-                var previousPage = Navigation.NavigationStack.LastOrDefault();
-                await Navigation.PushAsync(new Lobby(UserModel, _gameStatus), true);
-                Navigation.RemovePage(previousPage);
-            }
+                }
 
-            SubmitButtonIsEnable = true;
+                SubmitButtonIsEnable = true;
         });
     }
 }

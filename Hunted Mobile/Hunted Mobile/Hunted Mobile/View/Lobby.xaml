@@ -26,7 +26,8 @@
                    FontSize="36"/>
 
             <!-- Layout Team 1 -->
-            <Label Grid.Row="1"  Text="Agenten"
+            <Label Text="Agenten"
+                   Grid.Row="1"
                    Padding="5" 
                    HorizontalTextAlignment="Center" 
                    TextColor="Black" 

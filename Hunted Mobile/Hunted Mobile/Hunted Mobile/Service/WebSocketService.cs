@@ -13,7 +13,7 @@ namespace Hunted_Mobile.Service {
     /// </summary>
     public class WebSocketService {
         #region Static
-        private static readonly Pusher _pusher = new Pusher(
+        private static readonly Pusher pusher = new Pusher(
             "27357622ad22f596bba2",
             new PusherOptions() {
                 Cluster = "eu",
@@ -28,8 +28,8 @@ namespace Hunted_Mobile.Service {
 
         // Static initializer, executed once during the first usage of the class
         static WebSocketService() {
-            _pusher.ConnectionStateChanged += ConnectionStateChanged;
-            _pusher.Error += ErrorOccured;
+            pusher.ConnectionStateChanged += ConnectionStateChanged;
+            pusher.Error += ErrorOccured;
         }
 
         private static void ErrorOccured(object sender, PusherException error) {
@@ -49,23 +49,27 @@ namespace Hunted_Mobile.Service {
         public delegate void SocketEvent<T>(T data);
         public event SocketEvent StartGame;
         public event SocketEvent<JObject> PauseGame;
-        public event SocketEvent ResumeGame;
+        public event SocketEvent<JObject> ResumeGame;
         public event SocketEvent<JObject> EndGame;
         public event SocketEvent<JObject> IntervalEvent;
+        public event SocketEvent<JObject> ThiefCaught;
+        public event SocketEvent<JObject> ThiefReleased;
 
         public WebSocketService(int gameId) {
-            _pusher.SubscribeAsync("game." + gameId);
+            pusher.SubscribeAsync("game." + gameId);
 
             string gameIdStr = gameId.ToString();
             Bind("game.start", () => StartGame(), gameIdStr);
             Bind<JObject>("game.pause", (data) => PauseGame(data), gameIdStr);
-            Bind("game.resume", () => ResumeGame(), gameIdStr);
+            Bind<JObject>("game.resume", (data) => ResumeGame(data), gameIdStr);
             Bind<JObject>("game.end", (data) => EndGame(data), gameIdStr);
             Bind<JObject>("game.interval", (data) => IntervalEvent(data), gameIdStr);
+            Bind<JObject>("thief.caught", (data) => ThiefCaught(data), gameIdStr);
+            Bind<JObject>("thief.released", (data) => ThiefReleased(data), gameIdStr);
         }
 
         private void Bind(string eventName, Action action, string gameIdStr) {
-            _pusher.Bind(eventName, (PusherEvent eventData) => {
+            pusher.Bind(eventName, (PusherEvent eventData) => {
                 if(eventData.ChannelName.EndsWith(gameIdStr)) {
                     action();
                 }
@@ -73,7 +77,7 @@ namespace Hunted_Mobile.Service {
         }
 
         private void Bind<T>(string eventName, Action<T> action, string gameIdStr) {
-            _pusher.Bind(eventName, (PusherEvent eventData) => {
+            pusher.Bind(eventName, (PusherEvent eventData) => {
                 try {
                     if(eventData.ChannelName.EndsWith(gameIdStr)) {
                         T data = JsonConvert.DeserializeObject<T>(eventData.Data);
@@ -87,11 +91,11 @@ namespace Hunted_Mobile.Service {
         }
 
         public async Task Connect() {
-            await _pusher.ConnectAsync();
+            await pusher.ConnectAsync();
         }
 
         public async Task Disconnect() {
-            await _pusher.DisconnectAsync();
+            await pusher.DisconnectAsync();
         }
     }
 }
