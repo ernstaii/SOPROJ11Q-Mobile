@@ -68,7 +68,10 @@ namespace Hunted_Mobile.ViewModel {
             webSocketService = new WebSocketService(gameModel.Id);
             Task.Run(async () => await StartSocket());
             Task.Run(async () => await LoadUsers());
-            Task.Run(async () => await CheckForStatus());
+
+            if(gameStatus == GameStatus.OnGoing || gameStatus == GameStatus.Paused || gameStatus == GameStatus.Finished) {
+                StartGame();
+            }
         }
 
         private async Task StartSocket() {
@@ -107,13 +110,6 @@ namespace Hunted_Mobile.ViewModel {
             IsLoading = true;
             Users = await userRepository.GetAll(GameModel.Id);
             IsLoading = false;
-        }
-
-        public async Task CheckForStatus() {
-            Game gameStatus = await gameRepository.GetGame(gameModel.Id);
-            if(gameStatus.Status == GameStatus.OnGoing || gameStatus.Status == GameStatus.Paused || gameStatus.Status == GameStatus.Finished) {
-                StartGame();
-            }
         }
     }
 }
