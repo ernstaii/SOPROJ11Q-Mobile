@@ -86,7 +86,7 @@ namespace Hunted_Mobile.ViewModel {
             Game toBeJoined = await _gameRepository.GetGame(InviteKeyModel.GameId);
 
             // Navigate when InviteKey is valid
-            if((IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page) && !IsOverlayVisible) || toBeJoined.Status == "on-going" || toBeJoined.Status == "paused" || toBeJoined.Status == "finished") { 
+            if((IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page) && !IsOverlayVisible) || toBeJoined.Status == GameStatus.OnGoing || toBeJoined.Status == GameStatus.Paused || toBeJoined.Status == GameStatus.Finished) { 
                 await NavigateToEnterUsernamePage(toBeJoined.Status);
             }
 

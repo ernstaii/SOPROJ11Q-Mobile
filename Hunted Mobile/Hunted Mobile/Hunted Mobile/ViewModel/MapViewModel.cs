@@ -86,11 +86,11 @@ namespace Hunted_Mobile.ViewModel {
             _lootRepository = lootRepository;
             _userRepository = userRepository;
 
-            if(_gameModel.Status == "paused") {
+            if(_gameModel.Status == GameStatus.Paused) {
                 PauseGame(null);
             }
 
-            if(_gameModel.Status == "finished") {
+            if(_gameModel.Status == GameStatus.Finished) {
                 EndGame(null);
             }
         }

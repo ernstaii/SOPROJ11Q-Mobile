@@ -66,7 +66,7 @@ namespace Hunted_Mobile.ViewModel {
 
             Task.Run(async () => await LoadUsers());
 
-            if(gameStatus == "on-going" || gameStatus =="paused" || gameStatus == "finished") {
+            if(gameStatus == GameStatus.OnGoing || gameStatus == GameStatus.Paused || gameStatus == GameStatus.Finished) {
                 StartGame();
             }
         }

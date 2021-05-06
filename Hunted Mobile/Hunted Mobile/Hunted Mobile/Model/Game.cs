@@ -10,4 +10,12 @@ namespace Hunted_Mobile.Model {
         public int Interval { get; set; }
         public int TimeLeft { get; set; }
     }
+
+    public static class GameStatus {
+        public const string
+            Config = "config",
+            OnGoing = "on-going",
+            Paused = "paused",
+            Finished = "finished";
+    }
 }
