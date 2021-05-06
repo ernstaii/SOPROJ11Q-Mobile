@@ -22,9 +22,6 @@
                          AbsoluteLayout.LayoutFlags="PositionProportional"  
                          AbsoluteLayout.LayoutBounds=".98,0.01,60,60" />
 
-            <!-- Overlay -->
-            <!-- <StackLayout IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" BackgroundColor="Gray" Opacity="0.5"/> -->
-            
             <!-- Screen for picking up loot -->
             <Frame CornerRadius="10" OutlineColor="Black" Margin="25,80" BackgroundColor="White" IsVisible="{Binding IsHandlingLoot}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
                 <StackLayout>
@@ -139,6 +136,22 @@
                     <Label Text="BUIT" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Row="2" HorizontalTextAlignment="Center"/>
                     <Label Text="SPELERS" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Row="2" Grid.Column="1" HorizontalTextAlignment="Center"/>
                     <Label Text="GADGETS" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Row="2" Grid.Column="2" HorizontalTextAlignment="Center"/>
+
+                    <!-- Navigation to players overview -->
+                    <Button Text="P"
+                            Command="{Binding NavigateToPlayersOverviewCommand}"
+                            HorizontalOptions="Center"
+                            FontSize="25"
+                            CornerRadius="30"
+                            WidthRequest="60"
+                            HeightRequest="60"
+                            BackgroundColor="White"
+                            FontAttributes="Bold"
+                            BorderWidth="1"
+                            BorderColor="RoyalBlue"
+                            TextColor="RoyalBlue"
+                            Grid.Row="3"
+                            Grid.Column="1"/>
 
                     <!-- Close menu functionality -->
                     <Button Text="X"
