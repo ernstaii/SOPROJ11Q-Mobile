@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.ViewModel {
     public class PlayersOverviewViewModel : BaseViewModel {
-        private List<Player> users = new List<Player>();
+        private ObservableCollection<Player> users = new ObservableCollection<Player>();
         private readonly WebSocketService socketService;
 
-        // ReadOnlyList because operations like Add and Remove would not call OnPropertyChanged
-        public IReadOnlyList<Player> Users {
+        public ObservableCollection<Player> Users {
             get => users;
             private set {
-                users = new List<Player>(value);
+                users = value;
                 OnPropertyChanged("Thieves");
                 OnPropertyChanged("Police");
+                OnPropertyChanged("Users");
             }
         }
 
@@ -32,7 +32,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public PlayersOverviewViewModel(IReadOnlyList<Player> users, WebSocketService socketService) {
-            Users = users;
+            Users = new ObservableCollection<Player>(users);
             this.socketService = socketService;
 
             Task.Run(async () => await SetupSocket());
@@ -67,11 +67,11 @@ namespace Hunted_Mobile.ViewModel {
             }
             else users.Add(new Police(newUser));
 
-            Users = users;
+            Users = users; // Trigger OnPropertyChanged
         }
 
         private void UpdateUsers(JObject data) {
-            List<Player> updatedUsers = new List<Player>();
+            ObservableCollection<Player> updatedUsers = new ObservableCollection<Player>();
             foreach(JObject jUser in data.GetValue("users")) {
                 var newUser = new Player() {
                     Id = int.Parse(jUser.GetValue("id")?.ToString()),
@@ -84,7 +84,7 @@ namespace Hunted_Mobile.ViewModel {
                 }
                 else updatedUsers.Add(new Police(newUser));
             }
-            Users = updatedUsers;
+            Users = updatedUsers; // Trigger OnPropertyChanged
         }
 
         private void UpdateUserState(Newtonsoft.Json.Linq.JObject data) {
