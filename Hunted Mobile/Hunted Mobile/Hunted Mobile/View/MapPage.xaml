@@ -5,7 +5,7 @@
              xmlns:local="clr-namespace:Xamarin.Forms.BehaviorsPack;assembly=Xamarin.Forms.BehaviorsPack"
              x:Class="Hunted_Mobile.MapPage">
     <ContentPage.Content>
-        <AbsoluteLayout>
+        <AbsoluteLayout HorizontalOptions="FillAndExpand">
             <StackLayout AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
                 <mapsui:MapView x:Name="mapView"
                 VerticalOptions="FillAndExpand"
@@ -101,10 +101,66 @@
                             Margin="0, 20"/>
                 </StackLayout>
             </Frame>
-            
+
+            <!-- Button for opening the Main Map Menu -->
+            <Button Text="X"
+                    IsVisible="{Binding MainMapMenuButtonVisible}"
+                    Command="{Binding OpenMainMapMenuCommand}"
+                    FontSize="25"
+                    CornerRadius="30" 
+                    BackgroundColor="White"
+                    BorderWidth="1"
+                    BorderColor="LightGray"
+                    TextColor="RoyalBlue"
+                    AbsoluteLayout.LayoutFlags="PositionProportional"  
+                    AbsoluteLayout.LayoutBounds=".5,0.98,60,60" />
+
+            <!-- The Main Map menu -->
+            <Frame CornerRadius="10" OutlineColor="Black" BackgroundColor="White" IsVisible="{Binding OpenMainMapMenu}" AbsoluteLayout.LayoutBounds="0.5, 1, 1, 260" AbsoluteLayout.LayoutFlags="WidthProportional,PositionProportional" Padding="15">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="15" />
+                        <RowDefinition Height="60" />
+                        <RowDefinition Height="15" />
+                        <RowDefinition Height="60" />
+                        <RowDefinition Height="60" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Notify user functionality -->
+                    <Label Text="AUT. TRILLEN" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" HorizontalTextAlignment="Center"/>
+                    <Label Text="TRILLEN" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Column="1" HorizontalTextAlignment="Center"/>
+
+                    <!-- Other functionality -->
+                    <Label Text="BUIT" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Row="2" HorizontalTextAlignment="Center"/>
+                    <Label Text="SPELERS" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Row="2" Grid.Column="1" HorizontalTextAlignment="Center"/>
+                    <Label Text="GADGETS" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Row="2" Grid.Column="2" HorizontalTextAlignment="Center"/>
+
+                    <!-- Close menu functionality -->
+                    <Button Text="X"
+                            Command="{Binding CloseMainMapMenuCommand}"
+                            HorizontalOptions="Center"
+                            FontSize="25"
+                            CornerRadius="30"
+                            WidthRequest="60"
+                            HeightRequest="60"
+                            BackgroundColor="White"
+                            FontAttributes="Bold"
+                            BorderWidth="1"
+                            BorderColor="RoyalBlue"
+                            TextColor="RoyalBlue"
+                            Grid.Row="4"
+                            Grid.ColumnSpan="3"/>
+                </Grid>
+            </Frame>
+
             <!-- Screen when game is paused or has ended -->
-            <Frame CornerRadius="10" OutlineColor="Black" Margin="25,80" BackgroundColor="White" IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
-                <StackLayout>
+                <Frame CornerRadius="10" OutlineColor="Black" Margin="25,80" BackgroundColor="White" IsVisible="{Binding VisibleOverlay}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+                    <StackLayout>
                     <Label Text="{Binding TitleOverlay}"
                            Padding="5"
                            Margin="0,25,0,0" 
