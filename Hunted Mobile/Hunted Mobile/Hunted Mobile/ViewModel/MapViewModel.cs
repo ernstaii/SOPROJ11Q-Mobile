@@ -580,9 +580,9 @@ namespace Hunted_Mobile.ViewModel {
             Player closestThief = new Player();
             bool firstThief = true;
 
-            if(mapModel.PlayingUser.Role == "police") {
+            if(mapModel.PlayingUser is Police) {
                 foreach(var user in mapModel.GetUsers()) {
-                    if(user.Role == "thief") {
+                    if(user is Thief) {
                         thiefs.Add(user);
                     }
                 }
