@@ -29,13 +29,18 @@ using System.Linq;
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
         private const int LOOT_PICKUP_TIME_IN_SECONDES = 5,
-            LOOT_PICKUP_MAX_DISTANCE_IN_METERS = 10;
+            ARREST_THIEF_TIME_IN_SECONDES = 5,
+            LOOT_PICKUP_MAX_DISTANCE_IN_METERS = 10,
+            POLICE_ARREST_DISTANCE_IN_METERS = 10,
+            PICK_UP_LOOT_SCORE = 50,
+            ARREST_THIEF_SCORE = 200;
 
         const string PAUSE_TITLE = "Gepauzeerd",
             END_TITLE = "Het spel is afgelopen!",
             PAUSE_DESCRIPTION = "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.",
             END_DESCRIPTION = "Ga terug naar de spelleider!",
-            LOOT_TAG = "loot";
+            LOOT_TAG = "loot",
+            THIEF_TAG = "thief";
 
         private readonly Xamarin.Forms.Color policePinColor = Xamarin.Forms.Color.FromRgb(39, 96, 203);
         private readonly Xamarin.Forms.Color thiefPinColor = Xamarin.Forms.Color.Black;
@@ -54,13 +59,17 @@ namespace Hunted_Mobile.ViewModel {
         private View.PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
         private Timer lootTimer;
+        private Timer arrestingTimer;
         private Pin playerPin;
+        private Thief thiefToBeArrested;
         private bool isEnabled = true;
         private bool gameHasEnded = false;
         private bool isHandlingLoot = false;
         private bool openMainMapMenu = false;
         private bool mainMapMenuButtonVisible = true;
         private bool hasFinishedHandlingLoot = false;
+        private bool hasFinishedArrestingThief = false;
+        private bool isArrestingThief = false;
         private Resource chatIcon;
         private readonly Resource policeBadgeIcon;
         private readonly Resource moneyBagIcon;
@@ -128,7 +137,7 @@ namespace Hunted_Mobile.ViewModel {
         public Loot SelectedLoot {
             get => selectedLoot;
             set {
-                selectedLoot = value;
+                selectedLoot = value != null ? value : new Loot(0);
 
                 OnPropertyChanged("SelectedLoot");
                 OnPropertyChanged(nameof(IsCloseToSelectedLoot));
@@ -136,12 +145,19 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
+        public Thief ThiefToBeArrested {
+            get => thiefToBeArrested;
+            set {
+                thiefToBeArrested = value;
+                OnPropertyChanged("ThiefToBeArrested");
+            }
+        }
+
         public bool IsHandlingLoot {
             get => isHandlingLoot;
             set {
                 isHandlingLoot = value;
-                if(value)
-                    HasFinishedHandlingLoot = false;
+                if(value) HasFinishedHandlingLoot = false;
 
                 OnPropertyChanged("IsHandlingLoot");
                 OnPropertyChanged(nameof(IsCloseToSelectedLoot));
@@ -149,14 +165,34 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
+        public bool IsArrestingThief {
+            get => isArrestingThief;
+            set {
+                isArrestingThief = value;
+                if(value) HasFinishedArrestingThief = false;
+
+                OnPropertyChanged("IsArrestingThief");
+                OnPropertyChanged("IsCloseToSelectedThief");
+                OnPropertyChanged("IsFarFromSelectedThief");
+            }
+        }
+
         public bool HasFinishedHandlingLoot {
             get => hasFinishedHandlingLoot;
             set {
                 hasFinishedHandlingLoot = value;
-                if(value)
-                    IsHandlingLoot = false;
+                if(value) IsHandlingLoot = false;
 
                 OnPropertyChanged("HasFinishedHandlingLoot");
+            }
+        }
+
+        public bool HasFinishedArrestingThief {
+            get => hasFinishedArrestingThief;
+            set {
+                hasFinishedArrestingThief = value;
+                if(value) IsArrestingThief = false;
+                OnPropertyChanged("HasFinishedArrestingThief");
             }
         }
 
@@ -171,30 +207,33 @@ namespace Hunted_Mobile.ViewModel {
 
         public bool IsCloseToSelectedLoot {
             get {
-                if(IsHandlingLoot && mapModel != null && mapModel.PlayingUser != null && mapModel.PlayingUser.Location != null && SelectedLoot != null && SelectedLoot.Location != null) {
+                if(IsHandlingLoot && mapModel != null && mapModel.PlayingUser != null && mapModel.PlayingUser.Location != null && SelectedLoot != null) {
                     return mapModel.PlayingUser.Location.DistanceToOtherInMeters(SelectedLoot.Location) <= LOOT_PICKUP_MAX_DISTANCE_IN_METERS;
                 }
-                else return false;
+                return false;
+            }
+        }
+
+        public bool IsCloseToSelectedThief {
+            get {
+                if(IsArrestingThief && mapModel != null && mapModel.PlayingUser != null && mapModel.PlayingUser.Location != null && ThiefToBeArrested != null) {
+                    return mapModel.PlayingUser.Location.DistanceToOtherInMeters(ThiefToBeArrested.Location) <= POLICE_ARREST_DISTANCE_IN_METERS;
+                }
+                return false;
             }
         }
 
         public bool IsFarFromSelectedLoot => !IsCloseToSelectedLoot;
+        public bool IsFarFromSelectedThief => !IsCloseToSelectedThief;
         public bool VisibleOverlay => !IsEnabled;
         public bool Initialized { get; private set; }
-
         public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
-
         public string DescriptionOverlay => GameHasEnded ? END_DESCRIPTION : PAUSE_DESCRIPTION;
 
         public int PlayingUserScore {
             get {
                 if(mapModel != null && gameModel != null) {
-                    if(mapModel.PlayingUser is Thief) {
-                        return gameModel.ThievesScore;
-                    }
-                    else if(mapModel.PlayingUser is Police) {
-                        return gameModel.PoliceScore;
-                    }
+                    return mapModel.PlayingUser is Thief ? gameModel.ThievesScore : gameModel.PoliceScore;
                 }
                 return 0;
             }
@@ -232,13 +271,13 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void HandlePinClicked(object sender, PinClickedEventArgs args) {
-            if($"{args.Pin.Tag}" == LOOT_TAG) {
-                var loot = mapModel.FindLoot(new Location(args.Pin.Position));
+            string tag = $"{args.Pin.Tag}";
 
-                if(loot != null) {
-                    SelectedLoot = loot;
-                    IsHandlingLoot = true;
-                }
+            if(tag == LOOT_TAG && mapModel.PlayingUser is Thief) {
+                OnLootClicked(args.Pin.Position);
+            }
+            else if(tag == THIEF_TAG && mapModel.PlayingUser is Police) {
+                OnThiefClicked(args.Pin.Position);
             }
         }
 
@@ -260,7 +299,6 @@ namespace Hunted_Mobile.ViewModel {
         });
 
         public ICommand PickupLootCommand => new Xamarin.Forms.Command((e) => {
-            // Instant finishing off
             HasFinishedHandlingLoot = true;
         });
 
@@ -271,6 +309,19 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand CancelPickUpLootCommand => new Xamarin.Forms.Command((e) => {
             HasFinishedHandlingLoot = false;
             IsHandlingLoot = false;
+        });
+
+        public ICommand ArrestThiefCommand => new Xamarin.Forms.Command((e) => {
+            HasFinishedArrestingThief = true;
+        });
+
+        public ICommand ClosArrestingThiefCommand => new Xamarin.Forms.Command((e) => {
+            HasFinishedArrestingThief = false;
+        });
+
+        public ICommand CancelArrestingThiefCommand => new Xamarin.Forms.Command((e) => {
+            HasFinishedArrestingThief = false;
+            IsArrestingThief = false;
         });
 
         public ICommand OpenMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
@@ -297,6 +348,62 @@ namespace Hunted_Mobile.ViewModel {
                 lootTimer = null;
             }
         });
+
+        public ICommand Button_PressedArrestingThief => new Xamarin.Forms.Command((e) => {
+            arrestingTimer = new Timer();
+
+            // Interval is set with milisecondes
+            arrestingTimer.Interval = ARREST_THIEF_TIME_IN_SECONDES * 1000;
+            arrestingTimer.Elapsed += SuccessfullyArrestThief;
+            arrestingTimer.Start();
+        });
+
+        public ICommand Button_ReleasedArrestingThief => new Xamarin.Forms.Command((e) => {
+            if(arrestingTimer != null) {
+                arrestingTimer.Stop();
+                arrestingTimer = null;
+            }
+        });
+
+        private void SuccessfullyPickedUpLoot(object sender, EventArgs e) {
+            lootTimer.Stop();
+            lootTimer = null;
+            HasFinishedHandlingLoot = true;
+
+            Task.Run(async () => {
+                // Get latest score of game (in feature this should be replaced with socket event)
+                gameModel = await gameRepository.GetGame(gameModel.Id);
+                gameModel.ThievesScore += PICK_UP_LOOT_SCORE;
+
+                // User should be a thief here since a police can't open the dialog
+                bool deleted = await lootRepository.Delete(SelectedLoot.Id);
+                if(deleted) {
+                    await gameRepository.UpdateThievesScore(gameModel.Id, gameModel.ThievesScore);
+
+                    OnPropertyChanged(nameof(PlayingUserScore));
+                    await PollLoot();
+                    DisplayOtherPins();
+                }
+            });
+        }
+
+        private void SuccessfullyArrestThief(object sender, EventArgs e) {
+            arrestingTimer.Stop();
+            arrestingTimer = null;
+            HasFinishedArrestingThief = true;
+
+            Task.Run(async () => {
+                // Get latest score of game (in feature this should be replaced with socket event)
+                gameModel = await gameRepository.GetGame(gameModel.Id);
+                gameModel.PoliceScore += ARREST_THIEF_SCORE;
+
+                bool isCaught = await userRepository.CatchThief(ThiefToBeArrested.Id);
+                if(isCaught) {
+                    await gameRepository.UpdatePoliceScore(gameModel.Id, gameModel.PoliceScore);
+                    OnPropertyChanged(nameof(PlayingUserScore));
+                }
+            });
+        }
 
 
         private async Task PollLoot() {
@@ -480,7 +587,8 @@ namespace Hunted_Mobile.ViewModel {
                 webSocketService.ResumeGame += ResumeGame;
                 webSocketService.PauseGame += PauseGame;
                 webSocketService.EndGame += EndGame;
-
+                webSocketService.ThiefCaught += ThiefStatusChanged;
+                webSocketService.ThiefReleased += ThiefStatusChanged;
                 webSocketService.IntervalEvent += IntervalOfGame;
             }
             catch(Exception ex) {
@@ -507,6 +615,13 @@ namespace Hunted_Mobile.ViewModel {
             StartCountdown(Convert.ToDouble(data.GetValue("timeLeft")));
 
             StartIntervalTimer();
+        }
+
+        private void ThiefStatusChanged(JObject data) {
+            Task.Run(async () => {
+                await PollUsers();
+                DisplayOtherPins();
+            });
         }
 
         /// <summary>
@@ -650,12 +765,13 @@ namespace Hunted_Mobile.ViewModel {
             //TODO: the null checks here should probably be resolved elsewhere
             // Players
             foreach(var user in mapModel.GetUsers()) {
-                if(user.Location != null && user.UserName != null) {
+                if(user.Location != null && user.UserName != null && !user.IsCaught) {
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = user.UserName,
                         Color = user is Thief ? thiefPinColor : policePinColor,
                         Position = new Mapsui.UI.Forms.Position(user.Location.Latitude, user.Location.Longitude),
-                        Scale = 0.75f,
+                        Scale = 0.666f,
+                        Tag = user is Thief ? THIEF_TAG : null,
                         Transparency = 0.25f,
                     });
                 }
@@ -687,24 +803,14 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private void SuccessfullyPickedUpLoot(object sender, EventArgs e) {
-            lootTimer.Stop();
-            lootTimer = null;
-            HasFinishedHandlingLoot = true;
+        private void OnLootClicked(Position position) {
+            SelectedLoot = mapModel.FindLoot(new Location(position));
+            IsHandlingLoot = SelectedLoot != null;
+        }
 
-            Task.Run(async () => {
-                Game game = await gameRepository.GetGame(gameModel.Id);
-
-                // User should be a thief here since a police can't open the dialog
-                bool deleted = await lootRepository.Delete(SelectedLoot.Id);
-                if(deleted) {
-                    await gameRepository.UpdateThievesScore(game.Id, game.ThievesScore + 50);
-                    gameModel = await gameRepository.GetGame(gameModel.Id);
-                    OnPropertyChanged(nameof(PlayingUserScore));
-                    await PollLoot();
-                    DisplayOtherPins();
-                }
-            });
+        private void OnThiefClicked(Position position) {
+            thiefToBeArrested = mapModel.FindThief(new Location(position));
+            IsArrestingThief = thiefToBeArrested != null;
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Hunted_Mobile.Service {
             return await GetHttpClient().PostAsync(GetUrl(path), GetEncodedParameters(parameters));
         }
 
-        public static async Task<HttpResponseMessage> Put(string path, object parameters) {
+        public static async Task<HttpResponseMessage> Put(string path, object parameters = null) {
             return await GetHttpClient().PutAsync(GetUrl(path), GetEncodedParameters(parameters));
         }
 
@@ -66,8 +66,10 @@ namespace Hunted_Mobile.Service {
             var content = new List<KeyValuePair<string, string>>();
 
             // Place all properties and values inside a list with KeyValuePairs
-            foreach(var property in parameters.GetType().GetProperties()) {
-                content.Add(new KeyValuePair<string, string>(property.Name, property.GetValue(parameters).ToString()));
+            if(parameters != null) {
+                foreach(var property in parameters.GetType().GetProperties()) {
+                    content.Add(new KeyValuePair<string, string>(property.Name, property.GetValue(parameters).ToString()));
+                }
             }
 
             return new FormUrlEncodedContent(content);
