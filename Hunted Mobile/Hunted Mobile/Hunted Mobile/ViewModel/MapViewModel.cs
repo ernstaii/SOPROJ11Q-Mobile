@@ -268,6 +268,13 @@ namespace Hunted_Mobile.ViewModel {
             moneyBagIcon = resourceRepository.GetMapImage("money-bag.png");
           
             RemovePreviousNavigation();
+
+            if(gameModel.Status == GameStatus.PAUSED) {
+                PauseGame(null);
+            }
+            if(gameModel.Status == GameStatus.FINISHED) {
+                EndGame(null);
+            }
         }
 
         private void HandlePinClicked(object sender, PinClickedEventArgs args) {
