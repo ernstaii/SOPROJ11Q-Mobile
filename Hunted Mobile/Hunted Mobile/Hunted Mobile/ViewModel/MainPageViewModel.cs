@@ -17,10 +17,9 @@ namespace Hunted_Mobile.ViewModel {
         private bool isloading = false;
         private readonly InviteKeyRepository inviteKeyRepository = new InviteKeyRepository();
         private ObservableCollection<InviteKey> inviteKeys = new ObservableCollection<InviteKey>();
-        private readonly MainPage page;
+        private readonly MainPage _page;
         private bool isOverlayVisible;
         private GameRepository _gameRepository;
-        private MainPage _page;
 
         public InviteKey InviteKeyModel {
             get => inviteKeyModel;
@@ -64,7 +63,6 @@ namespace Hunted_Mobile.ViewModel {
         public MainPageViewModel(MainPage page) {
             _page = page;
             _gameRepository = new GameRepository();
-            this.page = page;
         }
 
         /// <summary>
@@ -72,7 +70,7 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         /// <returns></returns>
         public async Task GetInviteKey() {
-            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, page)) {
+            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page)) {
                 var result = await inviteKeyRepository.GetAll(InviteKeyModel.Value);
                 IsOverlayVisible = false;
 
@@ -97,8 +95,6 @@ namespace Hunted_Mobile.ViewModel {
             SubmitButtonIsEnable = false;
 
             await GetInviteKey();
-
-            Game toBeJoined = await _gameRepository.GetGame(InviteKeyModel.GameId);
 
             // Navigate when InviteKey is valid
             if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, _page) && !IsOverlayVisible) { 
