@@ -4,6 +4,7 @@ using Mapsui.Geometries;
 using Mapsui.UI.Forms;
 using Mapsui.UI.Objects;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,6 +28,14 @@ namespace Hunted_Mobile.Model {
         public IEnumerable<Player> GetUsers() {
             return users.AsReadOnly();
         }
+        public Player GetUserById(int id) {
+            foreach(Player user in users) {
+                if(user.Id == id) {
+                    return user;
+                }
+            }
+            return null;
+        }
         public void SetUsers(IEnumerable<Player> users) {
             this.users = new List<Player>(users);
         }
@@ -49,6 +58,10 @@ namespace Hunted_Mobile.Model {
 
         public Loot FindLoot(Location location) {
             return loot.FirstOrDefault(loot => loot.Location.Equals(location));
+        }
+
+        internal Thief FindThief(Location location) {
+            return users.Select(user => new Thief(user)).FirstOrDefault(user => user.Location.Equals(location));
         }
     }
 }

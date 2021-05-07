@@ -65,7 +65,7 @@ namespace Hunted_Mobile.Repository {
 
                     if(role == "thief") result.Add(new Thief(user));
                     else if(role == "police") result.Add(new Police(user));
-                    else  result.Add(user);
+                    else result.Add(user);
                 }
                 catch(Exception ex) {
                     Console.WriteLine(ex.ToString());
@@ -73,6 +73,13 @@ namespace Hunted_Mobile.Repository {
             }
 
             return result;
+        }
+
+        public async Task<bool> CatchThief(int userId) {
+            var response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Patch($"users/{userId}/catch"));
+
+            return response.IsSuccessful;
         }
 
         public async Task<bool> Update(int userId, Location location) {
