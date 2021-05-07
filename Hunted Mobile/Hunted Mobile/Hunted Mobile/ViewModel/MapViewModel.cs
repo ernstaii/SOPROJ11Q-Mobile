@@ -489,7 +489,21 @@ namespace Hunted_Mobile.ViewModel {
                 }
             }
 
+            List<Loot> lootList = new List<Loot>();
+
+            foreach(JObject loot in data.GetValue("loot")) {
+                int id = int.Parse(loot.GetValue("id")?.ToString());
+                Location location = new Location(loot.GetValue("location")?.ToString());
+
+                Loot newLoot = new Loot(id);
+                newLoot.Name = loot.GetValue("name")?.ToString();
+                newLoot.Location = location;
+
+                lootList.Add(newLoot);
+            }
+
             mapModel.SetUsers(userList);
+            mapModel.SetLoot(lootList);
 
             DisplayOtherPins();
         }
@@ -532,22 +546,9 @@ namespace Hunted_Mobile.ViewModel {
 
                 gpsService.LocationChanged += MyLocationUpdated;
 
-                await PollLoot();
-                DisplayOtherPins();
-
                 await StartSocket();
 
                 StartIntervalTimer();
-
-                Timer initialPlayerUpdateTimer = new Timer(5000);
-                initialPlayerUpdateTimer.AutoReset = false;
-                initialPlayerUpdateTimer.Elapsed += async (object sender, ElapsedEventArgs args) => {
-                    await PollUsers();
-                    DisplayOtherPins();
-                    Initialized = true;
-                    initialPlayerUpdateTimer.Dispose();
-                };
-                initialPlayerUpdateTimer.Start();
 
                 mapView.PinClicked += HandlePinClicked;
 
@@ -641,6 +642,7 @@ namespace Hunted_Mobile.ViewModel {
 
             if(!Initialized) {
                 await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
+                Initialized = true;
             }
         }
 
