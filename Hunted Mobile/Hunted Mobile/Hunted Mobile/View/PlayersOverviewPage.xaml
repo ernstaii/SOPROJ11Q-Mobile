@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Hunted_Mobile.ViewModel"
+             x:Class="Hunted_Mobile.View.PlayersOverviewPage">
+    <AbsoluteLayout>
+        <!-- Main layout -->
+        <Grid x:Name="mainLayout">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="90" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Label Text="SPELERS"
+                   Grid.ColumnSpan="2"
+                   Margin="0, 25" 
+                   HorizontalTextAlignment="Center" 
+                   TextColor="RoyalBlue" 
+                   FontAttributes="Bold"
+                   FontSize="36"/>
+
+            <!-- Layout Team 1 -->
+            <Label Text="Agenten"
+                   Grid.Row="1"
+                   Padding="5" 
+                   HorizontalTextAlignment="Center" 
+                   TextColor="Black" 
+                   FontAttributes="Bold" 
+                   FontSize="20"/>
+            <CollectionView Grid.Row="2" ItemsSource="{Binding Police}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Padding="10">
+                            <Label Text="{Binding UserName}" HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Layout Team 2 -->
+            <Label Text="Boeven" 
+                   Padding="5" 
+                   HorizontalTextAlignment="Center"
+                   TextColor="Black"
+                   FontAttributes="Bold" 
+                   FontSize="20"
+                   Grid.Column="1"
+                   Grid.Row="1"/>
+            <CollectionView Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Thieves}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="10" HorizontalOptions="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Text="{Binding UserName}" HorizontalTextAlignment="Center" IsVisible="{Binding IsFree}" Grid.ColumnSpan="2"/>
+
+                            <Label Text="{Binding UserName}" HorizontalTextAlignment="End" IsVisible="{Binding IsCaught}"/>
+                            <Label Text="Gepakt" TextColor="Red" IsVisible="{Binding IsCaught}" Grid.Column="1" Padding="5,0,0,0"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+    </AbsoluteLayout>
+</ContentPage>

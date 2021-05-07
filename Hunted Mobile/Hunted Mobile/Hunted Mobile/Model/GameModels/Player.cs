@@ -14,6 +14,11 @@ namespace Hunted_Mobile.Model.GameModels {
         [MaxLength(50, ErrorMessage = "De gebruikersnam geeft een maximale lengte van 50 karaktes")]
         public string UserName { get; set; }
         public string Role => InviteKey?.Role;
+        public bool IsCaught => CaughtAt != null && !CaughtAt.Equals("");
+        public bool IsFree => !IsCaught;
+        public string CaughtAt { get; set; }
+        public string Status { get; set; }
+
 
         public Player(int id, string userName, InviteKey inviteKey) {
             Id = id;
@@ -21,8 +26,7 @@ namespace Hunted_Mobile.Model.GameModels {
             InviteKey = inviteKey;
         }
 
-        public Player() {
-        }
+        public Player() { }
 
         public Player(Player player) {
             Id = player.Id;
@@ -30,6 +34,8 @@ namespace Hunted_Mobile.Model.GameModels {
             UserName = player.UserName;
             InviteKey = player.InviteKey;
             ErrorMessages = player.ErrorMessages;
+            CaughtAt = player.CaughtAt;
+            Status = player.Status;
         }
     }
 }
