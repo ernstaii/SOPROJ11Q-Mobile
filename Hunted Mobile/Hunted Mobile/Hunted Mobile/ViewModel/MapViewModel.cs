@@ -557,14 +557,16 @@ namespace Hunted_Mobile.ViewModel {
                     }
                 }
 
-                mapView.Pins.Add(new Pin(mapView) {
-                    Label = closestThief.UserName,
-                    Color = Xamarin.Forms.Color.Red,
-                    Position = new Mapsui.UI.Forms.Position(closestThief.Location.Latitude, closestThief.Location.Longitude),
-                    Scale = 0.666f,
-                });
+                if(thiefs.Count != 0) {
+                    mapView.Pins.Add(new Pin(mapView) {
+                        Label = closestThief.UserName,
+                        Color = Xamarin.Forms.Color.Red,
+                        Position = new Mapsui.UI.Forms.Position(closestThief.Location.Latitude, closestThief.Location.Longitude),
+                        Scale = 0.666f,
+                    });
+                }
             }
-                
+
             // Loot
             foreach(var loot in mapModel.GetLoot()) {
                 if(loot.Name != null && loot.Location != null) {
