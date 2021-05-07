@@ -29,10 +29,10 @@ namespace Hunted_Mobile.Service {
         // Static initializer, executed once during the first usage of the class
         static WebSocketService() {
             pusher.ConnectionStateChanged += ConnectionStateChanged;
-            pusher.Error += ErrorOccured;
+            pusher.Error += ErrorOccurred;
         }
 
-        private static void ErrorOccured(object sender, PusherException error) {
+        private static void ErrorOccurred(object sender, PusherException error) {
             throw error;
         }
 
@@ -47,6 +47,7 @@ namespace Hunted_Mobile.Service {
 
         public delegate void SocketEvent();
         public delegate void SocketEvent<T>(T data);
+
         public event SocketEvent StartGame;
         public event SocketEvent<JObject> PauseGame;
         public event SocketEvent<JObject> ResumeGame;
@@ -54,11 +55,17 @@ namespace Hunted_Mobile.Service {
         public event SocketEvent<JObject> IntervalEvent;
         public event SocketEvent<JObject> ThiefCaught;
         public event SocketEvent<JObject> ThiefReleased;
+        public event SocketEvent<JObject> PlayerJoined;
 
         public WebSocketService(int gameId) {
-            pusher.SubscribeAsync("game." + gameId);
-
             string gameIdStr = gameId.ToString();
+            string channelName = "game." + gameIdStr;
+            
+            var channel = pusher.GetChannel(channelName);
+            if(channel == null || !channel.IsSubscribed) {
+                pusher.SubscribeAsync(channelName);
+            }
+
             Bind("game.start", () => StartGame(), gameIdStr);
             Bind<JObject>("game.pause", (data) => PauseGame(data), gameIdStr);
             Bind<JObject>("game.resume", (data) => ResumeGame(data), gameIdStr);
@@ -66,6 +73,7 @@ namespace Hunted_Mobile.Service {
             Bind<JObject>("game.interval", (data) => IntervalEvent(data), gameIdStr);
             Bind<JObject>("thief.caught", (data) => ThiefCaught(data), gameIdStr);
             Bind<JObject>("thief.released", (data) => ThiefReleased(data), gameIdStr);
+            Bind<JObject>("player.joined", (data) => PlayerJoined(data), gameIdStr);
         }
 
         private void Bind(string eventName, Action action, string gameIdStr) {

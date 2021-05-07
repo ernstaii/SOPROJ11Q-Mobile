@@ -28,6 +28,14 @@ namespace Hunted_Mobile.Model {
         public IEnumerable<Player> GetUsers() {
             return users.AsReadOnly();
         }
+        public Player GetUserById(int id) {
+            foreach(Player user in users) {
+                if(user.Id == id) {
+                    return user;
+                }
+            }
+            return null;
+        }
         public void SetUsers(IEnumerable<Player> users) {
             this.users = new List<Player>(users);
         }

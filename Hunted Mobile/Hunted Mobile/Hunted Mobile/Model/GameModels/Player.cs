@@ -34,6 +34,8 @@ namespace Hunted_Mobile.Model.GameModels {
             Status = player.Status;
             CaughtAt = player.CaughtAt;
             ErrorMessages = player.ErrorMessages;
+            CaughtAt = player.CaughtAt;
+            Status = player.Status;
         }
     }
 }
