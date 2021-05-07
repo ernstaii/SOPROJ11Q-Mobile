@@ -319,22 +319,9 @@ namespace Hunted_Mobile.ViewModel {
 
                 gpsService.LocationChanged += MyLocationUpdated;
 
-                await PollLoot();
-                DisplayOtherPins();
-
                 await StartSocket();
 
                 StartIntervalTimer();
-
-                Timer initialPlayerUpdateTimer = new Timer(5000);
-                initialPlayerUpdateTimer.AutoReset = false;
-                initialPlayerUpdateTimer.Elapsed += async (object sender, ElapsedEventArgs args) => {
-                    await PollUsers();
-                    DisplayOtherPins();
-                    Initialized = true;
-                    initialPlayerUpdateTimer.Dispose();
-                };
-                initialPlayerUpdateTimer.Start();
 
                 mapView.PinClicked += HandlePinClicked;
             });
@@ -417,6 +404,7 @@ namespace Hunted_Mobile.ViewModel {
 
             if(!Initialized) {
                 await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
+                Initialized = true;
             }
         }
 
