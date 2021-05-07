@@ -66,6 +66,28 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Resource moneyBagIcon;
         private String selectedMainMenuOption = "";
 
+        private Countdown _countdown;
+        private int _hours;
+        private int _minutes;
+        private int _seconds;
+        private bool initialTimerStart = true;
+        private DateTime dateTimeNow;
+
+        public int Hours {
+            get => _hours;
+            set => SetProperty(ref _hours, value);
+        }
+
+        public int Minutes {
+            get => _minutes;
+            set => SetProperty(ref _minutes, value);
+        }
+
+        public int Seconds {
+            get => _seconds;
+            set => SetProperty(ref _seconds, value);
+        }
+
         /// <summary>
         /// This property will disable the touch of the user with the mapView
         /// </summary>
@@ -197,6 +219,9 @@ namespace Hunted_Mobile.ViewModel {
             this.gameRepository = gameRepository;
             this.inviteKeyRepository = inviteKeyRepository;
             this.borderMarkerRepository = borderMarkerRepository;
+            _countdown = new Countdown();
+            dateTimeNow = DateTime.Now;
+            StartCountdown(0);
 
             chatIcon = resourceRepository.GetGuiImage("chat.png");
             OnPropertyChanged(nameof(ChatIcon));
@@ -295,6 +320,41 @@ namespace Hunted_Mobile.ViewModel {
                 )
             );
         }
+
+        public void StartCountdown(double timeLeft) {
+            if(initialTimerStart) {
+                _countdown.EndDate = gameModel.EndTime;
+                initialTimerStart = false;
+            }
+            else {
+                _countdown.EndDate = DateTime.Now.AddSeconds(timeLeft);
+            }
+            _countdown.Start();
+
+            _countdown.Ticked += OnCountdownTicked;
+            _countdown.Completed += OnCountdownCompleted;
+        }
+
+        public void StopCountdown() {
+            _countdown.Ticked -= OnCountdownTicked;
+            _countdown.Completed -= OnCountdownCompleted;
+        }
+
+        void OnCountdownTicked() {
+            Hours = _countdown.RemainTime.Hours;
+            Minutes = _countdown.RemainTime.Minutes;
+            Seconds = _countdown.RemainTime.Seconds;
+
+            var totalSeconds = (gameModel.EndTime - dateTimeNow).TotalSeconds;
+            var remainSeconds = _countdown.RemainTime.TotalSeconds;
+        }
+
+        void OnCountdownCompleted() {
+            Hours = 0;
+            Minutes = 0;
+            Seconds = 0;
+        }
+
 
         private void IntervalOfGame(JObject data) {
             StartIntervalTimer();
@@ -437,12 +497,14 @@ namespace Hunted_Mobile.ViewModel {
 
         private void PauseGame(JObject data) {
             IsEnabled = false;
+            StopCountdown();
 
             StopIntervalTimer();
         }
 
         private void ResumeGame(JObject data) {
             IsEnabled = true;
+            StartCountdown(Convert.ToDouble(data.GetValue("timeLeft")));
 
             StartIntervalTimer();
         }
