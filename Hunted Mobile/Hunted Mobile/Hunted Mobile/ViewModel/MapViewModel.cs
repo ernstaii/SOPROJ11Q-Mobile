@@ -24,6 +24,7 @@ using System.Timers;
 using Newtonsoft.Json.Linq;
 using Hunted_Mobile.Enum;
 using System.Linq;
+using Hunted_Mobile.View;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -192,7 +193,6 @@ namespace Hunted_Mobile.ViewModel {
             if(gameModel.Status == GameStatus.Finished) {
                 EndGame(null);
             }
-            RemovePreviousNavigation();
         }
 
         private void HandlePinClicked(object sender, PinClickedEventArgs args) {
@@ -210,11 +210,9 @@ namespace Hunted_Mobile.ViewModel {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(messagesView);
         });
 
-        /// <summary>
-        /// Navigate to the RootPage
-        /// </summary>
         public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MainPage());
+            RemovePreviousNavigation();
             await webSocketService.Disconnect();
         });
 
