@@ -1,4 +1,5 @@
-﻿using Hunted_Mobile.Model;
+﻿using Hunted_Mobile.Enum;
+using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
@@ -68,6 +69,7 @@ namespace Hunted_Mobile.ViewModel {
             webSocketService = new WebSocketService(gameModel.Id);
             Task.Run(async () => await StartSocket());
             Task.Run(async () => await LoadUsers());
+            Task.Run(async () => await CheckForStatus());
         }
 
         private async Task StartSocket() {
@@ -106,6 +108,13 @@ namespace Hunted_Mobile.ViewModel {
             IsLoading = true;
             Users = await userRepository.GetAll(GameModel.Id);
             IsLoading = false;
+        }
+
+        public async Task CheckForStatus() {
+            Game gameStatus = await gameRepository.GetGame(gameModel.Id);
+            if(gameStatus.Status == GameStatus.ONGOING || gameStatus.Status == GameStatus.PAUSED || gameStatus.Status == GameStatus.FINISHED) {
+                StartGame();
+            }
         }
     }
 }

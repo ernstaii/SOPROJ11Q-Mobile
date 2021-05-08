@@ -24,6 +24,7 @@ using System.Timers;
 using Newtonsoft.Json.Linq;
 using Hunted_Mobile.Model.Resource;
 using Hunted_Mobile.Enum;
+using Hunted_Mobile.View;
 using System.Linq;
 
 namespace Hunted_Mobile.ViewModel {
@@ -122,6 +123,7 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged("GameHasEnded");
             }
         }
+
         public bool OpenMainMapMenu {
             get => openMainMapMenu;
             set {
@@ -267,8 +269,13 @@ namespace Hunted_Mobile.ViewModel {
             OnPropertyChanged(nameof(ChatIcon));
             policeBadgeIcon = resourceRepository.GetMapImage("police-badge.png");
             moneyBagIcon = resourceRepository.GetMapImage("money-bag.png");
-          
-            RemovePreviousNavigation();
+
+            if(gameModel.Status == GameStatus.PAUSED) {
+                PauseGame(null);
+            }
+            if(gameModel.Status == GameStatus.FINISHED) {
+                EndGame(null);
+            }
         }
 
         private void HandlePinClicked(object sender, PinClickedEventArgs args) {
@@ -290,7 +297,8 @@ namespace Hunted_Mobile.ViewModel {
         /// Navigate to the RootPage
         /// </summary>
         public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MainPage());
+            RemovePreviousNavigation();
             await webSocketService.Disconnect();
         });
 
@@ -477,9 +485,9 @@ namespace Hunted_Mobile.ViewModel {
 
                 if(userId != mapModel.PlayingUser.Id) {
                     Location location = new Location((string) user.GetValue("location"));
-                    bool wasThief = mapModel.GetUserById(userId) is Thief;
+                    bool wasThief = (mapModel.GetUserById(userId) is Thief);
                     Player newUser = new Player();
-                    if(wasThief) {
+                    if(user.GetValue("role").ToString() == "thief") {
                         newUser = new Thief(newUser);
                     }
                     else newUser = new Police(newUser);
@@ -770,7 +778,8 @@ namespace Hunted_Mobile.ViewModel {
             //TODO: the null checks here should probably be resolved elsewhere
             // Players
             foreach(var user in mapModel.GetUsers()) {
-                if(user.Location != null && user.UserName != null && !user.IsCaught) {
+                if(user.Location != null && user.UserName != null && !user.IsCaught && mapModel.PlayingUser.GetType() == user.GetType()) {
+
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = user.UserName,
                         Color = user is Thief ? thiefPinColor : policePinColor,
@@ -778,6 +787,39 @@ namespace Hunted_Mobile.ViewModel {
                         Scale = 0.666f,
                         Tag = user is Thief ? THIEF_TAG : null,
                         Transparency = 0.25f,
+                    });
+                }
+            }
+
+            // Closest thief for player
+            List<Player> thiefs = new List<Player>();
+            Player closestThief = new Player();
+            bool firstThief = true;
+
+            if(mapModel.PlayingUser is Police) {
+                foreach(var user in mapModel.GetUsers()) {
+                    if(user is Thief) {
+                        thiefs.Add(user);
+                    }
+                }
+
+                foreach(var thief in thiefs) {
+                    if(firstThief) {
+                        closestThief = thief;
+                        firstThief = false;
+                    }
+
+                    if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
+                        closestThief = thief;
+                    }
+                }
+
+                if(thiefs.Count != 0) {
+                    mapView.Pins.Add(new Pin(mapView) {
+                        Label = closestThief.UserName,
+                        Color = Xamarin.Forms.Color.Red,
+                        Position = new Mapsui.UI.Forms.Position(closestThief.Location.Latitude, closestThief.Location.Longitude),
+                        Scale = 0.666f,
                     });
                 }
             }
