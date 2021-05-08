@@ -24,6 +24,7 @@ using System.Timers;
 using Newtonsoft.Json.Linq;
 using Hunted_Mobile.Model.Resource;
 using Hunted_Mobile.Enum;
+using Hunted_Mobile.View;
 using System.Linq;
 
 namespace Hunted_Mobile.ViewModel {
@@ -267,8 +268,13 @@ namespace Hunted_Mobile.ViewModel {
             OnPropertyChanged(nameof(ChatIcon));
             policeBadgeIcon = resourceRepository.GetMapImage("police-badge.png");
             moneyBagIcon = resourceRepository.GetMapImage("money-bag.png");
-          
-            RemovePreviousNavigation();
+
+            if(gameModel.Status == GameStatus.PAUSED) {
+                PauseGame(null);
+            }
+            if(gameModel.Status == GameStatus.FINISHED) {
+                EndGame(null);
+            }
         }
 
         private void HandlePinClicked(object sender, PinClickedEventArgs args) {
@@ -290,7 +296,8 @@ namespace Hunted_Mobile.ViewModel {
         /// Navigate to the RootPage
         /// </summary>
         public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PopToRootAsync();
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MainPage());
+            RemovePreviousNavigation();
             await webSocketService.Disconnect();
         });
 
