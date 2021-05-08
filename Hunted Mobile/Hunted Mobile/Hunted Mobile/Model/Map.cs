@@ -4,43 +4,64 @@ using Mapsui.Geometries;
 using Mapsui.UI.Forms;
 using Mapsui.UI.Objects;
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Hunted_Mobile.Model {
     public class Map {
-        private List<User> _users = new List<User>();
+        private List<Player> users = new List<Player>();
 
-        private List<Loot> _loot = new List<Loot>();
-        public User PlayingUser { get; set; }
+        private List<Loot> loot = new List<Loot>();
 
+        public Player PlayingUser { get; set; }
         public Boundary GameBoundary { get; set; }
 
         public Map() { }
 
-        public void AddUser(User user) {
-            _users.Add(user);
+        public void AddUser(Player user) {
+            users.Add(user);
         }
-        public void RemoveUser(User user) {
-            _users.Remove(user);
+        public void RemoveUser(Player user) {
+            users.Remove(user);
         }
-        public IEnumerable<User> GetUsers() {
-            return _users.AsReadOnly();
+        public IEnumerable<Player> GetUsers() {
+            return users.AsReadOnly();
         }
-        public void SetUsers(IEnumerable<User> users) {
-            _users = new List<User>(users);
+        public Player GetUserById(int id) {
+            foreach(Player user in users) {
+                if(user.Id == id) {
+                    return user;
+                }
+            }
+            return null;
+        }
+        public void SetUsers(IEnumerable<Player> users) {
+            this.users = new List<Player>(users);
         }
 
         public void AddLoot(Loot loot) {
-            _loot.Add(loot);
+            this.loot.Add(loot);
         }
+
         public void RemoveLoot(Loot loot) {
-            _loot.Remove(loot);
+            this.loot.Remove(loot);
         }
+
         public IEnumerable<Loot> GetLoot() {
-            return _loot.AsReadOnly();
+            return loot.AsReadOnly();
         }
+
         public void SetLoot(IEnumerable<Loot> loot) {
-            _loot = new List<Loot>(loot);
+            this.loot = new List<Loot>(loot);
+        }
+
+        public Loot FindLoot(Location location) {
+            return loot.FirstOrDefault(loot => loot.Location.Equals(location));
+        }
+
+        internal Thief FindThief(Location location) {
+            return users.Select(user => new Thief(user)).FirstOrDefault(user => user.Location.Equals(location));
         }
     }
 }

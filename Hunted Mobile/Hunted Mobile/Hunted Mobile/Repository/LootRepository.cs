@@ -18,10 +18,8 @@ namespace Hunted_Mobile.Repository {
             var response = new HttpClientResponse() {
                 HasMultipleResults = true,
             };
-            await response.Convert(HttpClientRequestService.Get($"game/{gameId}/loot"));
+            await response.Convert(HttpClientRequestService.Get($"games/{gameId}/loot"));
             
-            Console.WriteLine(response + "HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-
             var output = new List<Loot>();
 
             // Looping through the result
@@ -37,10 +35,20 @@ namespace Hunted_Mobile.Repository {
                         }
                     });
                 }
-                catch { }
+                catch(Exception e) {
+                    Console.WriteLine(e.ToString());
+                }
             }
 
             return output;
+        }
+
+        public async Task<bool> Delete(int lootId) {
+            var response = new HttpClientResponse();
+
+            await response.Convert(HttpClientRequestService.Delete($"loot/{lootId}"));
+
+            return response.IsSuccessful;
         }
     }
 }

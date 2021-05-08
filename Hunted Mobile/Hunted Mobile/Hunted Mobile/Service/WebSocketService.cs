@@ -13,8 +13,8 @@ namespace Hunted_Mobile.Service {
     /// </summary>
     public class WebSocketService {
         #region Static
-        private static readonly Pusher _pusher = new Pusher(
-            "27357622ad22f596bba2",
+        private static readonly Pusher pusher = new Pusher(
+            "6ddf60970f8423c0cb36",
             new PusherOptions() {
                 Cluster = "eu",
                 Encrypted = true,
@@ -28,11 +28,11 @@ namespace Hunted_Mobile.Service {
 
         // Static initializer, executed once during the first usage of the class
         static WebSocketService() {
-            _pusher.ConnectionStateChanged += ConnectionStateChanged;
-            _pusher.Error += ErrorOccured;
+            pusher.ConnectionStateChanged += ConnectionStateChanged;
+            pusher.Error += ErrorOccurred;
         }
 
-        private static void ErrorOccured(object sender, PusherException error) {
+        private static void ErrorOccurred(object sender, PusherException error) {
             throw error;
         }
 
@@ -47,25 +47,37 @@ namespace Hunted_Mobile.Service {
 
         public delegate void SocketEvent();
         public delegate void SocketEvent<T>(T data);
+
         public event SocketEvent StartGame;
         public event SocketEvent<JObject> PauseGame;
-        public event SocketEvent ResumeGame;
+        public event SocketEvent<JObject> ResumeGame;
         public event SocketEvent<JObject> EndGame;
         public event SocketEvent<JObject> IntervalEvent;
+        public event SocketEvent<JObject> ThiefCaught;
+        public event SocketEvent<JObject> ThiefReleased;
+        public event SocketEvent<JObject> PlayerJoined;
 
         public WebSocketService(int gameId) {
-            _pusher.SubscribeAsync("game." + gameId);
-
             string gameIdStr = gameId.ToString();
+            string channelName = "game." + gameIdStr;
+            
+            var channel = pusher.GetChannel(channelName);
+            if(channel == null || !channel.IsSubscribed) {
+                pusher.SubscribeAsync(channelName);
+            }
+
             Bind("game.start", () => StartGame(), gameIdStr);
             Bind<JObject>("game.pause", (data) => PauseGame(data), gameIdStr);
-            Bind("game.resume", () => ResumeGame(), gameIdStr);
+            Bind<JObject>("game.resume", (data) => ResumeGame(data), gameIdStr);
             Bind<JObject>("game.end", (data) => EndGame(data), gameIdStr);
             Bind<JObject>("game.interval", (data) => IntervalEvent(data), gameIdStr);
+            Bind<JObject>("thief.caught", (data) => ThiefCaught(data), gameIdStr);
+            Bind<JObject>("thief.released", (data) => ThiefReleased(data), gameIdStr);
+            Bind<JObject>("player.joined", (data) => PlayerJoined(data), gameIdStr);
         }
 
         private void Bind(string eventName, Action action, string gameIdStr) {
-            _pusher.Bind(eventName, (PusherEvent eventData) => {
+            pusher.Bind(eventName, (PusherEvent eventData) => {
                 if(eventData.ChannelName.EndsWith(gameIdStr)) {
                     action();
                 }
@@ -73,23 +85,25 @@ namespace Hunted_Mobile.Service {
         }
 
         private void Bind<T>(string eventName, Action<T> action, string gameIdStr) {
-            _pusher.Bind(eventName, (PusherEvent eventData) => {
+            pusher.Bind(eventName, (PusherEvent eventData) => {
                 try {
-                    object data = JsonConvert.DeserializeObject<T>(eventData.Data);
                     if(eventData.ChannelName.EndsWith(gameIdStr)) {
-                        action((T) data);
+                        T data = JsonConvert.DeserializeObject<T>(eventData.Data);
+                        action(data);
                     }
                 }
-                catch(Exception) { }
+                catch(Exception ex) {
+                    Console.WriteLine("An error occurred while deserializing event data: " + ex.StackTrace);
+                }
             });
         }
 
         public async Task Connect() {
-            await _pusher.ConnectAsync();
+            await pusher.ConnectAsync();
         }
 
         public async Task Disconnect() {
-            await _pusher.DisconnectAsync();
+            await pusher.DisconnectAsync();
         }
     }
 }

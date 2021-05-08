@@ -1,5 +1,4 @@
-﻿using Hunted_Mobile.Model;
-using Hunted_Mobile.ViewModel;
+﻿using Hunted_Mobile.ViewModel;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
