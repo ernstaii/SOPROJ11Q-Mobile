@@ -238,6 +238,7 @@ namespace Hunted_Mobile.ViewModel {
                 return 0;
             }
         }
+        public string PlayingUserScoreDisplay => "Score: " + PlayingUserScore;
 
         public UriImageSource ChatIcon {
             get => new UriImageSource() {
@@ -381,6 +382,7 @@ namespace Hunted_Mobile.ViewModel {
                     await gameRepository.UpdateThievesScore(gameModel.Id, gameModel.ThievesScore);
 
                     OnPropertyChanged(nameof(PlayingUserScore));
+                    OnPropertyChanged(nameof(PlayingUserScoreDisplay));
                     await PollLoot();
                     DisplayOtherPins();
                 }
@@ -401,6 +403,7 @@ namespace Hunted_Mobile.ViewModel {
                 if(isCaught) {
                     await gameRepository.UpdatePoliceScore(gameModel.Id, gameModel.PoliceScore);
                     OnPropertyChanged(nameof(PlayingUserScore));
+                    OnPropertyChanged(nameof(PlayingUserScoreDisplay));
                 }
             });
         }

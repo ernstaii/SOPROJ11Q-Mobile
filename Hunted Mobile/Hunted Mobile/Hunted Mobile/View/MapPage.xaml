@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:mapsui="clr-namespace:Mapsui.UI.Forms;assembly=Mapsui.UI.Forms" 
              xmlns:local="clr-namespace:Xamarin.Forms.BehaviorsPack;assembly=Xamarin.Forms.BehaviorsPack"
-             x:Class="Hunted_Mobile.MapPage">
+             x:Class="Hunted_Mobile.MapPage"
+             Title="{Binding PlayingUserScoreDisplay}">
     <ContentPage.Content>
         <AbsoluteLayout HorizontalOptions="FillAndExpand">
             <StackLayout AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
@@ -309,15 +310,6 @@
                             Margin="0, 20"/>
                 </StackLayout>
             </Frame>
-
-            <Label Text="Score:"
-                   FontSize="40"
-                   Margin="10"
-                   BackgroundColor="White" />
-            <Label Text="{Binding PlayingUserScore}"
-                   FontSize="40"
-                   Margin="130,10,10,10"
-                   BackgroundColor="White" />
         </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>
