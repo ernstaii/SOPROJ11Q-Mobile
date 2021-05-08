@@ -14,7 +14,7 @@ namespace Hunted_Mobile.Service {
     public class WebSocketService {
         #region Static
         private static readonly Pusher pusher = new Pusher(
-            "27357622ad22f596bba2",
+            "6ddf60970f8423c0cb36",
             new PusherOptions() {
                 Cluster = "eu",
                 Encrypted = true,
