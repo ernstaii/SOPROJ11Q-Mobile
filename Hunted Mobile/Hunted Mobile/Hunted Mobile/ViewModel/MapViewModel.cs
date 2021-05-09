@@ -820,6 +820,8 @@ namespace Hunted_Mobile.ViewModel {
                         Color = Xamarin.Forms.Color.Red,
                         Position = new Mapsui.UI.Forms.Position(closestThief.Location.Latitude, closestThief.Location.Longitude),
                         Scale = 0.666f,
+                        Tag = THIEF_TAG,
+                        Transparency = 0.25f,
                     });
                 }
             }
