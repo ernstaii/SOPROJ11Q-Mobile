@@ -71,31 +71,31 @@ namespace Hunted_Mobile.ViewModel {
         private bool hasFinishedHandlingLoot = false;
         private bool hasFinishedArrestingThief = false;
         private bool isArrestingThief = false;
-        private Resource chatIcon;
+        private readonly Resource chatIcon;
         private readonly Resource policeBadgeIcon;
         private readonly Resource moneyBagIcon;
-        private String selectedMainMenuOption = "";
+        private string selectedMainMenuOption = "";
 
-        private Countdown _countdown;
-        private int _hours;
-        private int _minutes;
-        private int _seconds;
+        private readonly Countdown countdown;
+        private int hours;
+        private int minutes;
+        private int seconds;
         private bool initialTimerStart = true;
-        private DateTime dateTimeNow;
+        private readonly DateTime dateTimeNow;
 
         public int Hours {
-            get => _hours;
-            set => SetProperty(ref _hours, value);
+            get => hours;
+            set => SetProperty(ref hours, value);
         }
 
         public int Minutes {
-            get => _minutes;
-            set => SetProperty(ref _minutes, value);
+            get => minutes;
+            set => SetProperty(ref minutes, value);
         }
 
         public int Seconds {
-            get => _seconds;
-            set => SetProperty(ref _seconds, value);
+            get => seconds;
+            set => SetProperty(ref seconds, value);
         }
 
         /// <summary>
@@ -261,7 +261,7 @@ namespace Hunted_Mobile.ViewModel {
             this.gameRepository = gameRepository;
             this.inviteKeyRepository = inviteKeyRepository;
             this.borderMarkerRepository = borderMarkerRepository;
-            _countdown = new Countdown();
+            countdown = new Countdown();
             dateTimeNow = DateTime.Now;
             StartCountdown(0);
 
@@ -441,30 +441,30 @@ namespace Hunted_Mobile.ViewModel {
 
         public void StartCountdown(double timeLeft) {
             if(initialTimerStart) {
-                _countdown.EndDate = gameModel.EndTime;
+                countdown.EndDate = gameModel.EndTime;
                 initialTimerStart = false;
             }
             else {
-                _countdown.EndDate = DateTime.Now.AddSeconds(timeLeft);
+                countdown.EndDate = DateTime.Now.AddSeconds(timeLeft);
             }
-            _countdown.Start();
+            countdown.Start();
 
-            _countdown.Ticked += OnCountdownTicked;
-            _countdown.Completed += OnCountdownCompleted;
+            countdown.Ticked += OnCountdownTicked;
+            countdown.Completed += OnCountdownCompleted;
         }
 
         public void StopCountdown() {
-            _countdown.Ticked -= OnCountdownTicked;
-            _countdown.Completed -= OnCountdownCompleted;
+            countdown.Ticked -= OnCountdownTicked;
+            countdown.Completed -= OnCountdownCompleted;
         }
 
         void OnCountdownTicked() {
-            Hours = _countdown.RemainTime.Hours;
-            Minutes = _countdown.RemainTime.Minutes;
-            Seconds = _countdown.RemainTime.Seconds;
+            Hours = countdown.RemainTime.Hours;
+            Minutes = countdown.RemainTime.Minutes;
+            Seconds = countdown.RemainTime.Seconds;
 
             var totalSeconds = (gameModel.EndTime - dateTimeNow).TotalSeconds;
-            var remainSeconds = _countdown.RemainTime.TotalSeconds;
+            var remainSeconds = countdown.RemainTime.TotalSeconds;
         }
 
         void OnCountdownCompleted() {
