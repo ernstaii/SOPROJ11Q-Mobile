@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Environment.cs.example" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Mapsui.Forms" Version="2.0.3" />
     <PackageReference Include="Prism.Forms" Version="8.0.0.1909" />
     <PackageReference Include="PusherClient" Version="2.0.1" />
