@@ -75,6 +75,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Resource policeBadgeIcon;
         private readonly Resource moneyBagIcon;
         private string selectedMainMenuOption = "";
+        private bool showOutsideBoundaryScreen;
 
         private readonly Countdown countdown;
         private int hours;
@@ -249,6 +250,14 @@ namespace Hunted_Mobile.ViewModel {
             };
         }
 
+        public bool ShowOutsideBoundaryScreen {
+            get => showOutsideBoundaryScreen;
+            private set {
+                showOutsideBoundaryScreen = value;
+                OnPropertyChanged(nameof(ShowOutsideBoundaryScreen));
+            }
+        }
+
         public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository, InviteKeyRepository inviteKeyRepository, BorderMarkerRepository borderMarkerRepository, ResourceRepository resourceRepository) {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
@@ -372,6 +381,10 @@ namespace Hunted_Mobile.ViewModel {
                 arrestingTimer.Stop();
                 arrestingTimer = null;
             }
+        });
+
+        public ICommand CloseOutsideOfBoundaryScreenCommand => new Command((e) => {
+            ShowOutsideBoundaryScreen = false;
         });
 
         private void SuccessfullyPickedUpLoot(object sender, EventArgs e) {
@@ -654,6 +667,13 @@ namespace Hunted_Mobile.ViewModel {
             if(!Initialized) {
                 await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
                 Initialized = true;
+            }
+
+            if(mapModel.GameBoundary.Contains(newLocation)) {
+                ShowOutsideBoundaryScreen = false;
+            }
+            else {
+                ShowOutsideBoundaryScreen = true;
             }
         }
 
