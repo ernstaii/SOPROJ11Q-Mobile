@@ -1,6 +1,0 @@
-﻿namespace Hunted_Mobile {
-    public readonly struct Environment {
-        public const string WEB_ADDRESS = ;
-        public const string PUSHER_KEY = ;
-    }
-}

@@ -41,7 +41,7 @@ namespace Hunted_Mobile.Service {
         /// <param name="path"></param>
         /// <returns></returns>
         protected static string GetUrl(string path) {
-            return $"{Environment.WEB_ADDRESS}/api/{path}";
+            return $"{AppSettings.WebAddress}/api/{path}";
         }
 
         /// <summary>

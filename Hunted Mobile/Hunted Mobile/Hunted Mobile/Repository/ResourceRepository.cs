@@ -16,7 +16,7 @@ namespace Hunted_Mobile.Repository {
         private readonly Uri guiImageUri;
 
         public ResourceRepository() {
-            baseUri = new Uri(Environment.WEB_ADDRESS);
+            baseUri = new Uri(AppSettings.WebAddress);
             imageUri = new Uri(baseUri, "images/");
             mapImageUri = new Uri(imageUri, "map/");
             guiImageUri = new Uri(imageUri, "gui/");
