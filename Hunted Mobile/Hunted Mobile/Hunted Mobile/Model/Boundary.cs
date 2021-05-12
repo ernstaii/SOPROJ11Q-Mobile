@@ -39,7 +39,7 @@ namespace Hunted_Mobile.Model {
             double diameter = 0;
             foreach(Location firstLocation in Points) {
                 foreach(Location secondLocation in Points) {
-                    var distance = firstLocation.DistanceToOther(secondLocation);
+                    double distance = firstLocation.DistanceToOther(secondLocation);
                     if(distance > diameter) {
                         diameter = distance;
                     }
@@ -61,14 +61,14 @@ namespace Hunted_Mobile.Model {
             int j = Points.Count - 1;
             bool oddNodes = false;
 
-            var testingX = location.Latitude;
-            var testingY = location.Longitude;
+            double testingX = location.Latitude;
+            double testingY = location.Longitude;
 
             for(int i = 0; i < Points.Count; i++) {
-                var currentBoundaryPointY = Points[i].Longitude;
-                var currentBoundaryPointX = Points[i].Latitude;
-                var previousBoundaryPointY = Points[j].Longitude;
-                var previousBoundaryPointX = Points[j].Latitude;
+                double currentBoundaryPointY = Points[i].Longitude;
+                double currentBoundaryPointX = Points[i].Latitude;
+                double previousBoundaryPointY = Points[j].Longitude;
+                double previousBoundaryPointX = Points[j].Latitude;
                 if((currentBoundaryPointY < testingY && previousBoundaryPointY >= testingY
                     || previousBoundaryPointY < testingY && currentBoundaryPointY >= testingY)
                     && (currentBoundaryPointX <= testingX || previousBoundaryPointX <= testingX)) {
