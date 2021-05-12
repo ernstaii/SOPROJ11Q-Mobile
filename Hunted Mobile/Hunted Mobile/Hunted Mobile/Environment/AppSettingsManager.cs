@@ -14,10 +14,10 @@ namespace Hunted_Mobile {
 
         private static AppSettingsManager instance;
         private readonly JObject secrets;
-        private readonly Dictionary<string[], string> retrievedValues;
+        private readonly Dictionary<string, string> retrievedValues;
 
         private AppSettingsManager() {
-            retrievedValues = new Dictionary<string[], string>();
+            retrievedValues = new Dictionary<string, string>();
             try {
                 var assembly = IntrospectionExtensions.GetTypeInfo(typeof(AppSettingsManager)).Assembly;
                 var stream = assembly.GetManifestResourceStream($"{NAMESPACE}.{FILE_NAME}");
@@ -41,9 +41,14 @@ namespace Hunted_Mobile {
             }
         }
 
+        private string GetRetrievedValuesKey(string[] nestedKey) {
+            return string.Join(":", nestedKey);
+        }
+
         public string GetValue(string[] nestedKey) {
-            if(retrievedValues.ContainsKey(nestedKey)) {
-                return retrievedValues[nestedKey];
+            string key = GetRetrievedValuesKey(nestedKey);
+            if(retrievedValues.ContainsKey(key)) {
+                return retrievedValues[key];
             }
             else try {
                 object jValue = secrets;
@@ -52,7 +57,7 @@ namespace Hunted_Mobile {
                         jValue = ((JObject) jValue).GetValue(keyPart);
                     }
                 }
-                retrievedValues.Add(nestedKey, jValue?.ToString());
+                retrievedValues.Add(key, jValue?.ToString());
                 return GetValue(nestedKey);
             }
             catch(Exception) {
@@ -62,24 +67,7 @@ namespace Hunted_Mobile {
         }
 
         public string GetValue(string key) {
-            if(retrievedValues.ContainsKey(new string[] { key })) {
-                return retrievedValues[new string[] { key }];
-            }
-            else try {
-                var path = key.Split(':');
-
-                JToken node = secrets[path[0]];
-                for(int index = 1; index < path.Length; index++) {
-                    node = node[path[index]];
-                }
-
-                retrievedValues.Add(new string[] { key }, node.ToString());
-                return GetValue(key);
-            }
-            catch(Exception) {
-                Debug.WriteLine($"Unable to retrieve secret '{key}'");
-                return string.Empty;
-            }
+            return GetValue(new string[] { key });
         }
     }
 }
