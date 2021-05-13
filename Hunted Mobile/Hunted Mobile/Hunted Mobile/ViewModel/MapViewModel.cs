@@ -677,6 +677,10 @@ namespace Hunted_Mobile.ViewModel {
 
             if(isWithinBoundary) {
                 ShowOutsideBoundaryScreen = false;
+
+                if(!wasWithinBoundary) {
+                    await NotifyEnteringBoundary();
+                }
             }
             else {
                 ShowOutsideBoundaryScreen = true;
@@ -895,6 +899,14 @@ namespace Hunted_Mobile.ViewModel {
         private async Task<bool> NotifyLeavingBoundary() {
             return await notificationRepository.Create(
                 mapModel.PlayingUser.UserName + " heeft de spelgrenzen verlaten!",
+                gameModel.Id,
+                mapModel.PlayingUser.Id
+            );
+        }
+
+        private async Task<bool> NotifyEnteringBoundary() {
+            return await notificationRepository.Create(
+                mapModel.PlayingUser.UserName + " bevindt zich weer binnen de spelgrenzen.",
                 gameModel.Id,
                 mapModel.PlayingUser.Id
             );
