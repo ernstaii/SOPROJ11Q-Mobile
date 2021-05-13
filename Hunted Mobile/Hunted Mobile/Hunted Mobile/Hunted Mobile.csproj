@@ -12,10 +12,12 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="appsettings.json.example" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="appsettings.json" />
+    <EmbeddedResource Include="appsettings.json.example" />
   </ItemGroup>
 
   <ItemGroup>
