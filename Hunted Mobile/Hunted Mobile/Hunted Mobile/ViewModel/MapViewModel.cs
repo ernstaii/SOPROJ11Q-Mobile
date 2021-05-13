@@ -2,6 +2,7 @@
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Repository;
 
+using MapsuiPosition = Mapsui.UI.Forms.Position;
 using Mapsui;
 using Mapsui.Geometries;
 using Mapsui.Projection;
@@ -643,8 +644,8 @@ namespace Hunted_Mobile.ViewModel {
             mapModel.PlayingUser.Location = newLocation;
 
             // Send update to the map view
-            Mapsui.UI.Forms.Position mapsuiPosition = new Mapsui.UI.Forms.Position(newLocation.Latitude, newLocation.Longitude);
-            mapView.MyLocationLayer.UpdateMyLocation(mapsuiPosition, true);
+            MapsuiPosition position = new MapsuiPosition(newLocation.Latitude, newLocation.Longitude);
+            mapView.MyLocationLayer.UpdateMyLocation(position, true);
 
             DisplayPlayerPin();
 
@@ -658,7 +659,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void CenterMapOnLocation(Location center, double zoomResolution) {
-            Mapsui.Geometries.Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
+            Mapsui.Geometries.Point centerPoint = new MapsuiPosition(center.Latitude, center.Longitude).ToMapsui();
             mapView.Navigator.CenterOn(centerPoint);
             mapView.Navigator.NavigateTo(centerPoint, zoomResolution);
         }
@@ -668,7 +669,7 @@ namespace Hunted_Mobile.ViewModel {
         /// </summary>
         private void LimitMapViewport(Location center, int limit = 100000) {
             mapView.Map.Limiter = new ViewportLimiterKeepWithin();
-            Mapsui.Geometries.Point centerPoint = new Mapsui.UI.Forms.Position(center.Latitude, center.Longitude).ToMapsui();
+            Mapsui.Geometries.Point centerPoint = new MapsuiPosition(center.Latitude, center.Longitude).ToMapsui();
             Mapsui.Geometries.Point min = new Mapsui.Geometries.Point(centerPoint.X - limit, centerPoint.Y - limit);
             Mapsui.Geometries.Point max = new Mapsui.Geometries.Point(centerPoint.X + limit, centerPoint.Y + limit);
             mapView.Map.Limiter.PanLimits = new BoundingBox(min, max);
@@ -754,7 +755,7 @@ namespace Hunted_Mobile.ViewModel {
                 };
             }
 
-            playerPin.Position = new Mapsui.UI.Forms.Position(mapModel.PlayingUser.Location.Latitude, mapModel.PlayingUser.Location.Longitude);
+            playerPin.Position = new MapsuiPosition(mapModel.PlayingUser.Location.Latitude, mapModel.PlayingUser.Location.Longitude);
 
             if(!mapView.Pins.Contains(playerPin)) {
                 mapView.Pins.Add(playerPin);
@@ -782,7 +783,7 @@ namespace Hunted_Mobile.ViewModel {
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = user.UserName,
                         Color = user is Thief ? thiefPinColor : policePinColor,
-                        Position = new Mapsui.UI.Forms.Position(user.Location.Latitude, user.Location.Longitude),
+                        Position = new MapsuiPosition(user.Location.Latitude, user.Location.Longitude),
                         Scale = 0.666f,
                         Tag = user is Thief ? THIEF_TAG : null,
                         Transparency = 0.25f,
@@ -790,10 +791,9 @@ namespace Hunted_Mobile.ViewModel {
                 }
             }
 
-            // Closest thief for player
-            Player closestThief = null;
-
             if(mapModel.PlayingUser is Police) {
+                Player closestThief = null;
+
                 foreach(var thief in mapModel.Thiefs) {
                     if(closestThief == null) {
                         closestThief = thief;
@@ -807,7 +807,7 @@ namespace Hunted_Mobile.ViewModel {
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = closestThief.UserName,
                         Color = Xamarin.Forms.Color.Red,
-                        Position = new Mapsui.UI.Forms.Position(closestThief.Location.Latitude, closestThief.Location.Longitude),
+                        Position = new MapsuiPosition(closestThief.Location.Latitude, closestThief.Location.Longitude),
                         Scale = 0.666f,
                         Tag = THIEF_TAG,
                         Transparency = 0.25f,
@@ -819,7 +819,7 @@ namespace Hunted_Mobile.ViewModel {
             foreach(var loot in mapModel.GetLoot()) {
                 mapView.Pins.Add(new Pin(mapView) {
                     Label = loot.Name,
-                    Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
+                    Position = new MapsuiPosition(loot.Location.Latitude, loot.Location.Longitude),
                     Scale = 1.0f,
                     Tag = LOOT_TAG,
                     Icon = moneyBagIcon.Data,
@@ -831,7 +831,7 @@ namespace Hunted_Mobile.ViewModel {
             if(gameModel.PoliceStationLocation != null) {
                 mapView.Pins.Add(new Pin(mapView) {
                     Label = "Politie station",
-                    Position = new Mapsui.UI.Forms.Position(gameModel.PoliceStationLocation.Latitude, gameModel.PoliceStationLocation.Longitude),
+                    Position = new MapsuiPosition(gameModel.PoliceStationLocation.Latitude, gameModel.PoliceStationLocation.Longitude),
                     Scale = 1.0f,
                     Icon = policeBadgeIcon.Data,
                     Type = PinType.Icon,
