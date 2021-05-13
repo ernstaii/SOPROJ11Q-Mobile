@@ -31,26 +31,11 @@
                                  Spacing="0"
                                  HorizontalOptions="Center"
                                  >
-						<Label 
-                            Text="{Binding Hours, StringFormat='{0:D2}'}"
+                        <Label 
+                            Text="{Binding CounterDisplay}"
                             FontSize="18"
                             TextColor="RoyalBlue"/>
-						<Label
-                            Text=":"
-                            FontSize="18"
-                            TextColor="RoyalBlue"/>
-						<Label
-                            Text="{Binding Minutes, StringFormat='{0:D2}'}"
-                            FontSize="18"
-                            TextColor="RoyalBlue"/>
-						<Label
-                            Text=":"
-                            TextColor="RoyalBlue"/>
-						<Label
-                            Text="{Binding Seconds, StringFormat='{0:D2}'}"
-                            FontSize="18"
-                            TextColor="RoyalBlue"/>
-					</StackLayout>
+                    </StackLayout>
 				</Frame>
 			</StackLayout>
 			

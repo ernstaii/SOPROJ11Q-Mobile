@@ -24,9 +24,10 @@ using Xamarin.Forms;
 using System.Timers;
 using Newtonsoft.Json.Linq;
 using Hunted_Mobile.Model.Resource;
-using Hunted_Mobile.Enum;
 using Hunted_Mobile.View;
 using System.Linq;
+using Hunted_Mobile.Service.Map;
+using Hunted_Mobile.Enum;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -75,33 +76,12 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Resource chatIcon;
         private readonly Resource policeBadgeIcon;
         private readonly Resource moneyBagIcon;
-        private string selectedMainMenuOption = "";
 
         private readonly Countdown countdown;
-        private int hours;
-        private int minutes;
-        private int seconds;
-        private bool initialTimerStart = true;
-        private readonly DateTime dateTimeNow;
 
-        public int Hours {
-            get => hours;
-            set => SetProperty(ref hours, value);
-        }
+        public MainMenuOptions MainMenuOptions { get; set; } = new MainMenuOptions();
+        public string CounterDisplay => countdown.RemainTime.ToString(@"hh\:mm\:ss");
 
-        public int Minutes {
-            get => minutes;
-            set => SetProperty(ref minutes, value);
-        }
-
-        public int Seconds {
-            get => seconds;
-            set => SetProperty(ref seconds, value);
-        }
-
-        /// <summary>
-        /// This property will disable the touch of the user with the mapView
-        /// </summary>
         public bool IsEnabled {
             get => isEnabled;
             set {
@@ -200,9 +180,9 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public string SelectedMainMenuOption {
-            get => selectedMainMenuOption;
+            get => MainMenuOptions.SelectedMainMenuOption;
             set {
-                selectedMainMenuOption = value;
+                MainMenuOptions.SelectedMainMenuOption = value;
 
                 OnPropertyChanged("SelectedMainMenuOption");
             }
@@ -263,7 +243,6 @@ namespace Hunted_Mobile.ViewModel {
             this.inviteKeyRepository = inviteKeyRepository;
             this.borderMarkerRepository = borderMarkerRepository;
             countdown = new Countdown();
-            dateTimeNow = DateTime.Now;
             StartCountdown(0);
 
             chatIcon = resourceRepository.GetGuiImage("chat.png");
@@ -304,7 +283,7 @@ namespace Hunted_Mobile.ViewModel {
         });
 
         public ICommand NavigateToPlayersOverviewCommand => new Xamarin.Forms.Command((e) => {
-            SelectedMainMenuOption = MainMenuOptions.DisplayUsersOption;
+            SelectedMainMenuOption = MainMenuOptions.Options.DisplayUsersOption;
             NavigateToPlayersOverview();
         });
 
@@ -441,15 +420,15 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public void StartCountdown(double timeLeft) {
-            if(initialTimerStart) {
+            if(countdown.InitialTimerStart) {
                 countdown.EndDate = gameModel.EndTime;
-                initialTimerStart = false;
+                countdown.InitialTimerStart = false;
             }
             else {
                 countdown.EndDate = DateTime.Now.AddSeconds(timeLeft);
             }
-            countdown.Start();
 
+            countdown.Start();
             countdown.Ticked += OnCountdownTicked;
             countdown.Completed += OnCountdownCompleted;
         }
@@ -460,20 +439,12 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         void OnCountdownTicked() {
-            Hours = countdown.RemainTime.Hours;
-            Minutes = countdown.RemainTime.Minutes;
-            Seconds = countdown.RemainTime.Seconds;
-
-            var totalSeconds = (gameModel.EndTime - dateTimeNow).TotalSeconds;
-            var remainSeconds = countdown.RemainTime.TotalSeconds;
+            OnPropertyChanged(nameof(CounterDisplay));
         }
 
         void OnCountdownCompleted() {
-            Hours = 0;
-            Minutes = 0;
-            Seconds = 0;
+            countdown.RemainTime = new TimeSpan(0, 0, 0);
         }
-
 
         private void IntervalOfGame(JObject data) {
             StartIntervalTimer();
