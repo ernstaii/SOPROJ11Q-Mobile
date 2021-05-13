@@ -50,6 +50,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly UserRepository userRepository;
         private readonly InviteKeyRepository inviteKeyRepository;
         private readonly BorderMarkerRepository borderMarkerRepository;
+        private readonly NotificationRepository notificationRepository;
         private readonly GameRepository gameRepository;
         private readonly GpsService gpsService;
         private readonly WebSocketService webSocketService;
@@ -258,7 +259,7 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository, InviteKeyRepository inviteKeyRepository, BorderMarkerRepository borderMarkerRepository, ResourceRepository resourceRepository) {
+        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository, InviteKeyRepository inviteKeyRepository, BorderMarkerRepository borderMarkerRepository, ResourceRepository resourceRepository, NotificationRepository notificationRepository) {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
             this.gpsService = gpsService;
@@ -270,6 +271,7 @@ namespace Hunted_Mobile.ViewModel {
             this.gameRepository = gameRepository;
             this.inviteKeyRepository = inviteKeyRepository;
             this.borderMarkerRepository = borderMarkerRepository;
+            this.notificationRepository = notificationRepository;
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
             StartCountdown(0);
@@ -653,6 +655,10 @@ namespace Hunted_Mobile.ViewModel {
         /// Action to execute when the device location has updated
         /// </summary>
         private async void MyLocationUpdated(Location newLocation) {
+            bool wasWithinBoundary = mapModel.PlayingUser.Location == null
+                || mapModel.GameBoundary.Contains(mapModel.PlayingUser.Location);
+            bool isWithinBoundary = mapModel.GameBoundary.Contains(newLocation);
+
             mapModel.PlayingUser.Location = newLocation;
 
             // Send update to the map view
@@ -669,11 +675,15 @@ namespace Hunted_Mobile.ViewModel {
                 Initialized = true;
             }
 
-            if(mapModel.GameBoundary.Contains(newLocation)) {
+            if(isWithinBoundary) {
                 ShowOutsideBoundaryScreen = false;
             }
             else {
                 ShowOutsideBoundaryScreen = true;
+
+                if(wasWithinBoundary) {
+                    await NotifyLeavingBoundary();
+                }
             }
         }
 
@@ -880,6 +890,14 @@ namespace Hunted_Mobile.ViewModel {
         private void OnThiefClicked(Position position) {
             thiefToBeArrested = mapModel.FindThief(new Location(position));
             IsArrestingThief = thiefToBeArrested != null;
+        }
+
+        private async Task<bool> NotifyLeavingBoundary() {
+            return await notificationRepository.Create(
+                mapModel.PlayingUser.UserName + " heeft de spelgrenzen verlaten!",
+                gameModel.Id,
+                mapModel.PlayingUser.Id
+            );
         }
     }
 }

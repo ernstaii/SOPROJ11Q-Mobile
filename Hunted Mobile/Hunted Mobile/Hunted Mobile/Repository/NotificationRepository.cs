@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
     public class NotificationRepository {
-        public async Task<bool> CreateNotification(string message, int gameId, int? userId) {
+        public async Task<bool> Create(string message, int gameId, int? userId) {
             var response = new HttpClientResponse();
 
             object parameters;
