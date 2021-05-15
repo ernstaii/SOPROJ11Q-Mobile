@@ -253,7 +253,8 @@ namespace Hunted_Mobile.ViewModel {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
             this.gpsService = gpsService;
-            messagesView = new View.Messages(this.gameModel.Id);
+            var messageViewModel = new MessageViewModel(gameModel.Id);
+            messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameModel.Id);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
             this.lootRepository = lootRepository;

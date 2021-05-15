@@ -116,7 +116,9 @@ namespace Hunted_Mobile.ViewModel {
         });
 
         public async Task NavigateToEnterUsernamePage() {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new EnterUsername(InviteKeyModel));
+            var viewModel = new EnterUsernameViewModel(inviteKeyModel);
+            var view = new EnterUsername(viewModel);
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(view);
         }
     }
 }

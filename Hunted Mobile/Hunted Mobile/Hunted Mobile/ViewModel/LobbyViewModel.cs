@@ -23,7 +23,6 @@ namespace Hunted_Mobile.ViewModel {
         private readonly UserRepository userRepository = new UserRepository();
         private readonly GameRepository gameRepository = new GameRepository(); 
         private readonly InviteKeyRepository inviteKeyRepository = new InviteKeyRepository();
-        private readonly Lobby page;
         private readonly WebSocketService webSocketService;
 
         private bool isloading;
@@ -61,8 +60,7 @@ namespace Hunted_Mobile.ViewModel {
             get => new ObservableCollection<Player>(Users.Where(user => user is Police).ToList());
         }
 
-        public LobbyViewModel(Lobby page, Player currentUser) {
-            this.page = page;
+        public LobbyViewModel(Player currentUser) {
             this.currentUser = currentUser;
             gameModel.Id = this.currentUser.InviteKey.GameId;
 
