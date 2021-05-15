@@ -41,7 +41,7 @@ namespace Hunted_Mobile.Service {
                 var errorControlName = $"{memberName}{validationLabelSuffix}";
                 var control = page.FindByName<Label>(errorControlName);
                 if(control != null) {
-                    control.Text = $"{error.ErrorMessage}{Environment.NewLine}";
+                    control.Text = $"{error.ErrorMessage}{System.Environment.NewLine}";
                     control.IsVisible = true;
                 }
             }

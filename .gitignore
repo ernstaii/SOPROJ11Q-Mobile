@@ -1,4 +1,8 @@
 
+### Custom ###
+
+Hunted Mobile/Hunted Mobile/Hunted Mobile/appsettings.json
+
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudio,xamarinstudio
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,xamarinstudio
 
@@ -370,5 +374,3 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,xamarinstudio
-Hunted Mobile/Hunted Mobile/Hunted Mobile/Service/HttpClientService.cs
-Hunted Mobile/Hunted Mobile/Hunted Mobile/Service/HttpClientService.cs
