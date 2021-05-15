@@ -36,8 +36,10 @@ namespace Hunted_Mobile.ViewModel {
                 UserName = "Spelleider"
             });
 
-            // Scroll to top of CollectionView, because otherwise new items are not shown
-            CollectionView.ScrollTo(0, position: ScrollToPosition.Start);
+            if(CollectionView != null) {
+                // Scroll to top of CollectionView, because otherwise new items are not shown
+                CollectionView.ScrollTo(0, position: ScrollToPosition.Start);
+            }
         }
     }
 }
