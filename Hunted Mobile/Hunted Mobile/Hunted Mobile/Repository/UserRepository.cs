@@ -1,6 +1,7 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Service;
+using Hunted_Mobile.Service.Json;
 
 using Newtonsoft.Json.Linq;
 
@@ -45,11 +46,11 @@ namespace Hunted_Mobile.Repository {
             await usersResponse.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users-with-role"));
 
             var result = new List<Player>();
-            var jsonConverter = new JsonConversionService();
+            var jsonConverter = new ConvertFromJsonService(usersResponse.ResponseContent);
 
             // Looping through the result
-            foreach(string jsonUser in jsonConverter.ToArray(usersResponse.ResponseContent)) {
-                result.Add(jsonConverter.ConvertUserFromJson(jsonUser));
+            foreach(var userJson in jsonConverter.ToArray()) {
+                result.Add(new ConvertFromJsonService(userJson).ToPlayer());
             }
 
             return result;
