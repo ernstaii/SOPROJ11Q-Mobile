@@ -19,7 +19,7 @@ namespace Hunted_Mobile.Repository
 
             List<Location> result = new List<Location>();
 
-            foreach(JObject item in response.Items) {
+            foreach(JObject item in response.items) {
                 try {
                     result.Add(new Location(item.GetValue("location").ToString()));
                 }

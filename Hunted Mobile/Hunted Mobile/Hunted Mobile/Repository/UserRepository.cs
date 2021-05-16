@@ -45,31 +45,11 @@ namespace Hunted_Mobile.Repository {
             await usersResponse.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users-with-role"));
 
             var result = new List<Player>();
+            var jsonConverter = new JsonConversionService();
 
             // Looping through the result
-            foreach(JObject item in usersResponse.Items) {
-                try {
-                    string role = item.GetValue("role")?.ToString();
-                    int userId = (int) item.GetValue("id");
-
-                    Player user = new Player() {
-                        Id = userId,
-                        UserName = item.GetValue("username")?.ToString(),
-                        Location = new Location(item.GetValue("location")?.ToString()),
-                        CaughtAt = item.GetValue("caught_at")?.ToString(),
-                        Status = item.GetValue("status")?.ToString(),
-                        InviteKey = new InviteKey() {
-                            Role = role
-                        },
-                    };
-
-                    if(role == "thief") result.Add(new Thief(user));
-                    else if(role == "police") result.Add(new Police(user));
-                    else result.Add(user);
-                }
-                catch(Exception ex) {
-                    Console.WriteLine(ex.ToString());
-                }
+            foreach(string jsonUser in jsonConverter.ToArray(usersResponse.ResponseContent)) {
+                result.Add(jsonConverter.ConvertUserFromJson(jsonUser));
             }
 
             return result;

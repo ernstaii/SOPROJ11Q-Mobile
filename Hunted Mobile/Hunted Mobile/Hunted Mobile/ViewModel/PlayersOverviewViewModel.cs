@@ -59,10 +59,10 @@ namespace Hunted_Mobile.ViewModel {
             var newUser = new Player() {
                 Id = int.Parse(jUser.GetValue("id")?.ToString()),
                 UserName = jUser.GetValue("username")?.ToString(),
-                CaughtAt = jUser.GetValue("caught_at")?.ToString(),
             };
             string role = jUser.GetValue("role")?.ToString();
             if(role == "thief") {
+                ((Thief) newUser).CaughtAt = jUser.GetValue("caught_at")?.ToString();
                 users.Add(new Thief(newUser));
             }
             else users.Add(new Police(newUser));
@@ -76,10 +76,10 @@ namespace Hunted_Mobile.ViewModel {
                 var newUser = new Player() {
                     Id = int.Parse(jUser.GetValue("id")?.ToString()),
                     UserName = jUser.GetValue("username")?.ToString(),
-                    CaughtAt = jUser.GetValue("caught_at")?.ToString(),
                 };
                 string role = jUser.GetValue("role")?.ToString();
                 if(role == "thief") {
+                    ((Thief) newUser).CaughtAt = jUser.GetValue("caught_at")?.ToString();
                     updatedUsers.Add(new Thief(newUser));
                 }
                 else updatedUsers.Add(new Police(newUser));
@@ -91,8 +91,8 @@ namespace Hunted_Mobile.ViewModel {
             JObject jUserToUpdate = (JObject) data.GetValue("user");
             int id = int.Parse(jUserToUpdate.GetValue("id")?.ToString());
             foreach(Player player in Users) {
-                if(player.Id == id) {
-                    player.CaughtAt = jUserToUpdate.GetValue("caught_at")?.ToString();
+                if(player.Id == id && player is Thief) {
+                    ((Thief)player).CaughtAt = jUserToUpdate.GetValue("caught_at")?.ToString();
                     break;
                 }
             }

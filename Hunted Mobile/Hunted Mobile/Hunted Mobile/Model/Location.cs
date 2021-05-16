@@ -25,13 +25,13 @@ namespace Hunted_Mobile.Model {
         }
 
         public Location(string commaSeparatedLatitudeLongitude) {
-            string[] split = commaSeparatedLatitudeLongitude.Split(',');
             try {
+                string[] split = commaSeparatedLatitudeLongitude.Split(',');
                 Latitude = double.Parse(split[0]);
                 Longitude = double.Parse(split[1]);
             }
             catch(Exception ex) {
-                Console.WriteLine(ex.Message + " occurred when parsing comma separated location: " + commaSeparatedLatitudeLongitude);
+                Console.WriteLine(ex.Message + " occurred while parsing comma separated location: " + commaSeparatedLatitudeLongitude);
             }
         }
 

@@ -49,7 +49,7 @@ namespace Hunted_Mobile.Repository {
 
             List<InviteKey> inviteKeys = new List<InviteKey>();
 
-            foreach(JObject item in response.Items) {
+            foreach(JObject item in response.items) {
                 string role = item.GetValue("role")?.ToString();
                 var userId = item.GetValue("user_id");
                 if(!userId.HasValues) {

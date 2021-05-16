@@ -23,7 +23,7 @@ namespace Hunted_Mobile.Repository {
             var output = new List<Loot>();
 
             // Looping through the result
-            foreach(JObject item in response.Items) {
+            foreach(JObject item in response.items) {
                 var location = item.GetValue("location").ToString().Split(',');
 
                 try {

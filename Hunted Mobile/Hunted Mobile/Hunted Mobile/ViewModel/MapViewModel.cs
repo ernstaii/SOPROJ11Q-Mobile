@@ -779,7 +779,7 @@ namespace Hunted_Mobile.ViewModel {
             //TODO: the null checks here should probably be resolved elsewhere
             // Players
             foreach(var user in mapModel.GetUsers()) {
-                if(user.Location != null && user.UserName != null && !user.IsCaught && mapModel.PlayingUser.GetType() == user.GetType()) {
+                if(user.Location != null && user.UserName != null && mapModel.PlayingUser.GetType() == user.GetType()) {
 
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = user.UserName,

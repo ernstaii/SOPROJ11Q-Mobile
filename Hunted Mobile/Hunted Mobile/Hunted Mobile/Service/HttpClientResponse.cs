@@ -9,14 +9,15 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Service {
     public class HttpClientResponse {
+        public JObject item;
+        public JArray items;
+
         public HttpStatusCode Status => ResponseMessage != null ? ResponseMessage.StatusCode : HttpStatusCode.NoContent;
         public bool IsSuccessful => ResponseMessage != null && ResponseMessage.IsSuccessStatusCode;
         public bool HasMultipleResults { get; set; }
         public HttpResponseMessage ResponseMessage { get; set; }
 
         public string ResponseContent { get; set; }
-        public JObject Item { get; set; }
-        public JArray Items { get; set; }
 
         // Properties for getting and displaying errors
         public Dictionary<string, string> ErrorMessages { get; set; } = new Dictionary<string, string>();
@@ -63,10 +64,10 @@ namespace Hunted_Mobile.Service {
         protected void ConvertResponseContent() {
             try {
                 if(HasMultipleResults)
-                    Items = JArray.Parse(ResponseContent);
+                    items = JArray.Parse(ResponseContent);
 
                 if(!HasMultipleResults || HasMultipleResults && !IsSuccessful)
-                    Item = (JObject) JsonConvert.DeserializeObject(ResponseContent);
+                    item = (JObject) JsonConvert.DeserializeObject(ResponseContent);
             }
             catch(Exception) {
                 hasServerErrors = true;
@@ -89,7 +90,7 @@ namespace Hunted_Mobile.Service {
         }
 
         protected JToken GetValue(string key) {
-            return Item.GetValue(key);
+            return item.GetValue(key);
         }
 
         public string GetStringValue(string key) {
