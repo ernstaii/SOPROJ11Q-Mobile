@@ -39,7 +39,7 @@ namespace Hunted_Mobile.ViewModel {
             ARREST_THIEF_SCORE = 200;
 
         const string LOOT_TAG = "loot",
-            THIEF_TAG = "thief";
+            THIEF_TAG = PlayerRole.THIEF;
 
         private readonly Model.Map mapModel;
         private readonly LootRepository lootRepository;
@@ -306,7 +306,7 @@ namespace Hunted_Mobile.ViewModel {
             }
             mapModel.SetUsers(userList);
 
-            playersOverview = new View.PlayersOverviewPage(
+            playersOverview = new PlayersOverviewPage(
                 new PlayersOverviewViewModel(
                     new List<Player>(userList) { mapModel.PlayingUser },
                     webSocketService
@@ -339,6 +339,7 @@ namespace Hunted_Mobile.ViewModel {
 
         void OnCountdownCompleted() {
             countdown.RemainTime = new TimeSpan(0, 0, 0);
+            OnCountdownTicked();
         }
 
         private void IntervalOfGame(JObject data) {
@@ -347,21 +348,17 @@ namespace Hunted_Mobile.ViewModel {
             List<Player> userList = new List<Player>();
 
             foreach(JObject user in data.GetValue("users")) {
-                int userId = -1;
-                int.TryParse((string) user.GetValue("id"), out userId);
+                int.TryParse((string) user.GetValue("id"), out int userId);
 
                 if(userId != mapModel.PlayingUser.Id) {
-                    Location location = new Location((string) user.GetValue("location"));
-                    bool wasThief = (mapModel.GetUserById(userId) is Thief);
-                    Player newUser = new Player();
-                    if(user.GetValue("role").ToString() == "thief") {
-                        newUser = new Thief(newUser);
-                    }
-                    else newUser = new Police(newUser);
+                    Player newUser = new Player() {
+                        Id = userId,
+                        Location = new Location((string) user.GetValue("location")),
+                        UserName = (string) user.GetValue("username"),
+                    };
 
-                    newUser.Id = userId;
-                    newUser.UserName = ((string) user.GetValue("username"));
-                    newUser.Location = location;
+                    if(user.GetValue("role").ToString() == PlayerRole.THIEF) newUser = new Thief(newUser);
+                    else newUser = new Police(newUser);
 
                     userList.Add(newUser);
                 }
@@ -370,14 +367,10 @@ namespace Hunted_Mobile.ViewModel {
             List<Loot> lootList = new List<Loot>();
 
             foreach(JObject loot in data.GetValue("loot")) {
-                int id = int.Parse(loot.GetValue("id")?.ToString());
-                Location location = new Location(loot.GetValue("location")?.ToString());
-
-                Loot newLoot = new Loot(id);
-                newLoot.Name = loot.GetValue("name")?.ToString();
-                newLoot.Location = location;
-
-                lootList.Add(newLoot);
+                lootList.Add(new Loot((int) loot.GetValue("id")) {
+                    Location = new Location(loot.GetValue("location")?.ToString()),
+                    Name = loot.GetValue("name")?.ToString()
+                });
             }
 
             mapModel.SetUsers(userList);
@@ -415,13 +408,10 @@ namespace Hunted_Mobile.ViewModel {
                 }
 
                 gpsService.LocationChanged += MyLocationUpdated;
-
-                await StartSocket();
-
-                StartIntervalTimer();
-
                 mapView.PinClicked += HandlePinClickedCommand;
 
+                await StartSocket();
+                StartIntervalTimer();
                 RemovePreviousNavigation();
             });
         }
@@ -504,14 +494,13 @@ namespace Hunted_Mobile.ViewModel {
             // Send update to the map view
             MapsuiPosition position = new MapsuiPosition(newLocation.Latitude, newLocation.Longitude);
             mapView.MyLocationLayer.UpdateMyLocation(position, true);
-
-            // TODO: Is location of player in mapViewService up to date?
+            
             mapViewService.UpdatePlayerPinLocation(mapModel.PlayingUser.Location);
             OnPropertyChanged(nameof(IsCloseToSelectedLoot));
 
             if(!Initialized) {
-                await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
                 Initialized = true;
+                await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
             }
         }
 

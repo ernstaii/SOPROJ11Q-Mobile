@@ -1,4 +1,5 @@
-﻿using Hunted_Mobile.Model.GameModels;
+﻿using Hunted_Mobile.Enum;
+using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Service;
 
 using Newtonsoft.Json.Linq;
@@ -62,7 +63,7 @@ namespace Hunted_Mobile.ViewModel {
                 CaughtAt = jUser.GetValue("caught_at")?.ToString(),
             };
             string role = jUser.GetValue("role")?.ToString();
-            if(role == "thief") {
+            if(role == PlayerRole.THIEF) {
                 users.Add(new Thief(newUser));
             }
             else users.Add(new Police(newUser));
@@ -79,7 +80,7 @@ namespace Hunted_Mobile.ViewModel {
                     CaughtAt = jUser.GetValue("caught_at")?.ToString(),
                 };
                 string role = jUser.GetValue("role")?.ToString();
-                if(role == "thief") {
+                if(role == PlayerRole.THIEF) {
                     updatedUsers.Add(new Thief(newUser));
                 }
                 else updatedUsers.Add(new Police(newUser));

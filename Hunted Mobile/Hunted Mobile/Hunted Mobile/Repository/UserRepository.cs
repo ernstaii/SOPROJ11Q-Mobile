@@ -1,4 +1,5 @@
-﻿using Hunted_Mobile.Model;
+﻿using Hunted_Mobile.Enum;
+using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Service;
 
@@ -31,8 +32,8 @@ namespace Hunted_Mobile.Repository {
             };
             newUser.InviteKey.UserId = newUser.Id;
 
-            if(newUser.InviteKey.Role == "thief") return new Thief(newUser);
-            else if(newUser.InviteKey.Role == "police") return new Police(newUser);
+            if(newUser.InviteKey.Role == PlayerRole.THIEF) return new Thief(newUser);
+            else if(newUser.InviteKey.Role == PlayerRole.POLICE) return new Police(newUser);
             else return newUser;
         }
 
@@ -63,8 +64,8 @@ namespace Hunted_Mobile.Repository {
                         },
                     };
 
-                    if(role == "thief") result.Add(new Thief(user));
-                    else if(role == "police") result.Add(new Police(user));
+                    if(role == PlayerRole.THIEF) result.Add(new Thief(user));
+                    else if(role == PlayerRole.POLICE) result.Add(new Police(user));
                     else result.Add(user);
                 }
                 catch(Exception ex) {

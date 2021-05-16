@@ -7,11 +7,12 @@ using Xamarin.Forms;
 using System;
 using Hunted_Mobile.Model.Resource;
 using Hunted_Mobile.Repository;
+using Hunted_Mobile.Enum;
 
 namespace Hunted_Mobile.Service.Map {
     public class MapViewService {
         const string LOOT_TAG = "loot",
-            THIEF_TAG = "thief";
+            THIEF_TAG = PlayerRole.THIEF;
 
         private readonly Color policePinColor = Xamarin.Forms.Color.FromRgb(39, 96, 203),
             thiefPinColor = Xamarin.Forms.Color.Black;
@@ -91,8 +92,8 @@ namespace Hunted_Mobile.Service.Map {
 
         private void SetPlayerPin() {
             playerPin = new Pin(MapView) {
-                Label = this.player.UserName,
-                Color = this.player is Thief ? thiefPinColor : policePinColor,
+                Label = player.UserName,
+                Color = player is Thief ? thiefPinColor : policePinColor,
             };
         }
     }
