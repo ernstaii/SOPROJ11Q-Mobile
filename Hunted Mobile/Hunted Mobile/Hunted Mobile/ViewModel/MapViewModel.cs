@@ -529,7 +529,6 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-
         // In the Mockups, these options are not visible, so this method makes sure that the options are hidden
         private void DisableDefaultMapViewOptions() {
             mapView.IsZoomButtonVisible = false;
