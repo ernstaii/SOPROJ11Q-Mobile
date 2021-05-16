@@ -17,31 +17,37 @@ namespace Hunted_Mobile.Model {
         public Player PlayingUser { get; set; }
         public Boundary GameBoundary { get; set; }
 
+        public List<Police> Police => users.Where(user => user is Police).Select(user => new Police(user)).ToList();
+        public List<Thief> Thiefs => users.Where(user => user is Thief).Select(user => new Thief(user)).ToList();
+
         public Map() { }
 
         public void AddUser(Player user) {
-            users.Add(user);
+            if(user.IsValid) {
+                users.Add(user);
+            }
         }
+
         public void RemoveUser(Player user) {
             users.Remove(user);
         }
+
         public IEnumerable<Player> GetUsers() {
             return users.AsReadOnly();
         }
+
         public Player GetUserById(int id) {
-            foreach(Player user in users) {
-                if(user.Id == id) {
-                    return user;
-                }
-            }
-            return null;
+            return users.FirstOrDefault(user => user.Id == id);
         }
+
         public void SetUsers(IEnumerable<Player> users) {
-            this.users = new List<Player>(users);
+            this.users = users.Where(user => user.IsValid).ToList();
         }
 
         public void AddLoot(Loot loot) {
-            this.loot.Add(loot);
+            if(loot.IsValid) {
+                this.loot.Add(loot);
+            }
         }
 
         public void RemoveLoot(Loot loot) {
@@ -49,7 +55,7 @@ namespace Hunted_Mobile.Model {
         }
 
         public IEnumerable<Loot> GetLoot() {
-            return loot.AsReadOnly();
+            return loot.Where(item => item.IsValid).ToList().AsReadOnly();
         }
 
         public void SetLoot(IEnumerable<Loot> loot) {
@@ -61,7 +67,7 @@ namespace Hunted_Mobile.Model {
         }
 
         internal Thief FindThief(Location location) {
-            return users.Select(user => new Thief(user)).FirstOrDefault(user => user.Location.Equals(location));
+            return Thiefs.FirstOrDefault(thief => thief.Location.Equals(location));
         }
     }
 }
