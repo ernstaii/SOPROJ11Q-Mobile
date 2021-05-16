@@ -12,7 +12,7 @@ namespace Hunted_Mobile {
         private const string NAMESPACE = "Hunted_Mobile";
         private const string FILE_NAME = "appsettings.json";
 
-        private static AppSettingsManager instance;
+        private static AppSettingsManager instance = new AppSettingsManager();
         private readonly JObject secrets;
         private readonly Dictionary<string, string> retrievedValues;
 
@@ -31,15 +31,7 @@ namespace Hunted_Mobile {
             }
         }
 
-        public static AppSettingsManager Instance {
-            get {
-                if(instance == null) {
-                    instance = new AppSettingsManager();
-                }
-
-                return instance;
-            }
-        }
+        public static AppSettingsManager Instance => instance;
 
         private string GetRetrievedValuesKey(string[] nestedKey) {
             return string.Join(":", nestedKey);
