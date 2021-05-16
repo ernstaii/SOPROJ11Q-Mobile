@@ -68,9 +68,9 @@ namespace Hunted_Mobile.ViewModel {
 
             webSocketService = new WebSocketService(gameModel.Id);
 
+            IsLoading = true;
             Task.Run(async () => await LoadUsers());
             Task.Run(async () => {
-                IsLoading = true;
                 await StartSocket();
                 
                 // The socket-event should be set first, then the status can be checked
