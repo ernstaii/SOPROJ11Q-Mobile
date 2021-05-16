@@ -67,7 +67,7 @@
 
                     <BoxView VerticalOptions="FillAndExpand" />
 
-                    <Label Text="Houdt de knop 5 secondes ingedrukt om de buit op te pakken."
+                    <Label Text="Houd de knop 5 seconden ingedrukt om de buit op te pakken."
                            IsVisible="{Binding IsCloseToSelectedLoot}"
                            Margin="0,0,0,15"
                            HorizontalTextAlignment="Center" 
@@ -144,7 +144,7 @@
 
                     <BoxView VerticalOptions="FillAndExpand" />
 
-                    <Label Text="Houdt de knop 5 secondes ingedrukt om de dief op te pakken."
+                    <Label Text="Houd de knop 5 seconden ingedrukt om de dief op te pakken."
                            IsVisible="{Binding IsCloseToSelectedThief}"
                            Margin="0,0,0,15"
                            HorizontalTextAlignment="Center" 

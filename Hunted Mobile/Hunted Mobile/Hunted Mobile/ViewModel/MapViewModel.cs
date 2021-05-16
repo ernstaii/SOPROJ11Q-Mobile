@@ -816,7 +816,7 @@ namespace Hunted_Mobile.ViewModel {
                 if(thiefs.Count != 0) {
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = closestThief.UserName,
-                        Color = Xamarin.Forms.Color.Red,
+                        Color = Xamarin.Forms.Color.Black,
                         Position = new Mapsui.UI.Forms.Position(closestThief.Location.Latitude, closestThief.Location.Longitude),
                         Scale = 0.666f,
                         Tag = THIEF_TAG,
