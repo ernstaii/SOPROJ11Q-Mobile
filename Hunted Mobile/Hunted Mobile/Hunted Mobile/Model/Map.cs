@@ -23,7 +23,7 @@ namespace Hunted_Mobile.Model {
         public Map() { }
 
         public void AddUser(Player user) {
-            if(ValidUser(user)) {
+            if(user.IsValid) {
                 users.Add(user);
             }
         }
@@ -41,11 +41,11 @@ namespace Hunted_Mobile.Model {
         }
 
         public void SetUsers(IEnumerable<Player> users) {
-            this.users = users.Where(user => ValidUser(user)).ToList();
+            this.users = users.Where(user => user.IsValid).ToList();
         }
 
         public void AddLoot(Loot loot) {
-            if(ValidLoot(loot)) {
+            if(loot.IsValid) {
                 this.loot.Add(loot);
             }
         }
@@ -55,7 +55,7 @@ namespace Hunted_Mobile.Model {
         }
 
         public IEnumerable<Loot> GetLoot() {
-            return loot.Where(item => ValidLoot(item)).ToList().AsReadOnly();
+            return loot.Where(item => item.IsValid).ToList().AsReadOnly();
         }
 
         public void SetLoot(IEnumerable<Loot> loot) {
@@ -69,8 +69,5 @@ namespace Hunted_Mobile.Model {
         internal Thief FindThief(Location location) {
             return Thiefs.FirstOrDefault(thief => thief.Location.Equals(location));
         }
-
-        internal bool ValidUser(Player user) => user.UserName != null && user.Location != null;
-        internal bool ValidLoot(Loot loot) => loot .Name != null && loot.Location != null;
     }
 }
