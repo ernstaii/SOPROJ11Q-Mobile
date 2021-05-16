@@ -774,10 +774,9 @@ namespace Hunted_Mobile.ViewModel {
                 mapView.Pins.Add(playerPin);
             }
 
-            //TODO: the null checks here should probably be resolved elsewhere
             // Players
             foreach(var user in mapModel.GetUsers()) {
-                if(user.Location != null && user.UserName != null && !user.IsCaught && mapModel.PlayingUser.GetType() == user.GetType()) {
+                if(!user.IsCaught && mapModel.PlayingUser.GetType() == user.GetType()) {
 
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = user.UserName,
@@ -791,29 +790,19 @@ namespace Hunted_Mobile.ViewModel {
             }
 
             // Closest thief for player
-            List<Player> thiefs = new List<Player>();
-            Player closestThief = new Player();
-            bool firstThief = true;
+            Player closestThief = null;
 
             if(mapModel.PlayingUser is Police) {
-                foreach(var user in mapModel.GetUsers()) {
-                    if(user is Thief) {
-                        thiefs.Add(user);
-                    }
-                }
-
-                foreach(var thief in thiefs) {
-                    if(firstThief) {
+                foreach(var thief in mapModel.Thiefs) {
+                    if(closestThief == null) {
                         closestThief = thief;
-                        firstThief = false;
                     }
-
-                    if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
+                    else if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
                         closestThief = thief;
                     }
                 }
 
-                if(thiefs.Count != 0) {
+                if(closestThief != null) {
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = closestThief.UserName,
                         Color = Xamarin.Forms.Color.Black,
@@ -827,16 +816,14 @@ namespace Hunted_Mobile.ViewModel {
 
             // Loot
             foreach(var loot in mapModel.GetLoot()) {
-                if(loot.Name != null && loot.Location != null) {
-                    mapView.Pins.Add(new Pin(mapView) {
-                        Label = loot.Name,
-                        Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
-                        Scale = 1.0f,
-                        Tag = LOOT_TAG,
-                        Icon = moneyBagIcon.Data,
-                        Type = PinType.Icon,
-                    });
-                }
+                mapView.Pins.Add(new Pin(mapView) {
+                    Label = loot.Name,
+                    Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
+                    Scale = 1.0f,
+                    Tag = LOOT_TAG,
+                    Icon = moneyBagIcon.Data,
+                    Type = PinType.Icon,
+                });
             }
 
             // Police station

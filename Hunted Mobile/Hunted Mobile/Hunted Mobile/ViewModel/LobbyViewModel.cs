@@ -21,13 +21,13 @@ namespace Hunted_Mobile.ViewModel {
         private Game gameModel = new Game();
         private readonly Player currentUser;
         private readonly UserRepository userRepository = new UserRepository();
-        private readonly GameRepository gameRepository = new GameRepository(); 
+        private readonly GameRepository gameRepository = new GameRepository();
         private readonly InviteKeyRepository inviteKeyRepository = new InviteKeyRepository();
         private readonly Lobby page;
         private readonly WebSocketService webSocketService;
 
         private bool isloading;
-        
+
         public Game GameModel {
             get => gameModel;
             set {
@@ -67,9 +67,16 @@ namespace Hunted_Mobile.ViewModel {
             gameModel.Id = this.currentUser.InviteKey.GameId;
 
             webSocketService = new WebSocketService(gameModel.Id);
-            Task.Run(async () => await StartSocket());
+
+            IsLoading = true;
             Task.Run(async () => await LoadUsers());
-            Task.Run(async () => await CheckForStatus());
+            Task.Run(async () => {
+                await StartSocket();
+                
+                // The socket-event should be set first, then the status can be checked
+                await CheckForStatus();
+                IsLoading = false;
+            });
         }
 
         private async Task StartSocket() {
@@ -105,9 +112,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public async Task LoadUsers() {
-            IsLoading = true;
             Users = await userRepository.GetAll(GameModel.Id);
-            IsLoading = false;
         }
 
         public async Task CheckForStatus() {
