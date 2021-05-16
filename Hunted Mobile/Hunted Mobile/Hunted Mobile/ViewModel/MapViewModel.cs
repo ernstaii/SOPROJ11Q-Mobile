@@ -38,11 +38,7 @@ namespace Hunted_Mobile.ViewModel {
             PICK_UP_LOOT_SCORE = 50,
             ARREST_THIEF_SCORE = 200;
 
-        const string PAUSE_TITLE = "Gepauzeerd",
-            END_TITLE = "Het spel is afgelopen!",
-            PAUSE_DESCRIPTION = "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.",
-            END_DESCRIPTION = "Ga terug naar de spelleider!",
-            LOOT_TAG = "loot",
+        const string LOOT_TAG = "loot",
             THIEF_TAG = "thief";
 
         private readonly Xamarin.Forms.Color policePinColor = Xamarin.Forms.Color.FromRgb(39, 96, 203);
@@ -61,47 +57,25 @@ namespace Hunted_Mobile.ViewModel {
         private readonly View.Messages messagesView;
         private View.PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
-        private Timer lootTimer;
-        private Timer arrestingTimer;
+        private Timer holdingButtonTimer;
         private Pin playerPin;
-        private Thief thiefToBeArrested;
-        private bool isEnabled = true;
-        private bool gameHasEnded = false;
-        private bool isHandlingLoot = false;
+        private Thief selectedThief;
         private bool openMainMapMenu = false;
         private bool mainMapMenuButtonVisible = true;
-        private bool hasFinishedHandlingLoot = false;
-        private bool hasFinishedArrestingThief = false;
-        private bool isArrestingThief = false;
+        private bool isHoldingButton = false;
         private readonly Resource chatIcon;
         private readonly Resource policeBadgeIcon;
         private readonly Resource moneyBagIcon;
-
         private readonly Countdown countdown;
 
-        public MainMenuOptions MainMenuOptions { get; set; } = new MainMenuOptions();
         public string CounterDisplay => countdown.RemainTime.ToString(@"hh\:mm\:ss");
+        public MapDialog MapDialog { get; private set; } = new MapDialog();
 
-        public bool IsEnabled {
-            get => isEnabled;
+        public MapDialogOptions MapDialogOption {
+            get => MapDialog.SelectedDialog;
             set {
-                isEnabled = value;
-                if(mapView != null && mapView.Content != null)
-                    mapView.Content.IsEnabled = isEnabled;
-
-                OnPropertyChanged("IsEnabled");
-                OnPropertyChanged("VisibleOverlay");
-                OnPropertyChanged("TitleOverlay");
-                OnPropertyChanged("DescriptionOverlay");
-            }
-        }
-
-        public bool GameHasEnded {
-            get => gameHasEnded;
-            set {
-                gameHasEnded = value;
-
-                OnPropertyChanged("GameHasEnded");
+                MapDialog.SelectedDialog = value;
+                ToggleEnableStatusOnMapView();
             }
         }
 
@@ -120,77 +94,29 @@ namespace Hunted_Mobile.ViewModel {
         public Loot SelectedLoot {
             get => selectedLoot;
             set {
-                selectedLoot = value != null ? value : new Loot(0);
-
+                selectedLoot = value;
                 OnPropertyChanged("SelectedLoot");
-                OnPropertyChanged(nameof(IsCloseToSelectedLoot));
-                OnPropertyChanged(nameof(IsFarFromSelectedLoot));
             }
         }
 
-        public Thief ThiefToBeArrested {
-            get => thiefToBeArrested;
+        public Thief SelectedThief {
+            get => selectedThief;
             set {
-                thiefToBeArrested = value;
-                OnPropertyChanged("ThiefToBeArrested");
+                selectedThief = value;
+                OnPropertyChanged("SelectedThief");
             }
         }
 
-        public bool IsHandlingLoot {
-            get => isHandlingLoot;
+        public bool IsHoldingButton {
+            get => isHoldingButton;
             set {
-                isHandlingLoot = value;
-                if(value) HasFinishedHandlingLoot = false;
-
-                OnPropertyChanged("IsHandlingLoot");
-                OnPropertyChanged(nameof(IsCloseToSelectedLoot));
-                OnPropertyChanged(nameof(IsFarFromSelectedLoot));
-            }
-        }
-
-        public bool IsArrestingThief {
-            get => isArrestingThief;
-            set {
-                isArrestingThief = value;
-                if(value) HasFinishedArrestingThief = false;
-
-                OnPropertyChanged("IsArrestingThief");
-                OnPropertyChanged("IsCloseToSelectedThief");
-                OnPropertyChanged("IsFarFromSelectedThief");
-            }
-        }
-
-        public bool HasFinishedHandlingLoot {
-            get => hasFinishedHandlingLoot;
-            set {
-                hasFinishedHandlingLoot = value;
-                if(value) IsHandlingLoot = false;
-
-                OnPropertyChanged("HasFinishedHandlingLoot");
-            }
-        }
-
-        public bool HasFinishedArrestingThief {
-            get => hasFinishedArrestingThief;
-            set {
-                hasFinishedArrestingThief = value;
-                if(value) IsArrestingThief = false;
-                OnPropertyChanged("HasFinishedArrestingThief");
-            }
-        }
-
-        public string SelectedMainMenuOption {
-            get => MainMenuOptions.SelectedMainMenuOption;
-            set {
-                MainMenuOptions.SelectedMainMenuOption = value;
-
-                OnPropertyChanged("SelectedMainMenuOption");
+                isHoldingButton = value;
             }
         }
 
         public bool IsCloseToSelectedLoot {
             get {
-                if(IsHandlingLoot && mapModel != null && mapModel.PlayingUser != null && mapModel.PlayingUser.Location != null && SelectedLoot != null) {
+                if(IsHoldingButton && mapModel != null && mapModel.PlayingUser != null && mapModel.PlayingUser.Location != null && SelectedLoot != null) {
                     return mapModel.PlayingUser.Location.DistanceToOtherInMeters(SelectedLoot.Location) <= LOOT_PICKUP_MAX_DISTANCE_IN_METERS;
                 }
                 return false;
@@ -199,19 +125,14 @@ namespace Hunted_Mobile.ViewModel {
 
         public bool IsCloseToSelectedThief {
             get {
-                if(IsArrestingThief && mapModel != null && mapModel.PlayingUser != null && mapModel.PlayingUser.Location != null && ThiefToBeArrested != null) {
-                    return mapModel.PlayingUser.Location.DistanceToOtherInMeters(ThiefToBeArrested.Location) <= POLICE_ARREST_DISTANCE_IN_METERS;
+                if(IsHoldingButton && mapModel != null && mapModel.PlayingUser != null && mapModel.PlayingUser.Location != null && SelectedThief != null) {
+                    return mapModel.PlayingUser.Location.DistanceToOtherInMeters(SelectedThief.Location) <= POLICE_ARREST_DISTANCE_IN_METERS;
                 }
                 return false;
             }
         }
 
-        public bool IsFarFromSelectedLoot => !IsCloseToSelectedLoot;
-        public bool IsFarFromSelectedThief => !IsCloseToSelectedThief;
-        public bool VisibleOverlay => !IsEnabled;
         public bool Initialized { get; private set; }
-        public string TitleOverlay => GameHasEnded ? END_TITLE : PAUSE_TITLE;
-        public string DescriptionOverlay => GameHasEnded ? END_DESCRIPTION : PAUSE_DESCRIPTION;
 
         public int PlayingUserScore {
             get {
@@ -221,6 +142,7 @@ namespace Hunted_Mobile.ViewModel {
                 return 0;
             }
         }
+
         public string PlayingUserScoreDisplay => "Score: " + PlayingUserScore;
 
         public UriImageSource ChatIcon {
@@ -258,7 +180,7 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private void HandlePinClicked(object sender, PinClickedEventArgs args) {
+        private void HandlePinClickedCommand(object sender, PinClickedEventArgs args) {
             string tag = $"{args.Pin.Tag}";
 
             if(tag == LOOT_TAG && mapModel.PlayingUser is Thief) {
@@ -269,52 +191,52 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public ICommand ButtonSelectedCommand => new Command(async (e) => {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(messagesView);
+        public ICommand NavigateToPlayersOverviewCommand => new Xamarin.Forms.Command((e) => NavigateToPlayersOverview());
+
+        public ICommand NavigateToMessagePageCommand => new Command((e) => NavigateToMessagePage());
+
+
+        public ICommand ReleasingMapDialogActionButtonCommand => new Xamarin.Forms.Command((e) => {
+            if(holdingButtonTimer != null) {
+                holdingButtonTimer.Stop();
+                holdingButtonTimer = null;
+            }
+
+            IsHoldingButton = false;
         });
 
-        /// <summary>
-        /// Navigate to the RootPage
-        /// </summary>
-        public ICommand ExitGameCommand => new Xamarin.Forms.Command(async (e) => {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MainPage());
-            RemovePreviousNavigation();
-            await webSocketService.Disconnect();
+        public ICommand HoldingMapDialogActionButtonCommand => new Xamarin.Forms.Command((e) => {
+            IsHoldingButton = true;
+            holdingButtonTimer = new Timer();
+
+            // Interval is set with milisecondes
+            if(MapDialogOption == MapDialogOptions.DISPLAY_PICKUP_LOOT) {
+                holdingButtonTimer.Interval = LOOT_PICKUP_TIME_IN_SECONDES * 1000;
+                holdingButtonTimer.Elapsed += SuccessfullyPickedUpLoot;
+            }
+            else if(MapDialogOption == MapDialogOptions.DISPLAY_ARREST_THIEF) {
+                holdingButtonTimer.Interval = ARREST_THIEF_TIME_IN_SECONDES * 1000;
+                holdingButtonTimer.Elapsed += SuccessfullyArrestThief;
+            }
+
+            holdingButtonTimer.Start();
         });
 
-        public ICommand NavigateToPlayersOverviewCommand => new Xamarin.Forms.Command((e) => {
-            SelectedMainMenuOption = MainMenuOptions.Options.DisplayUsersOption;
-            NavigateToPlayersOverview();
+        public ICommand PressedMapDialogActionButtonCommand => new Xamarin.Forms.Command((e) => {
+            if(MapDialogOption == MapDialogOptions.DISPLAY_ARREST_THIEF_SUCCESFULLY || MapDialogOption == MapDialogOptions.DISPLAY_PICKUP_LOOT_SUCCESFULLY) {
+                MapDialogOption = MapDialogOptions.NONE;
+            }
+            else if(MapDialogOption == MapDialogOptions.DISPLAY_END_GAME) {
+                ExitGame();
+            }
         });
 
-        public ICommand PickupLootCommand => new Xamarin.Forms.Command((e) => {
-            HasFinishedHandlingLoot = true;
-        });
-
-        public ICommand ClosePickingLootCommand => new Xamarin.Forms.Command((e) => {
-            HasFinishedHandlingLoot = false;
-        });
-
-        public ICommand CancelPickUpLootCommand => new Xamarin.Forms.Command((e) => {
-            HasFinishedHandlingLoot = false;
-            IsHandlingLoot = false;
-        });
-
-        public ICommand ArrestThiefCommand => new Xamarin.Forms.Command((e) => {
-            HasFinishedArrestingThief = true;
-        });
-
-        public ICommand ClosArrestingThiefCommand => new Xamarin.Forms.Command((e) => {
-            HasFinishedArrestingThief = false;
-        });
-
-        public ICommand CancelArrestingThiefCommand => new Xamarin.Forms.Command((e) => {
-            HasFinishedArrestingThief = false;
-            IsArrestingThief = false;
+        public ICommand CloseMapDialogCommand => new Xamarin.Forms.Command((e) => {
+            IsHoldingButton = false;
+            MapDialogOption = MapDialogOptions.NONE;
         });
 
         public ICommand OpenMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
-            HasFinishedHandlingLoot = false;
             OpenMainMapMenu = true;
         });
 
@@ -322,42 +244,11 @@ namespace Hunted_Mobile.ViewModel {
             OpenMainMapMenu = false;
         });
 
-        public ICommand Button_PressedPickupLoot => new Xamarin.Forms.Command((e) => {
-            lootTimer = new Timer();
-
-            // Interval is set with milisecondes
-            lootTimer.Interval = LOOT_PICKUP_TIME_IN_SECONDES * 1000;
-            lootTimer.Elapsed += SuccessfullyPickedUpLoot;
-            lootTimer.Start();
-        });
-
-        public ICommand Button_ReleasedPickupLoot => new Xamarin.Forms.Command((e) => {
-            if(lootTimer != null) {
-                lootTimer.Stop();
-                lootTimer = null;
-            }
-        });
-
-        public ICommand Button_PressedArrestingThief => new Xamarin.Forms.Command((e) => {
-            arrestingTimer = new Timer();
-
-            // Interval is set with milisecondes
-            arrestingTimer.Interval = ARREST_THIEF_TIME_IN_SECONDES * 1000;
-            arrestingTimer.Elapsed += SuccessfullyArrestThief;
-            arrestingTimer.Start();
-        });
-
-        public ICommand Button_ReleasedArrestingThief => new Xamarin.Forms.Command((e) => {
-            if(arrestingTimer != null) {
-                arrestingTimer.Stop();
-                arrestingTimer = null;
-            }
-        });
-
         private void SuccessfullyPickedUpLoot(object sender, EventArgs e) {
-            lootTimer.Stop();
-            lootTimer = null;
-            HasFinishedHandlingLoot = true;
+            holdingButtonTimer.Stop();
+            holdingButtonTimer = null;
+            MapDialogOption = MapDialogOptions.DISPLAY_PICKUP_LOOT_SUCCESFULLY;
+            MapDialog.DisplayPickedUpLootSuccessfully(SelectedLoot.Name);
 
             Task.Run(async () => {
                 // Get latest score of game (in feature this should be replaced with socket event)
@@ -378,16 +269,17 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void SuccessfullyArrestThief(object sender, EventArgs e) {
-            arrestingTimer.Stop();
-            arrestingTimer = null;
-            HasFinishedArrestingThief = true;
+            holdingButtonTimer.Stop();
+            holdingButtonTimer = null;
+            MapDialogOption = MapDialogOptions.DISPLAY_ARREST_THIEF_SUCCESFULLY;
+            MapDialog.DisplayArrestedThiefSuccessfully(SelectedThief.UserName);
 
             Task.Run(async () => {
                 // Get latest score of game (in feature this should be replaced with socket event)
                 gameModel = await gameRepository.GetGame(gameModel.Id);
                 gameModel.PoliceScore += ARREST_THIEF_SCORE;
 
-                bool isCaught = await userRepository.CatchThief(ThiefToBeArrested.Id);
+                bool isCaught = await userRepository.CatchThief(SelectedThief.Id);
                 if(isCaught) {
                     await gameRepository.UpdatePoliceScore(gameModel.Id, gameModel.PoliceScore);
                     OnPropertyChanged(nameof(PlayingUserScore));
@@ -533,7 +425,7 @@ namespace Hunted_Mobile.ViewModel {
 
                 StartIntervalTimer();
 
-                mapView.PinClicked += HandlePinClicked;
+                mapView.PinClicked += HandlePinClickedCommand;
 
                 RemovePreviousNavigation();
             });
@@ -581,23 +473,23 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void EndGame(JObject data) {
-            GameHasEnded = true;
-            IsEnabled = false;
+            MapDialogOption = MapDialogOptions.DISPLAY_END_GAME;
+            MapDialog.DisplayEndScreen();
 
             StopIntervalTimer();
         }
 
         private void PauseGame(JObject data) {
-            IsEnabled = false;
+            MapDialogOption = MapDialogOptions.DISPLAY_PAUSE;
+            MapDialog.DisplayPauseScreen();
             StopCountdown();
 
             StopIntervalTimer();
         }
 
         private void ResumeGame(JObject data) {
-            IsEnabled = true;
+            MapDialogOption = MapDialogOptions.NONE;
             StartCountdown(Convert.ToDouble(data.GetValue("timeLeft")));
-
             StartIntervalTimer();
         }
 
@@ -619,9 +511,7 @@ namespace Hunted_Mobile.ViewModel {
             mapView.MyLocationLayer.UpdateMyLocation(position, true);
 
             DisplayPlayerPin();
-
             OnPropertyChanged(nameof(IsCloseToSelectedLoot));
-            OnPropertyChanged(nameof(IsFarFromSelectedLoot));
 
             if(!Initialized) {
                 await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
@@ -737,6 +627,10 @@ namespace Hunted_Mobile.ViewModel {
             Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(playersOverview);
         }
 
+        private void NavigateToMessagePage() {
+            Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(messagesView);
+        }
+
         /// <summary>
         /// Displays pins for all game objects with a location
         /// </summary>
@@ -750,7 +644,6 @@ namespace Hunted_Mobile.ViewModel {
             // Players
             foreach(var user in mapModel.GetUsers()) {
                 if(!user.IsCaught && mapModel.PlayingUser.GetType() == user.GetType()) {
-
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = user.UserName,
                         Color = user is Thief ? thiefPinColor : policePinColor,
@@ -762,6 +655,7 @@ namespace Hunted_Mobile.ViewModel {
                 }
             }
 
+            // If current user has role as Police
             if(mapModel.PlayingUser is Police) {
                 Player closestThief = null;
 
@@ -812,12 +706,24 @@ namespace Hunted_Mobile.ViewModel {
 
         private void OnLootClicked(Position position) {
             SelectedLoot = mapModel.FindLoot(new Location(position));
-            IsHandlingLoot = SelectedLoot != null;
+            MapDialogOption = MapDialogOptions.DISPLAY_PICKUP_LOOT;
+            MapDialog.DisplayPickingUpLoot(SelectedLoot.Name);
         }
 
         private void OnThiefClicked(Position position) {
-            thiefToBeArrested = mapModel.FindThief(new Location(position));
-            IsArrestingThief = thiefToBeArrested != null;
+            SelectedThief = mapModel.FindThief(new Location(position));
+            MapDialogOption = MapDialogOptions.DISPLAY_ARREST_THIEF;
+            MapDialog.DisplayArrestingThief(SelectedThief.UserName);
+        }
+
+        private void ToggleEnableStatusOnMapView() {
+            mapView.Content.IsEnabled = MapDialogOption == MapDialogOptions.NONE;
+        }
+
+        private void ExitGame() {
+            Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MainPage());
+            RemovePreviousNavigation();
+            webSocketService.Disconnect();
         }
     }
 }
