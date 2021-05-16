@@ -460,6 +460,7 @@ namespace Hunted_Mobile.ViewModel {
         private void EndGame(JObject data) {
             MapDialogOption = MapDialogOptions.DISPLAY_END_GAME;
             MapDialog.DisplayEndScreen();
+            StopCountdown();
 
             StopIntervalTimer();
         }
