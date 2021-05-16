@@ -671,23 +671,16 @@ namespace Hunted_Mobile.ViewModel {
             OnPropertyChanged(nameof(IsFarFromSelectedLoot));
 
             if(!Initialized) {
-                await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
                 Initialized = true;
+                await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
             }
 
-            if(isWithinBoundary) {
-                ShowOutsideBoundaryScreen = false;
-
-                if(!wasWithinBoundary) {
-                    await NotifyEnteringBoundary();
-                }
+            ShowOutsideBoundaryScreen = !isWithinBoundary;
+            if(isWithinBoundary && !wasWithinBoundary) {
+                await PostNotificationAboutPlayer(mapModel.PlayingUser.UserName + " bevindt zich weer binnen de spelgrenzen.");
             }
-            else {
-                ShowOutsideBoundaryScreen = true;
-
-                if(wasWithinBoundary) {
-                    await NotifyLeavingBoundary();
-                }
+            else if(!isWithinBoundary && wasWithinBoundary) {
+                await PostNotificationAboutPlayer(mapModel.PlayingUser.UserName + " heeft de spelgrenzen verlaten!");
             }
         }
 
@@ -896,17 +889,9 @@ namespace Hunted_Mobile.ViewModel {
             IsArrestingThief = thiefToBeArrested != null;
         }
 
-        private async Task<bool> NotifyLeavingBoundary() {
+        private async Task<bool> PostNotificationAboutPlayer(string message) {
             return await notificationRepository.Create(
-                mapModel.PlayingUser.UserName + " heeft de spelgrenzen verlaten!",
-                gameModel.Id,
-                mapModel.PlayingUser.Id
-            );
-        }
-
-        private async Task<bool> NotifyEnteringBoundary() {
-            return await notificationRepository.Create(
-                mapModel.PlayingUser.UserName + " bevindt zich weer binnen de spelgrenzen.",
+                message,
                 gameModel.Id,
                 mapModel.PlayingUser.Id
             );

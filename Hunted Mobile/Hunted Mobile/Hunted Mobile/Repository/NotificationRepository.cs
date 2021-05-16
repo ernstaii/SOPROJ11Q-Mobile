@@ -10,15 +10,11 @@ namespace Hunted_Mobile.Repository {
         public async Task<bool> Create(string message, int gameId, int? userId) {
             var response = new HttpClientResponse();
 
-            object parameters;
-            if(userId == null) {
-                parameters = new {
-                    message = message,
-                };
-            }
-            else parameters = new {
+            dynamic parameters = new {
                 message = message,
-                user_id = userId,
+            };
+            if(userId != null) {
+                parameters.user_id = userId;
             };
 
             await response.Convert(HttpClientRequestService.Create($"games/{gameId}/notifications", parameters));
