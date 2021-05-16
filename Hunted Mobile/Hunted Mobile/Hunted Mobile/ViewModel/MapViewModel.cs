@@ -41,32 +41,36 @@ namespace Hunted_Mobile.ViewModel {
         const string LOOT_TAG = "loot",
             THIEF_TAG = "thief";
 
-        private readonly Xamarin.Forms.Color policePinColor = Xamarin.Forms.Color.FromRgb(39, 96, 203);
-        private readonly Xamarin.Forms.Color thiefPinColor = Xamarin.Forms.Color.Black;
         private readonly Model.Map mapModel;
         private readonly LootRepository lootRepository;
         private readonly UserRepository userRepository;
         private readonly InviteKeyRepository inviteKeyRepository;
         private readonly BorderMarkerRepository borderMarkerRepository;
+        private readonly ResourceRepository resourceRepository;
         private readonly GameRepository gameRepository;
         private readonly GpsService gpsService;
         private readonly WebSocketService webSocketService;
         private Loot selectedLoot = new Loot(0);
         private Game gameModel;
-        private MapView mapView;
         private readonly View.Messages messagesView;
         private View.PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
         private Timer holdingButtonTimer;
-        private Pin playerPin;
         private Thief selectedThief;
         private bool openMainMapMenu = false;
         private bool mainMapMenuButtonVisible = true;
         private bool isHoldingButton = false;
         private readonly Resource chatIcon;
-        private readonly Resource policeBadgeIcon;
-        private readonly Resource moneyBagIcon;
         private readonly Countdown countdown;
+        private MapViewService mapViewService;
+#pragma warning disable IDE1006 // Naming Styles
+        private MapView mapView {
+            get => mapViewService?.MapView;
+            set {
+                mapViewService.MapView = value;
+            }
+        }
+#pragma warning restore IDE1006 // Naming Styles
 
         public string CounterDisplay => countdown.RemainTime.ToString(@"hh\:mm\:ss");
         public MapDialog MapDialog { get; private set; } = new MapDialog();
@@ -164,13 +168,12 @@ namespace Hunted_Mobile.ViewModel {
             this.gameRepository = gameRepository;
             this.inviteKeyRepository = inviteKeyRepository;
             this.borderMarkerRepository = borderMarkerRepository;
+            this.resourceRepository = resourceRepository;
             countdown = new Countdown();
             StartCountdown(0);
 
             chatIcon = resourceRepository.GetGuiImage("chat.png");
             OnPropertyChanged(nameof(ChatIcon));
-            policeBadgeIcon = resourceRepository.GetMapImage("police-badge.png");
-            moneyBagIcon = resourceRepository.GetMapImage("money-bag.png");
 
             if(gameModel.Status == GameStatus.PAUSED) {
                 PauseGame(null);
@@ -263,7 +266,7 @@ namespace Hunted_Mobile.ViewModel {
                     OnPropertyChanged(nameof(PlayingUserScore));
                     OnPropertyChanged(nameof(PlayingUserScoreDisplay));
                     await PollLoot();
-                    DisplayOtherPins();
+                    DisplayAllPins();
                 }
             });
         }
@@ -380,26 +383,18 @@ namespace Hunted_Mobile.ViewModel {
             mapModel.SetUsers(userList);
             mapModel.SetLoot(lootList);
 
-            DisplayOtherPins();
+            DisplayAllPins();
         }
 
         public void SetMapView(MapView mapView) {
             bool initializedBefore = this.mapView != null;
-            this.mapView = mapView;
-            DisableDefaultMapViewOptions();
+            mapViewService = new MapViewService(mapView, mapModel.PlayingUser, resourceRepository);
 
             if(!initializedBefore) {
                 InitializeMap();
             }
         }
 
-
-        // In the Mockups, these options are not visible, so this method makes sure that the options are hidden
-        private void DisableDefaultMapViewOptions() {
-            mapView.IsZoomButtonVisible = false;
-            mapView.IsNorthingButtonVisible = false;
-            mapView.IsMyLocationButtonVisible = false;
-        }
 
         private void RemovePreviousNavigation() {
             var navigation = Application.Current.MainPage.Navigation;
@@ -496,7 +491,7 @@ namespace Hunted_Mobile.ViewModel {
         private void ThiefStatusChanged(JObject data) {
             Task.Run(async () => {
                 await PollUsers();
-                DisplayOtherPins();
+                DisplayAllPins();
             });
         }
 
@@ -510,7 +505,8 @@ namespace Hunted_Mobile.ViewModel {
             MapsuiPosition position = new MapsuiPosition(newLocation.Latitude, newLocation.Longitude);
             mapView.MyLocationLayer.UpdateMyLocation(position, true);
 
-            DisplayPlayerPin();
+            // TODO: Is location of player in mapViewService up to date?
+            mapViewService.UpdatePlayerPinLocation(mapModel.PlayingUser.Location);
             OnPropertyChanged(nameof(IsCloseToSelectedLoot));
 
             if(!Initialized) {
@@ -608,21 +604,6 @@ namespace Hunted_Mobile.ViewModel {
             };
         }
 
-        private void DisplayPlayerPin() {
-            if(playerPin == null) {
-                playerPin = new Pin(mapView) {
-                    Label = mapModel.PlayingUser.UserName,
-                    Color = mapModel.PlayingUser is Thief ? thiefPinColor : policePinColor,
-                };
-            }
-
-            playerPin.Position = new MapsuiPosition(mapModel.PlayingUser.Location.Latitude, mapModel.PlayingUser.Location.Longitude);
-
-            if(!mapView.Pins.Contains(playerPin)) {
-                mapView.Pins.Add(playerPin);
-            }
-        }
-
         private void NavigateToPlayersOverview() {
             Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(playersOverview);
         }
@@ -634,74 +615,38 @@ namespace Hunted_Mobile.ViewModel {
         /// <summary>
         /// Displays pins for all game objects with a location
         /// </summary>
-        private void DisplayOtherPins() {
+        private void DisplayAllPins() {
             mapView.Pins.Clear();
+            mapViewService.AddPlayerPin();
+            mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
 
-            if(playerPin != null) {
-                mapView.Pins.Add(playerPin);
-            }
-
-            // Players
             foreach(var user in mapModel.GetUsers()) {
-                if(!user.IsCaught && mapModel.PlayingUser.GetType() == user.GetType()) {
-                    mapView.Pins.Add(new Pin(mapView) {
-                        Label = user.UserName,
-                        Color = user is Thief ? thiefPinColor : policePinColor,
-                        Position = new MapsuiPosition(user.Location.Latitude, user.Location.Longitude),
-                        Scale = 0.666f,
-                        Tag = user is Thief ? THIEF_TAG : null,
-                        Transparency = 0.25f,
-                    });
-                }
+                mapViewService.AddTeamMatePin(user);
             }
 
             // If current user has role as Police
-            if(mapModel.PlayingUser is Police) {
-                Player closestThief = null;
-
-                foreach(var thief in mapModel.Thiefs) {
-                    if(closestThief == null) {
-                        closestThief = thief;
-                    }
-                    else if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
-                        closestThief = thief;
-                    }
-                }
-
-                if(closestThief != null) {
-                    mapView.Pins.Add(new Pin(mapView) {
-                        Label = closestThief.UserName,
-                        Color = Xamarin.Forms.Color.Red,
-                        Position = new MapsuiPosition(closestThief.Location.Latitude, closestThief.Location.Longitude),
-                        Scale = 0.666f,
-                        Tag = THIEF_TAG,
-                        Transparency = 0.25f,
-                    });
-                }
+            if(mapModel.PlayingUser is Police && mapModel.Thiefs.Count > 0) {
+                mapViewService.AddClosestThiefPin(GetClosestThief());
             }
 
-            // Loot
             foreach(var loot in mapModel.GetLoot()) {
-                mapView.Pins.Add(new Pin(mapView) {
-                    Label = loot.Name,
-                    Position = new MapsuiPosition(loot.Location.Latitude, loot.Location.Longitude),
-                    Scale = 1.0f,
-                    Tag = LOOT_TAG,
-                    Icon = moneyBagIcon.Data,
-                    Type = PinType.Icon,
-                });
+                mapViewService.AddLootPin(loot);
+            }
+        }
+
+        private Player GetClosestThief() {
+            Player closestThief = null;
+
+            foreach(var thief in mapModel.Thiefs) {
+                if(closestThief == null) {
+                    closestThief = thief;
+                }
+                else if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
+                    closestThief = thief;
+                }
             }
 
-            // Police station
-            if(gameModel.PoliceStationLocation != null) {
-                mapView.Pins.Add(new Pin(mapView) {
-                    Label = "Politie station",
-                    Position = new MapsuiPosition(gameModel.PoliceStationLocation.Latitude, gameModel.PoliceStationLocation.Longitude),
-                    Scale = 1.0f,
-                    Icon = policeBadgeIcon.Data,
-                    Type = PinType.Icon,
-                });
-            }
+            return closestThief;
         }
 
         private void OnLootClicked(Position position) {
