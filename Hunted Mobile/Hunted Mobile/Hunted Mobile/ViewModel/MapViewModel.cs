@@ -865,7 +865,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private async Task<bool> PostNotificationAboutPlayer(string message) {
-            return await notificationRepository.Create(
+            return await UnitOfWork.Instance.NotificationRepository.Create(
                 message,
                 gameModel.Id,
                 mapModel.PlayingUser.Id
