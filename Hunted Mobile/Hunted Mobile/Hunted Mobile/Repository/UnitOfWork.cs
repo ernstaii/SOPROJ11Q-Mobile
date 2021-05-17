@@ -10,7 +10,7 @@ namespace Hunted_Mobile.Repository {
         private LootRepository lootRepo;
         private ResourceRepository resourcesRepo;
         private UserRepository usersRepo;
-
+        private NotificationRepository notificationsRepo;
         private static readonly UnitOfWork instance = new UnitOfWork();
 
         public static UnitOfWork Instance => instance;
@@ -66,6 +66,15 @@ namespace Hunted_Mobile.Repository {
                     usersRepo = new UserRepository();
                 }
                 return usersRepo;
+            }
+        }
+
+        public NotificationRepository NotificationRepository {
+            get {
+                if(notificationsRepo == null) {
+                    notificationsRepo = new NotificationRepository();
+                }
+                return notificationsRepo;
             }
         }
     }

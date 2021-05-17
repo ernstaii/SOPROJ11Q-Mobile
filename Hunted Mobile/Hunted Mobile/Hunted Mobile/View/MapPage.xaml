@@ -208,6 +208,34 @@
                 </StackLayout>
             </Frame>
 
+            <!-- Screen to notify player is outside of boundary -->
+            <Frame CornerRadius="10" OutlineColor="Black" Margin="25,80" BackgroundColor="White" IsVisible="{Binding ShowOutsideBoundaryScreen}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+                <StackLayout>
+                    <Label Text="Keer terug!"
+                           Padding="5"
+                           Margin="0,25,0,0" 
+                           HorizontalTextAlignment="Center" 
+                           TextColor="Black" 
+                           FontAttributes="Bold" 
+                           FontSize="30"/>
+
+                    <BoxView VerticalOptions="FillAndExpand" />
+
+                    <Label Text="Je bevindt je buiten de spelgrens! Ga zo snel mogelijk terug."
+                           Margin="0,0,0,15"
+                           HorizontalTextAlignment="Center" 
+                           TextColor="Black" 
+                           FontSize="16"/>
+
+                    <BoxView VerticalOptions="FillAndExpand" />
+
+                    <Button Text="Sluiten"
+                            CornerRadius="30" 
+                            Command="{Binding CloseOutsideOfBoundaryScreenCommand}"
+                            Margin="0, 0, 0, 20"/>
+                </StackLayout>
+            </Frame>
+
             <!-- Button for opening the Main Map Menu -->
             <Button Text="X"
                     IsVisible="{Binding MainMapMenuButtonVisible}"

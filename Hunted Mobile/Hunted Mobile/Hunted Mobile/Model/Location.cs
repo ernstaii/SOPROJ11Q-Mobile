@@ -68,6 +68,7 @@ namespace Hunted_Mobile.Model {
         }
 
         // https://stackoverflow.com/a/11172685
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Mathatmatical notations")]
         public double DistanceToOtherInMeters(Location other) {
             var R = 6378.137; // Radius of earth in KM
             var dLat = other.Latitude * Math.PI / 180 - Latitude * Math.PI / 180;
