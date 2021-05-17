@@ -87,7 +87,7 @@ namespace Hunted_Mobile.Repository {
             var response = new HttpClientResponse();
 
             await response.Convert(HttpClientRequestService.Put($"users/{userId}", new {
-                location = location.ToCsvString()
+                location = location.ToCsvString(),
             }));
 
             return response.ResponseContent != null;

@@ -157,6 +157,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository, InviteKeyRepository inviteKeyRepository, BorderMarkerRepository borderMarkerRepository, ResourceRepository resourceRepository) {
+            UpdateUserLocation();
             this.mapModel = mapModel;
             this.gameModel = gameModel;
             this.gpsService = gpsService;
@@ -396,6 +397,11 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
+        private async void UpdateUserLocation() {
+            // Update location and lastVerifiedAt from user
+            await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
+        }
+
         private void InitializeMap() {
             AddOsmLayerToMapView();
 
@@ -432,11 +438,9 @@ namespace Hunted_Mobile.ViewModel {
             intervalUpdateTimer.Start();
         }
 
-        private async void PreIntervalUpdate(object sender = null, ElapsedEventArgs args = null) {
+        private void PreIntervalUpdate(object sender = null, ElapsedEventArgs args = null) {
             StopIntervalTimer();
-
-            // Send the current user's location to the database
-            await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
+            UpdateUserLocation();
         }
 
         private async Task StartSocket() {
@@ -495,13 +499,13 @@ namespace Hunted_Mobile.ViewModel {
             // Send update to the map view
             MapsuiPosition position = new MapsuiPosition(newLocation.Latitude, newLocation.Longitude);
             mapView.MyLocationLayer.UpdateMyLocation(position, true);
-            
+
             mapViewService.UpdatePlayerPinLocation(mapModel.PlayingUser.Location);
             OnPropertyChanged(nameof(IsCloseToSelectedLoot));
 
             if(!Initialized) {
                 Initialized = true;
-                await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
+                UpdateUserLocation();
             }
         }
 
