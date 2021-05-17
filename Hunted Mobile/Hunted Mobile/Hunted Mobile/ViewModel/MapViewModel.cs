@@ -33,8 +33,8 @@ namespace Hunted_Mobile.ViewModel {
             ARREST_THIEF_TIME_IN_SECONDES = 5,
             LOOT_PICKUP_MAX_DISTANCE_IN_METERS = 10,
             POLICE_ARREST_DISTANCE_IN_METERS = 10,
-            PICK_UP_LOOT_SCORE = 50,
-            ARREST_THIEF_SCORE = 200;
+            PICK_UP_LOOT_SCORE = 1,
+            ARREST_THIEF_SCORE = 1;
 
         const string PAUSE_TITLE = "Gepauzeerd",
             END_TITLE = "Het spel is afgelopen!",
@@ -529,7 +529,6 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-
         // In the Mockups, these options are not visible, so this method makes sure that the options are hidden
         private void DisableDefaultMapViewOptions() {
             mapView.IsZoomButtonVisible = false;
@@ -806,7 +805,7 @@ namespace Hunted_Mobile.ViewModel {
                 if(closestThief != null) {
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = closestThief.UserName,
-                        Color = Xamarin.Forms.Color.Red,
+                        Color = Xamarin.Forms.Color.Black,
                         Position = new Mapsui.UI.Forms.Position(closestThief.Location.Latitude, closestThief.Location.Longitude),
                         Scale = 0.666f,
                         Tag = THIEF_TAG,
