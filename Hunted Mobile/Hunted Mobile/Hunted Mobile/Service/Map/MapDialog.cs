@@ -170,7 +170,7 @@ namespace Hunted_Mobile.Service.Map {
         public void DisplayBoundaryScreen() {
             SetContent("Keer terug!", "Je bevindt je buiten de spelgrens! Ga zo snel mogelijk terug.");
             HandleButtonText = "Terug naar hoofdscherm";
-            SetActionButtons();
+            SetActionButtons(false);
         }
     }
 }
