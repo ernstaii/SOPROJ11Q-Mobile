@@ -62,8 +62,9 @@ namespace Hunted_Mobile.ViewModel {
             };
             string role = jUser.GetValue("role")?.ToString();
             if(role == "thief") {
-                ((Thief) newUser).CaughtAt = jUser.GetValue("caught_at")?.ToString();
-                users.Add(new Thief(newUser));
+                Thief thief = new Thief(newUser);
+                thief.CaughtAt = jUser.GetValue("caught_at")?.ToString();
+                users.Add(thief);
             }
             else users.Add(new Police(newUser));
 
@@ -79,8 +80,9 @@ namespace Hunted_Mobile.ViewModel {
                 };
                 string role = jUser.GetValue("role")?.ToString();
                 if(role == "thief") {
-                    ((Thief) newUser).CaughtAt = jUser.GetValue("caught_at")?.ToString();
-                    updatedUsers.Add(new Thief(newUser));
+                    Thief thief = new Thief(newUser);
+                    thief.CaughtAt = jUser.GetValue("caught_at")?.ToString();
+                    updatedUsers.Add(thief);
                 }
                 else updatedUsers.Add(new Police(newUser));
             }
