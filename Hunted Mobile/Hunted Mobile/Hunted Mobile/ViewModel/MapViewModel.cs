@@ -263,6 +263,7 @@ namespace Hunted_Mobile.ViewModel {
 
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
+            BeforeStartCountdown();
             StartCountdown(0);
 
             chatIcon = UnitOfWork.Instance.ResourceRepository.GetGuiImage("chat.png");
@@ -568,6 +569,11 @@ namespace Hunted_Mobile.ViewModel {
 
                 RemovePreviousNavigation();
             });
+        }
+
+        private void BeforeStartCountdown() {
+            double diffInSecondes = (gameModel.StartTime - dateTimeNow).TotalSeconds;
+            gameModel.EndTime.AddSeconds(-diffInSecondes);
         }
 
         private void StopIntervalTimer() {
