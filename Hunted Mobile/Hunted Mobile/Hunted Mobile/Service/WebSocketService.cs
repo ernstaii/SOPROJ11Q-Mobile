@@ -51,6 +51,7 @@ namespace Hunted_Mobile.Service {
         public event SocketEvent StartGame;
         public event SocketEvent<JObject> PauseGame;
         public event SocketEvent<JObject> ResumeGame;
+        public event SocketEvent<JObject> NotificationEvent;
         public event SocketEvent<JObject> EndGame;
         public event SocketEvent<JObject> IntervalEvent;
         public event SocketEvent<JObject> ThiefCaught;
@@ -69,6 +70,7 @@ namespace Hunted_Mobile.Service {
             Bind("game.start", () => StartGame(), gameIdStr);
             Bind<JObject>("game.pause", (data) => PauseGame(data), gameIdStr);
             Bind<JObject>("game.resume", (data) => ResumeGame(data), gameIdStr);
+            Bind<JObject>("game.notification", (data) => NotificationEvent(data), gameIdStr);
             Bind<JObject>("game.end", (data) => EndGame(data), gameIdStr);
             Bind<JObject>("game.interval", (data) => IntervalEvent(data), gameIdStr);
             Bind<JObject>("thief.caught", (data) => ThiefCaught(data), gameIdStr);
