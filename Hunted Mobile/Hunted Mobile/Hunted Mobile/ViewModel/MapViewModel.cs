@@ -254,17 +254,10 @@ namespace Hunted_Mobile.ViewModel {
             MapDialog.DisplayPickedUpLootSuccessfully(SelectedLoot.Name);
 
             Task.Run(async () => {
-                // Get latest score of game (in feature this should be replaced with socket event)
-                gameModel = await gameRepository.GetGame(gameModel.Id);
-                gameModel.ThievesScore += PICK_UP_LOOT_SCORE;
-
                 // User should be a thief here since a police can't open the dialog
                 bool deleted = await lootRepository.Delete(SelectedLoot.Id);
                 if(deleted) {
-                    await gameRepository.UpdateThievesScore(gameModel.Id, gameModel.ThievesScore);
-
-                    OnPropertyChanged(nameof(PlayingUserScore));
-                    OnPropertyChanged(nameof(PlayingUserScoreDisplay));
+                    await gameRepository.UpdateThievesScore(gameModel.Id, PICK_UP_LOOT_SCORE);
                     await PollLoot();
                     DisplayAllPins();
                 }
@@ -278,15 +271,9 @@ namespace Hunted_Mobile.ViewModel {
             MapDialog.DisplayArrestedThiefSuccessfully(SelectedThief.UserName);
 
             Task.Run(async () => {
-                // Get latest score of game (in feature this should be replaced with socket event)
-                gameModel = await gameRepository.GetGame(gameModel.Id);
-                gameModel.PoliceScore += ARREST_THIEF_SCORE;
-
                 bool isCaught = await userRepository.CatchThief(SelectedThief.Id);
                 if(isCaught) {
-                    await gameRepository.UpdatePoliceScore(gameModel.Id, gameModel.PoliceScore);
-                    OnPropertyChanged(nameof(PlayingUserScore));
-                    OnPropertyChanged(nameof(PlayingUserScoreDisplay));
+                    await gameRepository.UpdatePoliceScore(gameModel.Id, ARREST_THIEF_SCORE);
                 }
             });
         }
@@ -340,6 +327,17 @@ namespace Hunted_Mobile.ViewModel {
         void OnCountdownCompleted() {
             countdown.RemainTime = new TimeSpan(0, 0, 0);
             OnCountdownTicked();
+        }
+
+        private void ScoreUpdated(JObject data) {
+            int.TryParse(data.GetValue("thief_score")?.ToString(), out int thiefScore);
+            int.TryParse(data.GetValue("police_score")?.ToString(), out int policeScore);
+
+            gameModel.ThievesScore = thiefScore;
+            gameModel.PoliceScore = policeScore;
+
+            OnPropertyChanged(nameof(PlayingUserScore));
+            OnPropertyChanged(nameof(PlayingUserScoreDisplay));
         }
 
         private void IntervalOfGame(JObject data) {
@@ -451,6 +449,7 @@ namespace Hunted_Mobile.ViewModel {
                 webSocketService.ThiefCaught += ThiefStatusChanged;
                 webSocketService.ThiefReleased += ThiefStatusChanged;
                 webSocketService.IntervalEvent += IntervalOfGame;
+                webSocketService.ScoreUpdated += ScoreUpdated;
             }
             catch(Exception ex) {
                 Console.WriteLine("An error occurred when connecting the web socket: " + ex.StackTrace);
@@ -495,7 +494,7 @@ namespace Hunted_Mobile.ViewModel {
             // Send update to the map view
             MapsuiPosition position = new MapsuiPosition(newLocation.Latitude, newLocation.Longitude);
             mapView.MyLocationLayer.UpdateMyLocation(position, true);
-            
+
             mapViewService.UpdatePlayerPinLocation(mapModel.PlayingUser.Location);
             OnPropertyChanged(nameof(IsCloseToSelectedLoot));
 
