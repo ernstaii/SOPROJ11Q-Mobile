@@ -18,11 +18,9 @@ namespace Hunted_Mobile.Repository
             };
             await response.Convert(HttpClientRequestService.GetAll($"games/{gameId}/border-markers"));
 
-            List<Location> result = new List<Location>();
-
-            foreach(string borderMarkerJson in new ConvertFromJsonService(response.ResponseContent).ToArray()) {
-                result.Add(new ConvertFromJsonService(borderMarkerJson).ToLocation());
-            }
+            List<Location> result = new List<Location>(
+                new LocationJsonService().ToObjects(response.ResponseContent)
+            );
 
             return result;
         }

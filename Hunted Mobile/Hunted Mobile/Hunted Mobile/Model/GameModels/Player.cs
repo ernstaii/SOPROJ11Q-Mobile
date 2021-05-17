@@ -27,17 +27,6 @@ namespace Hunted_Mobile.Model.GameModels {
 
         public Player() { }
 
-        public Player(UserData data) {
-            Id = data.id;
-            Location = new Location(data.location);
-            UserName = data.username;
-            InviteKey = new InviteKey() {
-                Role = data.role,
-                UserId = data.id
-            };
-            Status = data.status;
-        }
-
         public Player(Player player) {
             Id = player.Id;
             Location = player.Location;

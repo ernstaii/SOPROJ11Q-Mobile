@@ -28,7 +28,7 @@ namespace Hunted_Mobile.Repository {
                 InviteKey = player.InviteKey,
                 UserName = player.UserName,
                 ErrorMessages = response.ErrorMessages,
-                Location = string.IsNullOrWhiteSpace(responseLoc) ? null : new Location(responseLoc)
+                Location = string.IsNullOrWhiteSpace(responseLoc) ? null : new LocationJsonService().ToObjectFromCsv(responseLoc)
             };
             newUser.InviteKey.UserId = newUser.Id;
 
@@ -45,12 +45,9 @@ namespace Hunted_Mobile.Repository {
 
             await usersResponse.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users-with-role"));
 
-            var result = new List<Player>();
-
-            // Looping through the result
-            foreach(var userJson in new ConvertFromJsonService(usersResponse.ResponseContent).ToArray()) {
-                result.Add(new ConvertFromJsonService(userJson).ToPlayer());
-            }
+            var result = new List<Player>(
+                new PlayerJsonService().ToObjects(usersResponse.ResponseContent)
+            );
 
             return result;
         }

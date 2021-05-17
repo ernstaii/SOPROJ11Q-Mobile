@@ -77,7 +77,7 @@ namespace Hunted_Mobile.Service {
             Bind<JObject>("game.resume", (data) => ResumeGame(data));
             Bind<JObject>("game.notification", (data) => NotificationEvent(data));
             Bind<JObject>("game.end", (data) => EndGame(data));
-            Bind("game.interval", (json) => InvokeEvent(IntervalEvent, new ConvertFromJsonService(json).ToIntervalEvent()));
+            Bind("game.interval", (json) => InvokeEvent(IntervalEvent, new IntervalEventJsonService().ToObject(json)));
             Bind<JObject>("thief.caught", (data) => ThiefCaught(data));
             Bind<JObject>("thief.released", (data) => ThiefReleased(data));
             Bind<JObject>("player.joined", (data) => PlayerJoined(data));

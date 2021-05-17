@@ -1,5 +1,6 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Service;
+using Hunted_Mobile.Service.Json;
 
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace Hunted_Mobile.Repository {
                 Status = response.GetStringValue("status"),
                 ThievesScore = response.GetNumberValue("thieves_score"),
                 PoliceScore = response.GetNumberValue("police_score"),
-                PoliceStationLocation = new Location(
+                PoliceStationLocation = new LocationJsonService().ToObjectFromCsv(
                     response.GetStringValue("police_station_location")
                 )
             };

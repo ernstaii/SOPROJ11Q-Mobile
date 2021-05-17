@@ -50,9 +50,9 @@ namespace Hunted_Mobile.Repository {
 
             List<InviteKey> inviteKeys = new List<InviteKey>();
 
-            foreach(string inviteKeyJson in new ConvertFromJsonService(response.ResponseContent).ToArray()) {
-                InviteKey inviteKey = new ConvertFromJsonService(inviteKeyJson).ToInviteKey();
+            foreach(InviteKey inviteKey in new InviteKeyJsonService().ToObjects(response.ResponseContent)) {
                 inviteKey.GameId = gameId;
+                inviteKeys.Add(inviteKey);
             }
 
             return inviteKeys;

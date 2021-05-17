@@ -21,12 +21,9 @@ namespace Hunted_Mobile.Repository {
             };
             await response.Convert(HttpClientRequestService.Get($"games/{gameId}/loot"));
             
-            var result = new List<Loot>();
-
-            // Looping through the result
-            foreach(string lootJson in new ConvertFromJsonService(response.ResponseContent).ToArray()) {
-                result.Add(new ConvertFromJsonService(lootJson).ToLoot());
-            }
+            var result = new List<Loot>(
+                new LootJsonService().ToObjects(response.ResponseContent)
+            );
 
             return result;
         }
