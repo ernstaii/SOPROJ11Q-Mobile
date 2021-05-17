@@ -33,8 +33,8 @@ namespace Hunted_Mobile.ViewModel {
             ARREST_THIEF_TIME_IN_SECONDES = 5,
             LOOT_PICKUP_MAX_DISTANCE_IN_METERS = 10,
             POLICE_ARREST_DISTANCE_IN_METERS = 10,
-            PICK_UP_LOOT_SCORE = 50,
-            ARREST_THIEF_SCORE = 200;
+            PICK_UP_LOOT_SCORE = 1,
+            ARREST_THIEF_SCORE = 1;
 
         const string PAUSE_TITLE = "Gepauzeerd",
             END_TITLE = "Het spel is afgelopen!",
