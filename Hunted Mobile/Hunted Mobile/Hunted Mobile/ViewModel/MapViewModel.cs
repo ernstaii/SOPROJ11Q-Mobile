@@ -520,6 +520,8 @@ namespace Hunted_Mobile.ViewModel {
             if(overwritableScreens.Contains(MapDialogOption) && !isWithinBoundary) {
                 MapDialogOption = MapDialogOptions.DISPLAY_BOUNDARY_SCREEN;
                 MapDialog.DisplayBoundaryScreen();
+            } else if (isWithinBoundary && MapDialogOption == MapDialogOptions.DISPLAY_BOUNDARY_SCREEN) {
+                MapDialogOption = MapDialogOptions.NONE;
             }
 
             if(isWithinBoundary && !PlayerWasWithinGameBoundaries) {
