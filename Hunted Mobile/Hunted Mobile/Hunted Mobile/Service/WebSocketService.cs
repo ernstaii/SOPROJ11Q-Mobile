@@ -70,16 +70,22 @@ namespace Hunted_Mobile.Service {
             var channel = pusher.GetChannel(channelName);
             if(channel == null || !channel.IsSubscribed) {
                 pusher.SubscribeAsync(channelName);
+            }
 
-                Bind("game.start", () => StartGame());
-                Bind<JObject>("game.pause", (data) => PauseGame(data));
-                Bind<JObject>("game.resume", (data) => ResumeGame(data));
-                Bind<JObject>("game.notification", (data) => NotificationEvent(data));
-                Bind<JObject>("game.end", (data) => EndGame(data));
-                Bind("game.interval", (data) => IntervalEvent(new ConvertFromJsonService(data).ToIntervalEvent()));
-                Bind<JObject>("thief.caught", (data) => ThiefCaught(data));
-                Bind<JObject>("thief.released", (data) => ThiefReleased(data));
-                Bind<JObject>("player.joined", (data) => PlayerJoined(data));
+            Bind("game.start", () => StartGame());
+            Bind<JObject>("game.pause", (data) => PauseGame(data));
+            Bind<JObject>("game.resume", (data) => ResumeGame(data));
+            Bind<JObject>("game.notification", (data) => NotificationEvent(data));
+            Bind<JObject>("game.end", (data) => EndGame(data));
+            Bind("game.interval", (json) => InvokeEvent(IntervalEvent, new ConvertFromJsonService(json).ToIntervalEvent()));
+            Bind<JObject>("thief.caught", (data) => ThiefCaught(data));
+            Bind<JObject>("thief.released", (data) => ThiefReleased(data));
+            Bind<JObject>("player.joined", (data) => PlayerJoined(data));
+        }
+
+        private void InvokeEvent<T>(SocketEvent<T> @event, T data) {
+            if(@event != null) {
+                @event(data);
             }
         }
 
