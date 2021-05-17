@@ -20,9 +20,6 @@ namespace Hunted_Mobile.ViewModel {
         private List<Player> users = new List<Player>();
         private Game gameModel = new Game();
         private readonly Player currentUser;
-        private readonly UserRepository userRepository = new UserRepository();
-        private readonly GameRepository gameRepository = new GameRepository();
-        private readonly InviteKeyRepository inviteKeyRepository = new InviteKeyRepository();
         private readonly Lobby page;
         private readonly WebSocketService webSocketService;
 
@@ -88,7 +85,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private async void StartGame() {
-            GameModel = await gameRepository.GetGame(gameModel.Id);
+            GameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
             NavigateToMapPage();
         }
 
@@ -99,7 +96,7 @@ namespace Hunted_Mobile.ViewModel {
                     PlayingUser = currentUser
                 };
 
-                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel, new Service.Gps.GpsService(), new LootRepository(), userRepository, gameRepository, inviteKeyRepository, new BorderMarkerRepository(), new ResourceRepository(), new NotificationRepository()));
+                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel, new Service.Gps.GpsService()));
 
                 Device.BeginInvokeOnMainThread(() => {
                     Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
@@ -112,11 +109,11 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public async Task LoadUsers() {
-            Users = await userRepository.GetAll(GameModel.Id);
+            Users = await UnitOfWork.Instance.UserRepository.GetAll(GameModel.Id);
         }
 
         public async Task CheckForStatus() {
-            Game gameStatus = await gameRepository.GetGame(gameModel.Id);
+            Game gameStatus = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
             if(gameStatus.Status == GameStatus.ONGOING || gameStatus.Status == GameStatus.PAUSED || gameStatus.Status == GameStatus.FINISHED) {
                 StartGame();
             }
