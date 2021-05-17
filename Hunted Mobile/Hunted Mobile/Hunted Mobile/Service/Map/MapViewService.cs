@@ -59,7 +59,7 @@ namespace Hunted_Mobile.Service.Map {
         public void AddClosestThiefPin(Player thief) {
             MapView.Pins.Add(new Pin(MapView) {
                 Label = thief.UserName,
-                Color = Xamarin.Forms.Color.Red,
+                Color = Xamarin.Forms.Color.Black,
                 Position = new MapsuiPosition(thief.Location.Latitude, thief.Location.Longitude),
                 Scale = 0.666f,
                 Tag = THIEF_TAG,
