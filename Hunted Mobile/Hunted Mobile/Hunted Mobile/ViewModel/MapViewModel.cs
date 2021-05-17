@@ -120,7 +120,7 @@ namespace Hunted_Mobile.ViewModel {
 
         public bool IsCloseToSelectedLoot {
             get {
-                if(IsHoldingButton && mapModel != null && mapModel.PlayingUser != null && mapModel.PlayingUser.Location != null && SelectedLoot != null) {
+                if(mapModel != null && mapModel.PlayingUser != null && mapModel.PlayingUser.Location != null && SelectedLoot != null) {
                     return mapModel.PlayingUser.Location.DistanceToOtherInMeters(SelectedLoot.Location) <= LOOT_PICKUP_MAX_DISTANCE_IN_METERS;
                 }
                 return false;
@@ -129,7 +129,7 @@ namespace Hunted_Mobile.ViewModel {
 
         public bool IsCloseToSelectedThief {
             get {
-                if(IsHoldingButton && mapModel != null && mapModel.PlayingUser != null && mapModel.PlayingUser.Location != null && SelectedThief != null) {
+                if(mapModel != null && mapModel.PlayingUser != null && mapModel.PlayingUser.Location != null && SelectedThief != null) {
                     return mapModel.PlayingUser.Location.DistanceToOtherInMeters(SelectedThief.Location) <= POLICE_ARREST_DISTANCE_IN_METERS;
                 }
                 return false;
