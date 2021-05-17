@@ -9,6 +9,7 @@ namespace Hunted_Mobile.Model {
         public string Status { get; set; }
         public int Interval { get; set; }
         public DateTime EndTime { get; set; }
+        public DateTime StartTime { get; set; }
         public int TimeLeft { get; set; }
         public int ThievesScore { get; set; }
         public int PoliceScore { get; set; }
