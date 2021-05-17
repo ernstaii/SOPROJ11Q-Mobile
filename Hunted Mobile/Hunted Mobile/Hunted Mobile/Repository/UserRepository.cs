@@ -46,10 +46,9 @@ namespace Hunted_Mobile.Repository {
             await usersResponse.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users-with-role"));
 
             var result = new List<Player>();
-            var jsonConverter = new ConvertFromJsonService(usersResponse.ResponseContent);
 
             // Looping through the result
-            foreach(var userJson in jsonConverter.ToArray()) {
+            foreach(var userJson in new ConvertFromJsonService(usersResponse.ResponseContent).ToArray()) {
                 result.Add(new ConvertFromJsonService(userJson).ToPlayer());
             }
 

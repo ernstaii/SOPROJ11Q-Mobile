@@ -8,7 +8,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
 namespace Hunted_Mobile.Service.Json {
     public class ConvertFromJsonService {
@@ -46,7 +45,7 @@ namespace Hunted_Mobile.Service.Json {
                     Role = data.role,
                     UserId = data.id
                 },
-                Location = new Location(data.location),
+                Location = ToLocation(),
                 Status = data.status,
                 UserName = data.username
             };
@@ -60,6 +59,29 @@ namespace Hunted_Mobile.Service.Json {
                 return new Police(player);
             }
             else throw new ArgumentException("User json data did not contain role");
+        }
+
+        public Location ToLocation() {
+            string locationData = ToJObject().GetValue("location")?.ToString();
+            return new Location(locationData);
+        }
+
+        public InviteKey ToInviteKey() {
+            InviteKeyData data = ConvertFromJson<InviteKeyData>();
+            return new InviteKey() {
+                GameId = data.game_id,
+                Role = data.role,
+                UserId = data.user_id,
+                Value = data.value,
+            };
+        }
+
+        public Loot ToLoot() {
+            LootData data = ConvertFromJson<LootData>();
+            return new Loot(data.id) {
+                Location = ToLocation(),
+                Name = data.name
+            };
         }
     }
 }

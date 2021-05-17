@@ -33,7 +33,7 @@ namespace Hunted_Mobile.Service {
         }
 
         private static void ErrorOccurred(object sender, PusherException error) {
-            throw error;
+            Console.WriteLine(error.ToString());
         }
 
         /// <summary>
@@ -64,16 +64,16 @@ namespace Hunted_Mobile.Service {
             var channel = pusher.GetChannel(channelName);
             if(channel == null || !channel.IsSubscribed) {
                 pusher.SubscribeAsync(channelName);
-            }
 
-            Bind("game.start", () => StartGame(), gameIdStr);
-            Bind<JObject>("game.pause", (data) => PauseGame(data), gameIdStr);
-            Bind<JObject>("game.resume", (data) => ResumeGame(data), gameIdStr);
-            Bind<JObject>("game.end", (data) => EndGame(data), gameIdStr);
-            Bind<JObject>("game.interval", (data) => IntervalEvent(data), gameIdStr);
-            Bind<JObject>("thief.caught", (data) => ThiefCaught(data), gameIdStr);
-            Bind<JObject>("thief.released", (data) => ThiefReleased(data), gameIdStr);
-            Bind<JObject>("player.joined", (data) => PlayerJoined(data), gameIdStr);
+                Bind("game.start", () => StartGame(), gameIdStr);
+                Bind<JObject>("game.pause", (data) => PauseGame(data), gameIdStr);
+                Bind<JObject>("game.resume", (data) => ResumeGame(data), gameIdStr);
+                Bind<JObject>("game.end", (data) => EndGame(data), gameIdStr);
+                Bind<JObject>("game.interval", (data) => IntervalEvent(data), gameIdStr);
+                Bind<JObject>("thief.caught", (data) => ThiefCaught(data), gameIdStr);
+                Bind<JObject>("thief.released", (data) => ThiefReleased(data), gameIdStr);
+                Bind<JObject>("player.joined", (data) => PlayerJoined(data), gameIdStr);
+            }
         }
 
         private void Bind(string eventName, Action action, string gameIdStr) {
@@ -86,15 +86,16 @@ namespace Hunted_Mobile.Service {
 
         private void Bind<T>(string eventName, Action<T> action, string gameIdStr) {
             pusher.Bind(eventName, (PusherEvent eventData) => {
+                T data = default;
                 try {
                     if(eventData.ChannelName.EndsWith(gameIdStr)) {
-                        T data = JsonConvert.DeserializeObject<T>(eventData.Data);
-                        action(data);
+                        data = JsonConvert.DeserializeObject<T>(eventData.Data);
                     }
                 }
                 catch(Exception ex) {
                     Console.WriteLine("An error occurred while deserializing event data: " + ex.StackTrace);
                 }
+                action(data);
             });
         }
 

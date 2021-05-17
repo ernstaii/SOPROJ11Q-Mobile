@@ -13,15 +13,14 @@ namespace Hunted_Mobile.Model {
         /// <summary>
         /// Horizontal map coordinate
         /// </summary>
-        public double Latitude { get; set; }
+        public double Latitude { get; set; } = 5.000000;
 
         /// <summary>
         /// Vertical map coordinate
         /// </summary>
-        public double Longitude { get; set; }
+        public double Longitude { get; set; } = 51.000000;
 
         public Location() {
-
         }
 
         public Location(string commaSeparatedLatitudeLongitude) {

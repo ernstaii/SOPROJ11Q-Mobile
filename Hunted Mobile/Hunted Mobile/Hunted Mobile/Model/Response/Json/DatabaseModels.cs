@@ -31,4 +31,14 @@ namespace Hunted_Mobile.Model.Response.Json {
         public DateTime created_at;
         public DateTime updated_at;
     }
+
+    // Currently unused because there is no BorderMarker model. Might be used in the future
+    public struct BorderMarkerData : DataModel {
+        public int id;
+        public int borderable_id;
+        public int borderable_type;
+        public string location;
+        public DateTime created_at;
+        public DateTime updated_at;
+    }
 }
