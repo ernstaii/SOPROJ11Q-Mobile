@@ -26,6 +26,7 @@ using Hunted_Mobile.Model.Resource;
 using Hunted_Mobile.Enum;
 using Hunted_Mobile.View;
 using System.Linq;
+using Hunted_Mobile.Model.Response;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -465,47 +466,11 @@ namespace Hunted_Mobile.ViewModel {
         }
 
 
-        private void IntervalOfGame(JObject data) {
+        private void IntervalOfGame(IntervalEventData data) {
             StartIntervalTimer();
 
-            List<Player> userList = new List<Player>();
-
-            foreach(JObject user in data.GetValue("users")) {
-                int userId = -1;
-                int.TryParse((string) user.GetValue("id"), out userId);
-
-                if(userId != mapModel.PlayingUser.Id) {
-                    Location location = new Location((string) user.GetValue("location"));
-                    bool wasThief = (mapModel.GetUserById(userId) is Thief);
-                    Player newUser = new Player();
-                    if(user.GetValue("role").ToString() == "thief") {
-                        newUser = new Thief(newUser);
-                    }
-                    else newUser = new Police(newUser);
-
-                    newUser.Id = userId;
-                    newUser.UserName = ((string) user.GetValue("username"));
-                    newUser.Location = location;
-
-                    userList.Add(newUser);
-                }
-            }
-
-            List<Loot> lootList = new List<Loot>();
-
-            foreach(JObject loot in data.GetValue("loot")) {
-                int id = int.Parse(loot.GetValue("id")?.ToString());
-                Location location = new Location(loot.GetValue("location")?.ToString());
-
-                Loot newLoot = new Loot(id);
-                newLoot.Name = loot.GetValue("name")?.ToString();
-                newLoot.Location = location;
-
-                lootList.Add(newLoot);
-            }
-
-            mapModel.SetUsers(userList);
-            mapModel.SetLoot(lootList);
+            mapModel.SetUsers(data.Players);
+            mapModel.SetLoot(data.Loot);
 
             DisplayOtherPins();
         }
@@ -795,11 +760,13 @@ namespace Hunted_Mobile.ViewModel {
 
             if(mapModel.PlayingUser is Police) {
                 foreach(var thief in mapModel.Thiefs) {
-                    if(closestThief == null) {
-                        closestThief = thief;
-                    }
-                    else if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
-                        closestThief = thief;
+                    if(!thief.IsCaught) {
+                        if(closestThief == null) {
+                            closestThief = thief;
+                        }
+                        else if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
+                            closestThief = thief;
+                        }
                     }
                 }
 

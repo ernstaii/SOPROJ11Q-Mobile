@@ -43,7 +43,6 @@ namespace Hunted_Mobile.Model.GameModels {
             Location = player.Location;
             UserName = player.UserName;
             InviteKey = player.InviteKey;
-            Status = player.Status;
             ErrorMessages = player.ErrorMessages;
             Status = player.Status;
         }

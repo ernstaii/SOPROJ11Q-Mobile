@@ -17,7 +17,7 @@ namespace Hunted_Mobile.Service.Json {
             Json = json;
         }
 
-        protected T ConvertFromJson<T>() where T : DataModel {
+        protected T ConvertFromJson<T>() where T : JsonResponseData {
             return JsonConvert.DeserializeObject<T>(Json);
         }
 
@@ -39,13 +39,17 @@ namespace Hunted_Mobile.Service.Json {
 
         public Player ToPlayer() {
             UserData data = ConvertFromJson<UserData>();
+            return ToPlayer(data);
+        }
+
+        protected Player ToPlayer(UserData data) {
             Player player = new Player() {
                 Id = data.id,
                 InviteKey = new InviteKey() {
                     Role = data.role,
                     UserId = data.id
                 },
-                Location = ToLocation(),
+                Location = new Location(data.location),
                 Status = data.status,
                 UserName = data.username
             };
@@ -59,6 +63,14 @@ namespace Hunted_Mobile.Service.Json {
                 return new Police(player);
             }
             else throw new ArgumentException("User json data did not contain role");
+        }
+
+        protected Player[] ToPlayer(UserData[] data) {
+            Player[] players = new Player[data.Length];
+            for(int i = 0; i < players.Length; i++) {
+                players[i] = ToPlayer(data[i]);
+            }
+            return players;
         }
 
         public Location ToLocation() {
@@ -78,9 +90,30 @@ namespace Hunted_Mobile.Service.Json {
 
         public Loot ToLoot() {
             LootData data = ConvertFromJson<LootData>();
+            return ToLoot(data);
+        }
+
+        protected Loot ToLoot(LootData data) {
             return new Loot(data.id) {
-                Location = ToLocation(),
+                Location = new Location(data.location),
                 Name = data.name
+            };
+        }
+
+        protected Loot[] ToLoot(LootData[] data) {
+            Loot[] loot = new Loot[data.Length];
+            for(int i = 0; i < loot.Length; i++) {
+                loot[i] = ToLoot(data[i]);
+            }
+            return loot;
+        }
+
+        public Model.Response.IntervalEventData ToIntervalEvent() {
+            IntervalEventData data = ConvertFromJson<IntervalEventData>();
+            return new Model.Response.IntervalEventData() {
+                Loot = ToLoot(data.loot),
+                Message = data.message,
+                Players = ToPlayer(data.users)
             };
         }
     }

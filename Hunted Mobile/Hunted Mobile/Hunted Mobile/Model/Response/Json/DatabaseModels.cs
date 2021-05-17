@@ -3,7 +3,7 @@ using System;
 
 namespace Hunted_Mobile.Model.Response.Json {
 #pragma warning disable IDE1006 // Naming Styles
-    public struct UserData : DataModel {
+    public struct UserData : JsonResponseData {
         public int id;
         public string username;
         public string location;
@@ -14,7 +14,7 @@ namespace Hunted_Mobile.Model.Response.Json {
         public string updated_at;
     }
 
-    public struct LootData : DataModel {
+    public struct LootData : JsonResponseData {
         public int id;
         public int lootable_id;
         public string lootable_type;
@@ -23,7 +23,7 @@ namespace Hunted_Mobile.Model.Response.Json {
         public int game_id;
     }
 
-    public struct InviteKeyData : DataModel {
+    public struct InviteKeyData : JsonResponseData {
         public string value;
         public int game_id;
         public int user_id;
@@ -33,7 +33,7 @@ namespace Hunted_Mobile.Model.Response.Json {
     }
 
     // Currently unused because there is no BorderMarker model. Might be used in the future
-    public struct BorderMarkerData : DataModel {
+    public struct BorderMarkerData : JsonResponseData {
         public int id;
         public int borderable_id;
         public int borderable_type;

@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using Hunted_Mobile.Model.Response;
+using Hunted_Mobile.Service.Json;
+
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using PusherClient;
@@ -45,6 +48,8 @@ namespace Hunted_Mobile.Service {
         }
         #endregion
 
+        private readonly string gameIdString;
+
         public delegate void SocketEvent();
         public delegate void SocketEvent<T>(T data);
 
@@ -53,51 +58,59 @@ namespace Hunted_Mobile.Service {
         public event SocketEvent<JObject> ResumeGame;
         public event SocketEvent<JObject> NotificationEvent;
         public event SocketEvent<JObject> EndGame;
-        public event SocketEvent<JObject> IntervalEvent;
+        public event SocketEvent<IntervalEventData> IntervalEvent;
         public event SocketEvent<JObject> ThiefCaught;
         public event SocketEvent<JObject> ThiefReleased;
         public event SocketEvent<JObject> PlayerJoined;
 
         public WebSocketService(int gameId) {
-            string gameIdStr = gameId.ToString();
-            string channelName = "game." + gameIdStr;
+            gameIdString = gameId.ToString();
+            string channelName = "game." + gameIdString;
             
             var channel = pusher.GetChannel(channelName);
             if(channel == null || !channel.IsSubscribed) {
                 pusher.SubscribeAsync(channelName);
 
-                Bind("game.start", () => StartGame(), gameIdStr);
-                Bind<JObject>("game.pause", (data) => PauseGame(data), gameIdStr);
-                Bind<JObject>("game.resume", (data) => ResumeGame(data), gameIdStr);
-                Bind<JObject>("game.notification", (data) => NotificationEvent(data), gameIdStr);
-                Bind<JObject>("game.end", (data) => EndGame(data), gameIdStr);
-                Bind<JObject>("game.interval", (data) => IntervalEvent(data), gameIdStr);
-                Bind<JObject>("thief.caught", (data) => ThiefCaught(data), gameIdStr);
-                Bind<JObject>("thief.released", (data) => ThiefReleased(data), gameIdStr);
-                Bind<JObject>("player.joined", (data) => PlayerJoined(data), gameIdStr);
+                Bind("game.start", () => StartGame());
+                Bind<JObject>("game.pause", (data) => PauseGame(data));
+                Bind<JObject>("game.resume", (data) => ResumeGame(data));
+                Bind<JObject>("game.notification", (data) => NotificationEvent(data));
+                Bind<JObject>("game.end", (data) => EndGame(data));
+                Bind("game.interval", (data) => IntervalEvent(new ConvertFromJsonService(data).ToIntervalEvent()));
+                Bind<JObject>("thief.caught", (data) => ThiefCaught(data));
+                Bind<JObject>("thief.released", (data) => ThiefReleased(data));
+                Bind<JObject>("player.joined", (data) => PlayerJoined(data));
             }
         }
 
-        private void Bind(string eventName, Action action, string gameIdStr) {
+        private void Bind(string eventName, Action action) {
             pusher.Bind(eventName, (PusherEvent eventData) => {
-                if(eventData.ChannelName.EndsWith(gameIdStr)) {
+                if(eventData.ChannelName.EndsWith(gameIdString)) {
                     action();
                 }
             });
         }
 
-        private void Bind<T>(string eventName, Action<T> action, string gameIdStr) {
+        private void Bind(string eventName, Action<string> action) {
+            pusher.Bind(eventName, (PusherEvent eventData) => {
+                if(eventData.ChannelName.EndsWith(gameIdString)) {
+                    action(eventData.Data);
+                }
+            });
+        }
+
+        private void Bind<T>(string eventName, Action<T> action) {
             pusher.Bind(eventName, (PusherEvent eventData) => {
                 T data = default;
                 try {
-                    if(eventData.ChannelName.EndsWith(gameIdStr)) {
+                    if(eventData.ChannelName.EndsWith(gameIdString)) {
                         data = JsonConvert.DeserializeObject<T>(eventData.Data);
+                        action(data);
                     }
                 }
                 catch(Exception ex) {
                     Console.WriteLine("An error occurred while deserializing event data: " + ex.StackTrace);
                 }
-                action(data);
             });
         }
 

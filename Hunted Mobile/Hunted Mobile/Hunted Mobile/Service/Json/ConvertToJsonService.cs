@@ -9,8 +9,8 @@ namespace Hunted_Mobile.Service.Json {
         private ConvertToJsonService() {
         }
 
-        protected string ConvertToJson(DataModel dataModel) {
-            return JsonConvert.SerializeObject(dataModel);
+        protected string ConvertToJson(JsonResponseData data) {
+            return JsonConvert.SerializeObject(data);
         }
 
         public string ConvertToJson(Player player) {

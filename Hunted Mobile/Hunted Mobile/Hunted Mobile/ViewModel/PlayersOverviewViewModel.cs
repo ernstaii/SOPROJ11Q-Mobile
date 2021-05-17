@@ -1,4 +1,5 @@
 ﻿using Hunted_Mobile.Model.GameModels;
+using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Service;
 
 using Newtonsoft.Json.Linq;
@@ -71,22 +72,8 @@ namespace Hunted_Mobile.ViewModel {
             Users = users; // Trigger OnPropertyChanged
         }
 
-        private void UpdateUsers(JObject data) {
-            ObservableCollection<Player> updatedUsers = new ObservableCollection<Player>();
-            foreach(JObject jUser in data.GetValue("users")) {
-                var newUser = new Player() {
-                    Id = int.Parse(jUser.GetValue("id")?.ToString()),
-                    UserName = jUser.GetValue("username")?.ToString(),
-                };
-                string role = jUser.GetValue("role")?.ToString();
-                if(role == "thief") {
-                    Thief thief = new Thief(newUser);
-                    thief.CaughtAt = jUser.GetValue("caught_at")?.ToString();
-                    updatedUsers.Add(thief);
-                }
-                else updatedUsers.Add(new Police(newUser));
-            }
-            Users = updatedUsers; // Trigger OnPropertyChanged
+        private void UpdateUsers(IntervalEventData data) {
+            Users = new ObservableCollection<Player>(data.Players);
         }
 
         private void UpdateUserState(Newtonsoft.Json.Linq.JObject data) {
