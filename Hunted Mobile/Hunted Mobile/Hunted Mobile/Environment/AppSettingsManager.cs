@@ -12,7 +12,7 @@ namespace Hunted_Mobile {
         private const string NAMESPACE = "Hunted_Mobile";
         private const string FILE_NAME = "appsettings.json";
 
-        private static AppSettingsManager instance = new AppSettingsManager();
+        private static readonly AppSettingsManager instance = new AppSettingsManager();
         private readonly JObject secrets;
         private readonly Dictionary<string, string> retrievedValues;
 
