@@ -28,20 +28,22 @@ namespace Hunted_Mobile.Service.Gps {
         }
 
         public async Task StartGps() {
-            await CrossGeolocator.Current.StartListeningAsync(
-                TimeSpan.FromSeconds(14),
-                4,
-                false,
-                new ListenerSettings {
-                    ActivityType = ActivityType.Fitness,
-                    AllowBackgroundUpdates = false,
-                    DeferLocationUpdates = true,
-                    DeferralDistanceMeters = 4,
-                    DeferralTime = TimeSpan.FromSeconds(14),
-                    ListenForSignificantChanges = false,
-                    PauseLocationUpdatesAutomatically = true
-                }
-            );
+            if(!GpsHasStarted()) {
+                await CrossGeolocator.Current.StartListeningAsync(
+                    TimeSpan.FromSeconds(14),
+                    4,
+                    false,
+                    new ListenerSettings {
+                        ActivityType = ActivityType.Fitness,
+                        AllowBackgroundUpdates = false,
+                        DeferLocationUpdates = true,
+                        DeferralDistanceMeters = 4,
+                        DeferralTime = TimeSpan.FromSeconds(14),
+                        ListenForSignificantChanges = false,
+                        PauseLocationUpdatesAutomatically = true
+                    }
+                );
+            }
         }
 
         public bool GpsHasStarted() {

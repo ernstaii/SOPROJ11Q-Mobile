@@ -47,6 +47,8 @@ namespace Hunted_Mobile.Service.Map {
             private set {
                 isVisible = value;
                 OnPropertyChanged();
+
+                if(!value) HandleButtonHasHoldEvent = false;
             }
         }
 
@@ -122,9 +124,10 @@ namespace Hunted_Mobile.Service.Map {
             HandleButtonText = "Klaar";
         }
 
-        public void DisplayPickingUpLoot(string title, bool isToFarFromSelectedLoot = false) {
-            string description = isToFarFromSelectedLoot ? "Je bent te ver weg om deze buit op te pakken." : "Houd de knop 5 seconden ingedrukt om de buit op te pakken.";
+        public void DisplayPickingUpLoot(string title, bool isCloseToSelectedLoot = false) {
+            string description = isCloseToSelectedLoot ? "Houd de knop 5 seconden ingedrukt om de buit op te pakken." : "Je bent te ver weg om deze buit op te pakken.";
 
+            HandleButtonIsVisible = isCloseToSelectedLoot;
             HandleButtonHasHoldEvent = true;
             HandleButtonText = "Oppakken";
 
@@ -137,9 +140,10 @@ namespace Hunted_Mobile.Service.Map {
             FinishSuccessfullyAction();
         }
 
-        public void DisplayArrestingThief(string title, bool isToFarFromSelectedThief = false) {
-            string description = isToFarFromSelectedThief ? "Je bent te ver weg om deze dief op te pakken." : "Houd de knop 5 seconden ingedrukt om de dief op te pakken.";
+        public void DisplayArrestingThief(string title, bool isCloseToSelectedThief = false) {
+            string description = isCloseToSelectedThief ? "Houd de knop 5 seconden ingedrukt om de dief op te pakken." : "Je bent te ver weg om deze dief op te pakken.";
 
+            HandleButtonIsVisible = isCloseToSelectedThief;
             HandleButtonHasHoldEvent = true;
             HandleButtonText = "Arresteren";
 
@@ -153,18 +157,20 @@ namespace Hunted_Mobile.Service.Map {
         }
 
         public void DisplayPauseScreen() {
-            HandleButtonHasHoldEvent = false;
-
             SetContent("Gepauzeerd", "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.");
             HideActionButtons();
         }
 
         public void DisplayEndScreen() {
-            HandleButtonHasHoldEvent = false;
-
             SetContent("Het spel is afgelopen!", "Ga terug naar de spelleider!");
             HandleButtonText = "Terug naar hoofdscherm";
             SetActionButtons(true, false);
+        }
+
+        public void DisplayBoundaryScreen() {
+            SetContent("Keer terug!", "Je bevindt je buiten de spelgrens! Ga zo snel mogelijk terug.");
+            HandleButtonText = "Terug naar hoofdscherm";
+            SetActionButtons(false);
         }
     }
 }

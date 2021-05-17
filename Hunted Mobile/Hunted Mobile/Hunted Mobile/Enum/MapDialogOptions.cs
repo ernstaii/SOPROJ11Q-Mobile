@@ -11,5 +11,6 @@ namespace Hunted_Mobile.Enum {
         DISPLAY_ARREST_THIEF_SUCCESFULLY,
         DISPLAY_PAUSE,
         DISPLAY_END_GAME,
+        DISPLAY_BOUNDARY_SCREEN,
     }
 }

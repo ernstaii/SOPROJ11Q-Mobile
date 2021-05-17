@@ -23,13 +23,13 @@ namespace Hunted_Mobile.Service.Map {
 
         public MapView MapView { get; set; }
 
-        public MapViewService(MapView mapView, Player player, ResourceRepository resourceRepository) {
+        public MapViewService(MapView mapView, Player player) {
             MapView = mapView;
             this.player = player;
             SetPlayerPin();
 
-            policeBadgeIcon = resourceRepository.GetMapImage("police-badge.png");
-            moneyBagIcon = resourceRepository.GetMapImage("money-bag.png");
+            policeBadgeIcon = UnitOfWork.Instance.ResourceRepository.GetMapImage("police-badge.png");
+            moneyBagIcon = UnitOfWork.Instance.ResourceRepository.GetMapImage("money-bag.png");
         }
 
         public void UpdatePlayerPinLocation(Location location) {
@@ -60,7 +60,7 @@ namespace Hunted_Mobile.Service.Map {
             MapView.Pins.Add(new Pin(MapView) {
                 Label = thief.UserName,
                 Color = Xamarin.Forms.Color.Black,
-                Position = new MapsuiPosition(thief.Location.Latitude, thief.Location.Longitude),
+                Position = new Mapsui.UI.Forms.Position(thief.Location.Latitude, thief.Location.Longitude),
                 Scale = 0.666f,
                 Tag = THIEF_TAG,
                 Transparency = 0.25f,
