@@ -1,6 +1,7 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Service;
+using Hunted_Mobile.Service.Json;
 
 using Newtonsoft.Json.Linq;
 
@@ -20,27 +21,14 @@ namespace Hunted_Mobile.Repository {
             };
             await response.Convert(HttpClientRequestService.Get($"games/{gameId}/loot"));
             
-            var output = new List<Loot>();
+            var result = new List<Loot>();
 
             // Looping through the result
-            foreach(JObject item in response.items) {
-                var location = item.GetValue("location").ToString().Split(',');
-
-                try {
-                    output.Add(new Loot((int) item.GetValue("id")) {
-                        Name = item.GetValue("name").ToString(),
-                        Location = new Location() {
-                            Latitude = double.Parse(location[0]),
-                            Longitude = double.Parse(location[1])
-                        }
-                    });
-                }
-                catch(Exception e) {
-                    Console.WriteLine(e.ToString());
-                }
+            foreach(string lootJson in new ConvertFromJsonService(response.ResponseContent).ToArray()) {
+                result.Add(new ConvertFromJsonService(lootJson).ToLoot());
             }
 
-            return output;
+            return result;
         }
 
         public async Task<bool> Delete(int lootId) {

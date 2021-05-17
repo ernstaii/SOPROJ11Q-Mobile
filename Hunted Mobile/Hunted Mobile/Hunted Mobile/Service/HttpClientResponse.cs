@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Service {
     public class HttpClientResponse {
-        public JObject item;
-        public JArray items;
+        protected JObject item;
+        protected JArray items;
 
         public HttpStatusCode Status => ResponseMessage != null ? ResponseMessage.StatusCode : HttpStatusCode.NoContent;
         public bool IsSuccessful => ResponseMessage != null && ResponseMessage.IsSuccessStatusCode;

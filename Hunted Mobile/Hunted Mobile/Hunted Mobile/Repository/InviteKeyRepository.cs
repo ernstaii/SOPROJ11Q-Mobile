@@ -1,5 +1,6 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Service;
+using Hunted_Mobile.Service.Json;
 
 using Newtonsoft.Json.Linq;
 
@@ -49,19 +50,9 @@ namespace Hunted_Mobile.Repository {
 
             List<InviteKey> inviteKeys = new List<InviteKey>();
 
-            foreach(JObject item in response.items) {
-                string role = item.GetValue("role")?.ToString();
-                var userId = item.GetValue("user_id");
-                if(!userId.HasValues) {
-                    userId = -1;
-                }
-                string value = item.GetValue("value")?.ToString();
-                inviteKeys.Add(new InviteKey() {
-                    GameId = gameId,
-                    Role = role,
-                    UserId = (int) userId,
-                    Value = value
-                });
+            foreach(string inviteKeyJson in new ConvertFromJsonService(response.ResponseContent).ToArray()) {
+                InviteKey inviteKey = new ConvertFromJsonService(inviteKeyJson).ToInviteKey();
+                inviteKey.GameId = gameId;
             }
 
             return inviteKeys;

@@ -1,5 +1,6 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Service;
+using Hunted_Mobile.Service.Json;
 
 using Newtonsoft.Json.Linq;
 
@@ -19,13 +20,8 @@ namespace Hunted_Mobile.Repository
 
             List<Location> result = new List<Location>();
 
-            foreach(JObject item in response.items) {
-                try {
-                    result.Add(new Location(item.GetValue("location").ToString()));
-                }
-                catch(Exception) {
-                    result.Add(new Location("5.000000,51.000000"));
-                }
+            foreach(string borderMarkerJson in new ConvertFromJsonService(response.ResponseContent).ToArray()) {
+                result.Add(new ConvertFromJsonService(borderMarkerJson).ToLocation());
             }
 
             return result;
