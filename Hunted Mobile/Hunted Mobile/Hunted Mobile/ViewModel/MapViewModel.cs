@@ -33,8 +33,8 @@ namespace Hunted_Mobile.ViewModel {
             ARREST_THIEF_TIME_IN_SECONDES = 5,
             LOOT_PICKUP_MAX_DISTANCE_IN_METERS = 10,
             POLICE_ARREST_DISTANCE_IN_METERS = 10,
-            PICK_UP_LOOT_SCORE = 50,
-            ARREST_THIEF_SCORE = 200;
+            PICK_UP_LOOT_SCORE = 1,
+            ARREST_THIEF_SCORE = 1;
 
         const string PAUSE_TITLE = "Gepauzeerd",
             END_TITLE = "Het spel is afgelopen!",
@@ -46,11 +46,6 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Xamarin.Forms.Color policePinColor = Xamarin.Forms.Color.FromRgb(39, 96, 203);
         private readonly Xamarin.Forms.Color thiefPinColor = Xamarin.Forms.Color.Black;
         private readonly Model.Map mapModel;
-        private readonly LootRepository lootRepository;
-        private readonly UserRepository userRepository;
-        private readonly InviteKeyRepository inviteKeyRepository;
-        private readonly BorderMarkerRepository borderMarkerRepository;
-        private readonly GameRepository gameRepository;
         private readonly GpsService gpsService;
         private readonly WebSocketService webSocketService;
         private Loot selectedLoot = new Loot(0);
@@ -249,7 +244,7 @@ namespace Hunted_Mobile.ViewModel {
             };
         }
 
-        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService, LootRepository lootRepository, UserRepository userRepository, GameRepository gameRepository, InviteKeyRepository inviteKeyRepository, BorderMarkerRepository borderMarkerRepository, ResourceRepository resourceRepository) {
+        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService) {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
             this.gpsService = gpsService;
@@ -257,19 +252,14 @@ namespace Hunted_Mobile.ViewModel {
             messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameModel.Id);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
-            this.lootRepository = lootRepository;
-            this.userRepository = userRepository;
-            this.gameRepository = gameRepository;
-            this.inviteKeyRepository = inviteKeyRepository;
-            this.borderMarkerRepository = borderMarkerRepository;
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
             StartCountdown(0);
 
-            chatIcon = resourceRepository.GetGuiImage("chat.png");
+            chatIcon = UnitOfWork.Instance.ResourceRepository.GetGuiImage("chat.png");
             OnPropertyChanged(nameof(ChatIcon));
-            policeBadgeIcon = resourceRepository.GetMapImage("police-badge.png");
-            moneyBagIcon = resourceRepository.GetMapImage("money-bag.png");
+            policeBadgeIcon = UnitOfWork.Instance.ResourceRepository.GetMapImage("police-badge.png");
+            moneyBagIcon = UnitOfWork.Instance.ResourceRepository.GetMapImage("money-bag.png");
 
             if(gameModel.Status == GameStatus.PAUSED) {
                 PauseGame(null);
@@ -382,13 +372,13 @@ namespace Hunted_Mobile.ViewModel {
 
             Task.Run(async () => {
                 // Get latest score of game (in feature this should be replaced with socket event)
-                gameModel = await gameRepository.GetGame(gameModel.Id);
+                gameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
                 gameModel.ThievesScore += PICK_UP_LOOT_SCORE;
 
                 // User should be a thief here since a police can't open the dialog
-                bool deleted = await lootRepository.Delete(SelectedLoot.Id);
+                bool deleted = await UnitOfWork.Instance.LootRepository.Delete(SelectedLoot.Id);
                 if(deleted) {
-                    await gameRepository.UpdateThievesScore(gameModel.Id, gameModel.ThievesScore);
+                    await UnitOfWork.Instance.GameRepository.UpdateThievesScore(gameModel.Id, gameModel.ThievesScore);
 
                     OnPropertyChanged(nameof(PlayingUserScore));
                     OnPropertyChanged(nameof(PlayingUserScoreDisplay));
@@ -405,12 +395,12 @@ namespace Hunted_Mobile.ViewModel {
 
             Task.Run(async () => {
                 // Get latest score of game (in feature this should be replaced with socket event)
-                gameModel = await gameRepository.GetGame(gameModel.Id);
+                gameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
                 gameModel.PoliceScore += ARREST_THIEF_SCORE;
 
-                bool isCaught = await userRepository.CatchThief(ThiefToBeArrested.Id);
+                bool isCaught = await UnitOfWork.Instance.UserRepository.CatchThief(ThiefToBeArrested.Id);
                 if(isCaught) {
-                    await gameRepository.UpdatePoliceScore(gameModel.Id, gameModel.PoliceScore);
+                    await UnitOfWork.Instance.GameRepository.UpdatePoliceScore(gameModel.Id, gameModel.PoliceScore);
                     OnPropertyChanged(nameof(PlayingUserScore));
                     OnPropertyChanged(nameof(PlayingUserScoreDisplay));
                 }
@@ -419,13 +409,13 @@ namespace Hunted_Mobile.ViewModel {
 
 
         private async Task PollLoot() {
-            var lootList = await lootRepository.GetAll(gameModel.Id);
+            var lootList = await UnitOfWork.Instance.LootRepository.GetAll(gameModel.Id);
             mapModel.SetLoot(lootList);
         }
 
         private async Task PollUsers() {
             var userList = new List<Player>();
-            foreach(Player user in await userRepository.GetAll(gameModel.Id)) {
+            foreach(Player user in await UnitOfWork.Instance.UserRepository.GetAll(gameModel.Id)) {
                 if(user.Id != mapModel.PlayingUser.Id) {
                     userList.Add(user);
                 }
@@ -530,7 +520,6 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-
         // In the Mockups, these options are not visible, so this method makes sure that the options are hidden
         private void DisableDefaultMapViewOptions() {
             mapView.IsZoomButtonVisible = false;
@@ -588,7 +577,7 @@ namespace Hunted_Mobile.ViewModel {
             StopIntervalTimer();
 
             // Send the current user's location to the database
-            await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
+            await UnitOfWork.Instance.UserRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
         }
 
         private async Task StartSocket() {
@@ -653,7 +642,7 @@ namespace Hunted_Mobile.ViewModel {
             OnPropertyChanged(nameof(IsFarFromSelectedLoot));
 
             if(!Initialized) {
-                await userRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
+                await UnitOfWork.Instance.UserRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
                 Initialized = true;
             }
         }
@@ -718,7 +707,7 @@ namespace Hunted_Mobile.ViewModel {
         /// Adds the visual game boundary as a polygon
         /// </summary>
         private async Task AddGameBoundary() {
-            List<Location> locations = await borderMarkerRepository.GetAll(gameModel.Id);
+            List<Location> locations = await UnitOfWork.Instance.BorderMarkerRepository.GetAll(gameModel.Id);
             Boundary boundary = new Boundary();
 
             foreach(Location location in locations)
@@ -776,49 +765,48 @@ namespace Hunted_Mobile.ViewModel {
                 mapView.Pins.Add(playerPin);
             }
 
-            //TODO: the null checks here should probably be resolved elsewhere
             // Players
             foreach(var user in mapModel.GetUsers()) {
-                if(user.Location != null && user.UserName != null && mapModel.PlayingUser.GetType() == user.GetType()) {
-
-                    mapView.Pins.Add(new Pin(mapView) {
+                if(mapModel.PlayingUser.GetType() == user.GetType()) {
+                    var pin = new Pin(mapView) {
                         Label = user.UserName,
-                        Color = user is Thief ? thiefPinColor : policePinColor,
                         Position = new Mapsui.UI.Forms.Position(user.Location.Latitude, user.Location.Longitude),
                         Scale = 0.666f,
-                        Tag = user is Thief ? THIEF_TAG : null,
                         Transparency = 0.25f,
-                    });
+                    };
+
+                    if(user is Thief) {
+                        pin.Color = thiefPinColor;
+                        pin.Tag = THIEF_TAG;
+
+                        if(!((Thief) user).IsCaught) {
+                            mapView.Pins.Add(pin);
+                        }
+                    }
+                    else {
+                        pin.Color = policePinColor;
+                        mapView.Pins.Add(pin);
+                    }
                 }
             }
 
             // Closest thief for player
-            List<Player> thiefs = new List<Player>();
-            Player closestThief = new Player();
-            bool firstThief = true;
+            Player closestThief = null;
 
             if(mapModel.PlayingUser is Police) {
-                foreach(var user in mapModel.GetUsers()) {
-                    if(user is Thief) {
-                        thiefs.Add(user);
-                    }
-                }
-
-                foreach(var thief in thiefs) {
-                    if(firstThief) {
+                foreach(var thief in mapModel.Thiefs) {
+                    if(closestThief == null) {
                         closestThief = thief;
-                        firstThief = false;
                     }
-
-                    if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
+                    else if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
                         closestThief = thief;
                     }
                 }
 
-                if(thiefs.Count != 0) {
+                if(closestThief != null) {
                     mapView.Pins.Add(new Pin(mapView) {
                         Label = closestThief.UserName,
-                        Color = Xamarin.Forms.Color.Red,
+                        Color = Xamarin.Forms.Color.Black,
                         Position = new Mapsui.UI.Forms.Position(closestThief.Location.Latitude, closestThief.Location.Longitude),
                         Scale = 0.666f,
                         Tag = THIEF_TAG,
@@ -829,16 +817,14 @@ namespace Hunted_Mobile.ViewModel {
 
             // Loot
             foreach(var loot in mapModel.GetLoot()) {
-                if(loot.Name != null && loot.Location != null) {
-                    mapView.Pins.Add(new Pin(mapView) {
-                        Label = loot.Name,
-                        Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
-                        Scale = 1.0f,
-                        Tag = LOOT_TAG,
-                        Icon = moneyBagIcon.Data,
-                        Type = PinType.Icon,
-                    });
-                }
+                mapView.Pins.Add(new Pin(mapView) {
+                    Label = loot.Name,
+                    Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),
+                    Scale = 1.0f,
+                    Tag = LOOT_TAG,
+                    Icon = moneyBagIcon.Data,
+                    Type = PinType.Icon,
+                });
             }
 
             // Police station

@@ -17,6 +17,7 @@ namespace Hunted_Mobile.Model.GameModels {
         public string UserName { get; set; }
         public string Status { get; set; }
 
+        public bool IsValid => UserName != null && Location != null;
 
         public Player(int id, string userName, InviteKey inviteKey) {
             Id = id;

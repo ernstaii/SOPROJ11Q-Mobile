@@ -15,7 +15,6 @@ namespace Hunted_Mobile.ViewModel {
     public class MainPageViewModel : BaseViewModel {
         private InviteKey inviteKeyModel = new InviteKey();
         private bool isloading = false;
-        private readonly InviteKeyRepository inviteKeyRepository = new InviteKeyRepository();
         private ObservableCollection<InviteKey> inviteKeys = new ObservableCollection<InviteKey>();
         private readonly MainPage page;
         private bool isOverlayVisible;
@@ -69,7 +68,7 @@ namespace Hunted_Mobile.ViewModel {
         /// <returns></returns>
         public async Task GetInviteKey() {
             if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, page)) {
-                var result = await inviteKeyRepository.GetAll(InviteKeyModel.Value);
+                var result = await UnitOfWork.Instance.InviteKeyRepository.GetAll(InviteKeyModel.Value);
                 IsOverlayVisible = false;
 
                 if(result.Count == 1) {

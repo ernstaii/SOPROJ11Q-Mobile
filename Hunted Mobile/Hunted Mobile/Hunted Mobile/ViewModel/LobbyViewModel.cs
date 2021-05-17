@@ -20,13 +20,10 @@ namespace Hunted_Mobile.ViewModel {
         private List<Player> users = new List<Player>();
         private Game gameModel = new Game();
         private readonly Player currentUser;
-        private readonly UserRepository userRepository = new UserRepository();
-        private readonly GameRepository gameRepository = new GameRepository(); 
-        private readonly InviteKeyRepository inviteKeyRepository = new InviteKeyRepository();
         private readonly WebSocketService webSocketService;
 
         private bool isloading;
-        
+
         public Game GameModel {
             get => gameModel;
             set {
@@ -65,9 +62,16 @@ namespace Hunted_Mobile.ViewModel {
             gameModel.Id = this.currentUser.InviteKey.GameId;
 
             webSocketService = new WebSocketService(gameModel.Id);
-            Task.Run(async () => await StartSocket());
+
+            IsLoading = true;
             Task.Run(async () => await LoadUsers());
-            Task.Run(async () => await CheckForStatus());
+            Task.Run(async () => {
+                await StartSocket();
+                
+                // The socket-event should be set first, then the status can be checked
+                await CheckForStatus();
+                IsLoading = false;
+            });
         }
 
         private async Task StartSocket() {
@@ -79,7 +83,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private async void StartGame() {
-            GameModel = await gameRepository.GetGame(gameModel.Id);
+            GameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
             NavigateToMapPage();
         }
 
@@ -90,7 +94,7 @@ namespace Hunted_Mobile.ViewModel {
                     PlayingUser = currentUser
                 };
 
-                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel, new Service.Gps.GpsService(), new LootRepository(), userRepository, gameRepository, inviteKeyRepository, new BorderMarkerRepository(), new ResourceRepository()));
+                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel, new Service.Gps.GpsService()));
 
                 Device.BeginInvokeOnMainThread(() => {
                     Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
@@ -103,13 +107,11 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public async Task LoadUsers() {
-            IsLoading = true;
-            Users = await userRepository.GetAll(GameModel.Id);
-            IsLoading = false;
+            Users = await UnitOfWork.Instance.UserRepository.GetAll(GameModel.Id);
         }
 
         public async Task CheckForStatus() {
-            Game gameStatus = await gameRepository.GetGame(gameModel.Id);
+            Game gameStatus = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
             if(gameStatus.Status == GameStatus.ONGOING || gameStatus.Status == GameStatus.PAUSED || gameStatus.Status == GameStatus.FINISHED) {
                 StartGame();
             }

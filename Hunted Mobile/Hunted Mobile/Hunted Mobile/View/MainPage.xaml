@@ -17,7 +17,7 @@
 
             <StackLayout Padding="40">
                 <!-- Enter here the InviteCode and submit with button -->
-                <Entry Placeholder="Voer uw code in" Text="{Binding InviteKeyModel.Value}"/>
+                <Entry Placeholder="Voer uw code in" Text="{Binding InviteKeyModel.Value}" TextTransform="Uppercase"/>
                 <Label TextColor="Red" x:Name="InviteKey_ValueError"/>
 
                 <!-- Submit InviteCode to join a game -->
