@@ -642,13 +642,13 @@ namespace Hunted_Mobile.ViewModel {
         private void OnLootClicked(Position position) {
             SelectedLoot = mapModel.FindLoot(new Location(position));
             MapDialogOption = MapDialogOptions.DISPLAY_PICKUP_LOOT;
-            MapDialog.DisplayPickingUpLoot(SelectedLoot.Name);
+            MapDialog.DisplayPickingUpLoot(SelectedLoot.Name, IsCloseToSelectedLoot);
         }
 
         private void OnThiefClicked(Position position) {
             SelectedThief = mapModel.FindThief(new Location(position));
             MapDialogOption = MapDialogOptions.DISPLAY_ARREST_THIEF;
-            MapDialog.DisplayArrestingThief(SelectedThief.UserName);
+            MapDialog.DisplayArrestingThief(SelectedThief.UserName, IsCloseToSelectedThief);
         }
 
         private void ToggleEnableStatusOnMapView() {

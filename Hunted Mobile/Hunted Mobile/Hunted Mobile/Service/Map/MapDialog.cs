@@ -122,9 +122,10 @@ namespace Hunted_Mobile.Service.Map {
             HandleButtonText = "Klaar";
         }
 
-        public void DisplayPickingUpLoot(string title, bool isToFarFromSelectedLoot = false) {
-            string description = isToFarFromSelectedLoot ? "Je bent te ver weg om deze buit op te pakken." : "Houd de knop 5 seconden ingedrukt om de buit op te pakken.";
+        public void DisplayPickingUpLoot(string title, bool isCloseToSelectedLoot = false) {
+            string description = isCloseToSelectedLoot ? "Houd de knop 5 seconden ingedrukt om de buit op te pakken.": "Je bent te ver weg om deze buit op te pakken.";
 
+            HandleButtonIsVisible = isCloseToSelectedLoot;
             HandleButtonHasHoldEvent = true;
             HandleButtonText = "Oppakken";
 
@@ -137,9 +138,10 @@ namespace Hunted_Mobile.Service.Map {
             FinishSuccessfullyAction();
         }
 
-        public void DisplayArrestingThief(string title, bool isToFarFromSelectedThief = false) {
-            string description = isToFarFromSelectedThief ? "Je bent te ver weg om deze dief op te pakken." : "Houd de knop 5 seconden ingedrukt om de dief op te pakken.";
+        public void DisplayArrestingThief(string title, bool isCloseToSelectedThief = false) {
+            string description = isCloseToSelectedThief ? "Houd de knop 5 seconden ingedrukt om de dief op te pakken." : "Je bent te ver weg om deze dief op te pakken.";
 
+            HandleButtonIsVisible = isCloseToSelectedThief;
             HandleButtonHasHoldEvent = true;
             HandleButtonText = "Arresteren";
 
