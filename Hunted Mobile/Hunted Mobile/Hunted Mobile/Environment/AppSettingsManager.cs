@@ -1,10 +1,14 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Hunted_Mobile.Service;
+
+using Newtonsoft.Json.Linq;
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+
+using Xamarin.Forms;
 
 namespace Hunted_Mobile {
     // https://www.andrewhoefling.com/Blog/Post/xamarin-app-configuration-control-your-app-settings
@@ -27,7 +31,7 @@ namespace Hunted_Mobile {
                 }
             }
             catch(Exception) {
-                Debug.WriteLine("Unable to load secrets file");
+                DependencyService.Get<Toast>().Show("Er was een probleem met het laden van de secrets file");
             }
         }
 
@@ -53,8 +57,8 @@ namespace Hunted_Mobile {
                 return GetValue(nestedKey);
             }
             catch(Exception) {
-                Debug.WriteLine($"Unable to retrieve secret '{nestedKey}'");
-                return string.Empty;
+                    DependencyService.Get<Toast>().Show("Er was een probleem met het laden van de secrets file");
+                    return string.Empty;
             }
         }
 

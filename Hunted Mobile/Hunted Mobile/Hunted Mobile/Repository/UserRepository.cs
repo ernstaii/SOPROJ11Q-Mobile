@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using Xamarin.Forms;
+
 namespace Hunted_Mobile.Repository {
     public class UserRepository {
         public async Task<Player> Create(Player player) {
@@ -68,7 +70,7 @@ namespace Hunted_Mobile.Repository {
                     else result.Add(user);
                 }
                 catch(Exception ex) {
-                    Console.WriteLine(ex.ToString());
+                    DependencyService.Get<Toast>().Show("Er was een probleem met het ophalen van de spelers");
                 }
             }
 

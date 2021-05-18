@@ -7,6 +7,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using Xamarin.Forms;
+
 namespace Hunted_Mobile.Service {
     public class HttpClientResponse {
         public HttpStatusCode Status => ResponseMessage != null ? ResponseMessage.StatusCode : HttpStatusCode.NoContent;
@@ -48,6 +50,7 @@ namespace Hunted_Mobile.Service {
             }
             catch(Exception) {
                 hasServerErrors = true;
+                DependencyService.Get<Toast>().Show("Er was een probleem met het uitvoeren van een request");
             }
         }
 
@@ -57,6 +60,7 @@ namespace Hunted_Mobile.Service {
             }
             catch(Exception) {
                 hasServerErrors = true;
+                DependencyService.Get<Toast>().Show("Er was een probleem met het uitlezen van de response");
             }
         }
 
@@ -70,6 +74,7 @@ namespace Hunted_Mobile.Service {
             }
             catch(Exception) {
                 hasServerErrors = true;
+                DependencyService.Get<Toast>().Show("Er was een probleem met het converteren van de response");
             }
         }
 
@@ -85,6 +90,7 @@ namespace Hunted_Mobile.Service {
             }
             catch(Exception) {
                 hasServerErrors = true;
+                DependencyService.Get<Toast>().Show("Er was een probleem met de server");
             }
         }
 

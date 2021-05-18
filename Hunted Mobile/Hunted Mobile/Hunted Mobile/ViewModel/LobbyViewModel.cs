@@ -104,7 +104,7 @@ namespace Hunted_Mobile.ViewModel {
                 });
             }
             catch(Exception ex) {
-                Console.WriteLine(ex.ToString());
+                DependencyService.Get<Toast>().Show("Er was een probleem met het navigeren naar het speelveld");
             }
         }
 

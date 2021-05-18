@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using Xamarin.Forms;
 
 namespace Hunted_Mobile.Repository {
     public class LootRepository {
@@ -36,7 +37,7 @@ namespace Hunted_Mobile.Repository {
                     });
                 }
                 catch(Exception e) {
-                    Console.WriteLine(e.ToString());
+                    DependencyService.Get<Toast>().Show("Er was een probleem met het ophalen van de buit");
                 }
             }
 

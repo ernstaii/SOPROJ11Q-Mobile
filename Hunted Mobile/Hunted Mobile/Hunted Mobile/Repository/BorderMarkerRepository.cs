@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
+using Xamarin.Forms;
+
 namespace Hunted_Mobile.Repository
 {
     public class BorderMarkerRepository {
@@ -25,6 +27,7 @@ namespace Hunted_Mobile.Repository
                 }
                 catch(Exception) {
                     result.Add(new Location("5.000000,51.000000"));
+                    DependencyService.Get<Toast>().Show("Er was een probleem met het ophalen van de spelgrenzen");
                 }
             }
 
