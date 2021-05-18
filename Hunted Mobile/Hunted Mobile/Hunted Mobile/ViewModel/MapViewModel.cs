@@ -28,6 +28,7 @@ using Hunted_Mobile.View;
 using System.Linq;
 using Hunted_Mobile.Service.Map;
 using Hunted_Mobile.Enum;
+using Hunted_Mobile.Service.Preference;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -57,6 +58,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Resource chatIcon;
         private readonly Countdown countdown;
         private MapViewService mapViewService;
+        private readonly GameSessionPreference gameSessionPreference;
         private DateTime dateTimeNow;
 #pragma warning disable IDE1006 // Naming Styles
         private MapView mapView {
@@ -156,6 +158,10 @@ namespace Hunted_Mobile.ViewModel {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
             this.gpsService = gpsService;
+
+            gameSessionPreference = new GameSessionPreference();
+            SaveCurrentGame();
+
             messagesView = new View.Messages(this.gameModel.Id);
             webSocketService = new WebSocketService(gameModel.Id);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
@@ -286,6 +292,11 @@ namespace Hunted_Mobile.ViewModel {
         private async Task PollLoot() {
             var lootList = await UnitOfWork.Instance.LootRepository.GetAll(gameModel.Id);
             mapModel.SetLoot(lootList);
+        }
+
+        private void SaveCurrentGame() {
+            gameSessionPreference.SetGame(gameModel.Id);
+            gameSessionPreference.SetUser(mapModel.PlayingUser.Id);
         }
 
         private async Task PollUsers() {
@@ -684,6 +695,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void ExitGame() {
+            gameSessionPreference.ClearUserAndGame();
             Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MainPage());
             RemovePreviousNavigation();
             webSocketService.Disconnect();
