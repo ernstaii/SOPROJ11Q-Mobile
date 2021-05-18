@@ -13,4 +13,8 @@ namespace Hunted_Mobile.Model.Response.Json {
         public UserData[] users;
         public LootData[] loot;
     }
+
+    public class UserEventData : EventData {
+        public UserData user;
+    }
 }

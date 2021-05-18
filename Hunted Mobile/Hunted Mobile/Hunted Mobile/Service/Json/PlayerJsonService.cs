@@ -20,7 +20,7 @@ namespace Hunted_Mobile.Service.Json {
             });
         }
 
-        protected override Player ToObject(UserData data) {
+        public override Player ToObject(UserData data) {
             Player player = new Player() {
                 Id = data.id,
                 InviteKey = new InviteKey() {

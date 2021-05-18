@@ -14,4 +14,8 @@ namespace Hunted_Mobile.Model.Response {
         public Player[] Players { get; set; }
         public Loot[] Loot { get; set; }
     }
+
+    public class PlayerEventData : EventData {
+        public Player Player { get; set; }
+    }
 }

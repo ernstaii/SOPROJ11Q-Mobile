@@ -29,7 +29,7 @@ namespace Hunted_Mobile.Service.Json {
             }
         }
 
-        protected override Location ToObject(LocationData data) {
+        public override Location ToObject(LocationData data) {
             return ToObjectFromCsv(data.location);
         }
     }

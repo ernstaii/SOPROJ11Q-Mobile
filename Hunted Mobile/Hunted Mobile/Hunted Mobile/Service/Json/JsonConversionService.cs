@@ -45,7 +45,7 @@ namespace Hunted_Mobile.Service.Json {
             return objects;
         }
 
-        protected abstract NativeType ToObject(DataType data);
+        public abstract NativeType ToObject(DataType data);
 
         protected ReadOnlyCollection<string> ToArray(string json) {
             List<string> items = new List<string>();
