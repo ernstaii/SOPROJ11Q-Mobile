@@ -28,6 +28,9 @@ namespace Hunted_Mobile.Service.Map {
             this.player = player;
             SetPlayerPin();
 
+            // Enableling this buttons is something for a different PR
+            DisableDefaultMapViewOptions();
+
             policeBadgeIcon = UnitOfWork.Instance.ResourceRepository.GetMapImage("police-badge.png");
             moneyBagIcon = UnitOfWork.Instance.ResourceRepository.GetMapImage("money-bag.png");
         }
@@ -95,6 +98,12 @@ namespace Hunted_Mobile.Service.Map {
                 Label = player.UserName,
                 Color = player is Thief ? thiefPinColor : policePinColor,
             };
+        }
+
+        private void DisableDefaultMapViewOptions() {
+            MapView.IsZoomButtonVisible = false;
+            MapView.IsNorthingButtonVisible = false;
+            MapView.IsMyLocationButtonVisible = false;
         }
     }
 }
