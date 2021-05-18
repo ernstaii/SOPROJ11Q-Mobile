@@ -3,11 +3,8 @@ using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Service;
 using Hunted_Mobile.Service.Json;
 
-using Newtonsoft.Json.Linq;
-
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {

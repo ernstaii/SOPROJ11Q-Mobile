@@ -21,7 +21,6 @@ using Hunted_Mobile.Service.Gps;
 using System.Windows.Input;
 using Xamarin.Forms;
 using System.Timers;
-using Newtonsoft.Json.Linq;
 using Hunted_Mobile.Model.Resource;
 using Hunted_Mobile.Enum;
 using Hunted_Mobile.View;

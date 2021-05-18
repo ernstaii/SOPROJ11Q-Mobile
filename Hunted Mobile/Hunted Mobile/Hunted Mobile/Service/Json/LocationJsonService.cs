@@ -1,8 +1,6 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.Response.Json;
 
-using Newtonsoft.Json.Linq;
-
 using System;
 
 namespace Hunted_Mobile.Service.Json {

@@ -4,9 +4,6 @@ using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
-using Hunted_Mobile.View;
-
-using Newtonsoft.Json.Linq;
 
 using System;
 using System.Collections.Generic;

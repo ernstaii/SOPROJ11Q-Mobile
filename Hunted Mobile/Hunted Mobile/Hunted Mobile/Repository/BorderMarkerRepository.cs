@@ -2,15 +2,10 @@
 using Hunted_Mobile.Service;
 using Hunted_Mobile.Service.Json;
 
-using Newtonsoft.Json.Linq;
-
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Hunted_Mobile.Repository
-{
+namespace Hunted_Mobile.Repository {
     public class BorderMarkerRepository {
         public async Task<List<Location>> GetAll(int gameId) {
             var response = new HttpClientResponse() {
