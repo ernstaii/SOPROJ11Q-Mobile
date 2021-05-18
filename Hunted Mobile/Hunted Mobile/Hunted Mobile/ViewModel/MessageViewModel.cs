@@ -20,7 +20,7 @@ namespace Hunted_Mobile.ViewModel {
             AddMessage("Het spel is begonnen!");
             socket.PauseGame += (data) => AddMessage(data.Message);
             socket.ResumeGame += (data) => AddMessage(data.Message);
-            socket.NotificationEvent += (data) => AddMessage((String) data.GetValue("message"));
+            socket.NotificationEvent += (data) => AddMessage(data.Message);
             socket.EndGame += (data) => AddMessage((String) data.GetValue("message"));
             socket.ThiefCaught += (data) => AddMessage((String) data.GetValue("message"));
             socket.ThiefReleased += (data) => AddMessage((String) data.GetValue("message"));
