@@ -76,8 +76,6 @@ namespace Hunted_Mobile.ViewModel {
         public MainPageViewModel(MainPage page) {
             this.page = page;
             gameSessionPreference = new GameSessionPreference();
-
-            LoadPreviousGame();
         }
 
         /// <summary>
@@ -142,17 +140,17 @@ namespace Hunted_Mobile.ViewModel {
                 userId = gameSessionPreference.GetUser();
 
             if(gameId > 0 && userId > 0) {
-                await GetGame();
+                await GetGame(gameId);
 
                 if(checkIfUserCanJoinAGame) {
-                    await GetUser();
+                    await GetUser(userId);
                     DisplayJoinGameButton = true;
                 }
             }
         }
 
-        private async Task GetGame() {
-            gameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
+        private async Task GetGame(int gameId) {
+            gameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameId);
             checkIfUserCanJoinAGame = gameModel.Status == GameStatus.ONGOING || gameModel.Status == GameStatus.PAUSED || gameModel.Status == GameStatus.CONFIG;
 
             if(!checkIfUserCanJoinAGame) {
@@ -160,8 +158,8 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private async Task GetUser() {
-            playingUser = await UnitOfWork.Instance.UserRepository.GetUser(gameModel.Id);
+        private async Task GetUser(int userId) {
+            playingUser = await UnitOfWork.Instance.UserRepository.GetUser(userId);
         }
 
         private async Task NotifyGame() {
