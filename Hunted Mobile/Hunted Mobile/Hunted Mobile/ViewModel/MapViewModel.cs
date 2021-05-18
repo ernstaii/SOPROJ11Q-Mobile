@@ -484,7 +484,9 @@ namespace Hunted_Mobile.ViewModel {
         private void IntervalOfGame(IntervalEventData data) {
             StartIntervalTimer();
 
-            mapModel.SetUsers(data.Players);
+            mapModel.SetUsers(data.Players.Where(
+                player => player.Id != mapModel.PlayingUser.Id)
+            );
             mapModel.SetLoot(data.Loot);
 
             DisplayOtherPins();

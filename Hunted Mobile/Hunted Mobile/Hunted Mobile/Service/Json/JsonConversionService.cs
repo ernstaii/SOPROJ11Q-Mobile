@@ -19,7 +19,7 @@ namespace Hunted_Mobile.Service.Json {
 
         public abstract string ToJson(NativeType @object);
 
-        public virtual NativeType ToObject(string json) {
+        public NativeType ToObject(string json) {
             return ToObject(ConvertFromJson(json));
         }
 
@@ -68,7 +68,7 @@ namespace Hunted_Mobile.Service.Json {
             return JsonConvert.SerializeObject(data, serializerSettings);
         }
 
-        private DataType ConvertFromJson(string json) {
+        protected DataType ConvertFromJson(string json) {
             return JsonConvert.DeserializeObject<DataType>(json, serializerSettings);
         }
     }

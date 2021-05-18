@@ -41,4 +41,8 @@ namespace Hunted_Mobile.Model.Response.Json {
         public DateTime created_at;
         public DateTime updated_at;
     }
+
+    public struct LocationData : JsonResponseData {
+        public string location;
+    }
 }

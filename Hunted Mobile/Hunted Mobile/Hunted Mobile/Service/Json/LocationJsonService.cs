@@ -1,21 +1,17 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.Response.Json;
 
+using Newtonsoft.Json.Linq;
+
 using System;
 
 namespace Hunted_Mobile.Service.Json {
-    public class LocationJsonService : JsonConversionService<Location, JsonResponseData> {
+    public class LocationJsonService : JsonConversionService<Location, LocationData> {
         public LocationJsonService() {
         }
 
         public override string ToJson(Location location) {
             return location.ToCsvString();
-        }
-
-        public override Location ToObject(string json) {
-            return ToObjectFromCsv(
-                ToJObject(json).GetValue("location")?.ToString()
-            );
         }
 
         public Location ToObjectFromCsv(string commaSeparatedValues) {
@@ -33,8 +29,8 @@ namespace Hunted_Mobile.Service.Json {
             }
         }
 
-        protected override Location ToObject(JsonResponseData data) {
-            throw new NotImplementedException();
+        protected override Location ToObject(LocationData data) {
+            return ToObjectFromCsv(data.location);
         }
     }
 }
