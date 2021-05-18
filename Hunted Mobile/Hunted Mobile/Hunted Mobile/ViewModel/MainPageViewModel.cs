@@ -119,5 +119,9 @@ namespace Hunted_Mobile.ViewModel {
             var view = new EnterUsername(viewModel);
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(view);
         }
+
+        public void ResetInviteKey() {
+            InviteKeyModel = new InviteKey();
+        }
     }
 }
