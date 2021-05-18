@@ -26,6 +26,7 @@ using Hunted_Mobile.Enum;
 using Hunted_Mobile.View;
 using System.Linq;
 using Hunted_Mobile.Model.Response;
+using System.Collections.ObjectModel;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -48,7 +49,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Model.Map mapModel;
         private readonly GpsService gpsService;
         private readonly WebSocketService webSocketService;
-        private Loot selectedLoot = new Loot(0);
+        private Loot selectedLoot = new Loot();
         private Game gameModel;
         private MapView mapView;
         private readonly View.Messages messagesView;
@@ -135,7 +136,7 @@ namespace Hunted_Mobile.ViewModel {
         public Loot SelectedLoot {
             get => selectedLoot;
             set {
-                selectedLoot = value != null ? value : new Loot(0);
+                selectedLoot = value != null ? value : new Loot();
 
                 OnPropertyChanged("SelectedLoot");
                 OnPropertyChanged(nameof(IsCloseToSelectedLoot));
@@ -425,7 +426,7 @@ namespace Hunted_Mobile.ViewModel {
 
         private async Task PollLoot() {
             var lootList = await UnitOfWork.Instance.LootRepository.GetAll(gameModel.Id);
-            mapModel.SetLoot(lootList);
+            mapModel.Loot = lootList;
         }
 
         private async Task PollUsers() {
@@ -435,7 +436,7 @@ namespace Hunted_Mobile.ViewModel {
                     userList.Add(user);
                 }
             }
-            mapModel.SetUsers(userList);
+            mapModel.Players = userList;
 
             playersOverview = new View.PlayersOverviewPage(
                 new PlayersOverviewViewModel(
@@ -483,10 +484,8 @@ namespace Hunted_Mobile.ViewModel {
         private void IntervalOfGame(IntervalEventData data) {
             StartIntervalTimer();
 
-            mapModel.SetUsers(data.Players.Where(
-                player => player.Id != mapModel.PlayingUser.Id)
-            );
-            mapModel.SetLoot(data.Loot);
+            mapModel.Players = data.Players.Where(player => player.Id != mapModel.PlayingUser.Id).ToList();
+            mapModel.Loot = data.Loot;
 
             DisplayOtherPins();
         }
@@ -705,11 +704,7 @@ namespace Hunted_Mobile.ViewModel {
         /// Adds the visual game boundary as a polygon
         /// </summary>
         private async Task AddGameBoundary() {
-            List<Location> locations = await UnitOfWork.Instance.BorderMarkerRepository.GetAll(gameModel.Id);
-            Boundary boundary = new Boundary();
-
-            foreach(Location location in locations)
-                boundary.Points.Add(location);
+            Boundary boundary = await UnitOfWork.Instance.BorderMarkerRepository.GetBoundary(gameModel.Id);
 
             mapModel.GameBoundary = boundary;
             mapView.Map.Layers.Add(CreateBoundaryLayer());
@@ -764,7 +759,7 @@ namespace Hunted_Mobile.ViewModel {
             }
 
             // Players
-            foreach(var user in mapModel.GetUsers()) {
+            foreach(var user in mapModel.Players) {
                 if(mapModel.PlayingUser.GetType() == user.GetType()) {
                     var pin = new Pin(mapView) {
                         Label = user.UserName,
@@ -816,7 +811,7 @@ namespace Hunted_Mobile.ViewModel {
             }
 
             // Loot
-            foreach(var loot in mapModel.GetLoot()) {
+            foreach(var loot in mapModel.Loot) {
                 mapView.Pins.Add(new Pin(mapView) {
                     Label = loot.Name,
                     Position = new Mapsui.UI.Forms.Position(loot.Location.Latitude, loot.Location.Longitude),

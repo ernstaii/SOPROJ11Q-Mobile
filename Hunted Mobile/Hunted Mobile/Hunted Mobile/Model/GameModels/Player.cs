@@ -27,7 +27,7 @@ namespace Hunted_Mobile.Model.GameModels {
 
         public Player() { }
 
-        public Player(Player player) {
+        protected Player(Player player) {
             Id = player.Id;
             Location = player.Location;
             UserName = player.UserName;

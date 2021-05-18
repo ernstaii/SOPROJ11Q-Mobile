@@ -19,5 +19,17 @@ namespace Hunted_Mobile.Repository {
 
             return result;
         }
+
+        public async Task<Boundary> GetBoundary(int gameId) {
+            var locations = await GetAll(gameId);
+
+            Boundary boundary = new Boundary();
+
+            foreach(Location location in locations) {
+                boundary.Points.Add(location);
+            }
+
+            return boundary;
+        }
     }
 }

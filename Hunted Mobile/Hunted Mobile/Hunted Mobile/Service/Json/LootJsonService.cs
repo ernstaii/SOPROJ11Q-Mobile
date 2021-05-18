@@ -8,7 +8,8 @@ using System.Text;
 namespace Hunted_Mobile.Service.Json {
     public class LootJsonService : JsonConversionService<Loot, LootData> {
         public override Loot ToObject(LootData data) {
-            return new Loot(data.id) {
+            return new Loot() {
+                Id = data.id,
                 Location = new LocationJsonService().ToObjectFromCsv(data.location),
                 Name = data.name
             };
