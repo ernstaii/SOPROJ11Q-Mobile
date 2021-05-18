@@ -19,7 +19,7 @@
             return GetInt(PLAYER_KEY);
         }
 
-        public void ClearUserAndGame() {
+        public static void ClearUserAndGame() {
             Remove(GAME_KEY);
             Remove(PLAYER_KEY);
         }

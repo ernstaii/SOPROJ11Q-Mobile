@@ -144,7 +144,12 @@ namespace Hunted_Mobile.ViewModel {
 
                 if(checkIfUserCanJoinAGame) {
                     await GetUser(userId);
-                    DisplayJoinGameButton = true;
+
+                    if(playingUser == null) {
+                        GameSessionPreference.ClearUserAndGame();
+                    } else {
+                        DisplayJoinGameButton = true;
+                    }
                 }
             }
         }
@@ -154,7 +159,7 @@ namespace Hunted_Mobile.ViewModel {
             checkIfUserCanJoinAGame = gameModel.Status == GameStatus.ONGOING || gameModel.Status == GameStatus.PAUSED || gameModel.Status == GameStatus.CONFIG;
 
             if(!checkIfUserCanJoinAGame) {
-                gameSessionPreference.ClearUserAndGame();
+                GameSessionPreference.ClearUserAndGame();
             }
         }
 

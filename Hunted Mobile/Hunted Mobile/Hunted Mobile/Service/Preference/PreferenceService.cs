@@ -16,11 +16,11 @@ namespace Hunted_Mobile.Service {
             return value;
         }
 
-        public void Remove(string key) {
+        public static void Remove(string key) {
             Preferences.Remove(key);
         }
 
-        public void Clear() {
+        public static void Clear() {
             Preferences.Clear();
         }
     }

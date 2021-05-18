@@ -2,6 +2,7 @@
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
+using Hunted_Mobile.Service.Preference;
 using Hunted_Mobile.View;
 
 using System.Linq;
@@ -48,6 +49,7 @@ namespace Hunted_Mobile.ViewModel {
         public async Task CreateUser() {
             if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
                 UserModel = await UnitOfWork.Instance.UserRepository.Create(UserModel);
+                GameSessionPreference.ClearUserAndGame();
             }
         }
 

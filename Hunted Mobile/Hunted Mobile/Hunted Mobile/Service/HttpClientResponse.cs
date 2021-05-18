@@ -95,7 +95,7 @@ namespace Hunted_Mobile.Service {
         public string GetStringValue(string key) {
             var result = GetValue(key);
 
-            return result != null ? result.ToString() : null;
+            return result != null ? result.ToString() : "";
         }
 
         public int GetNumberValue(string key) {

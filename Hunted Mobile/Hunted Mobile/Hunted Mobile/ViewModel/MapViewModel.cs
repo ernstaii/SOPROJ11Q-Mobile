@@ -685,7 +685,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void ExitGame() {
-            new GameSessionPreference().ClearUserAndGame();
+            GameSessionPreference.ClearUserAndGame();
             Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MainPage());
             RemovePreviousNavigation();
             webSocketService.Disconnect();
