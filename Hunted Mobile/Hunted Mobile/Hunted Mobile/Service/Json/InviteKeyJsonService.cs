@@ -7,10 +7,6 @@ using System.Text;
 
 namespace Hunted_Mobile.Service.Json {
     public class InviteKeyJsonService : JsonConversionService<InviteKey, InviteKeyData> {
-        public override string ToJson(InviteKey @object) {
-            throw new NotImplementedException();
-        }
-
         protected override InviteKey ToObject(InviteKeyData data) {
             return new InviteKey() {
                 GameId = data.game_id,

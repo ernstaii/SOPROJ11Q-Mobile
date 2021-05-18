@@ -18,7 +18,7 @@ namespace Hunted_Mobile.ViewModel {
         public MessageViewModel(int gameId) {
             WebSocketService socket = new WebSocketService(gameId);
             AddMessage("Het spel is begonnen!");
-            socket.PauseGame += (data) => AddMessage((String) data.GetValue("message"));
+            socket.PauseGame += (data) => AddMessage(data.Message);
             socket.ResumeGame += (data) => AddMessage((String) data.GetValue("message"));
             socket.NotificationEvent += (data) => AddMessage((String) data.GetValue("message"));
             socket.EndGame += (data) => AddMessage((String) data.GetValue("message"));

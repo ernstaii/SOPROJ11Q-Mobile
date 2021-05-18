@@ -592,7 +592,7 @@ namespace Hunted_Mobile.ViewModel {
             StopIntervalTimer();
         }
 
-        private void PauseGame(JObject data) {
+        private void PauseGame(EventData data) {
             IsEnabled = false;
             StopCountdown();
 

@@ -17,7 +17,9 @@ namespace Hunted_Mobile.Service.Json {
         public JsonConversionService() {
         }
 
-        public abstract string ToJson(NativeType @object);
+        public virtual string ToJson(NativeType @object) {
+            throw new NotImplementedException();
+        }
 
         public NativeType ToObject(string json) {
             return ToObject(ConvertFromJson(json));
