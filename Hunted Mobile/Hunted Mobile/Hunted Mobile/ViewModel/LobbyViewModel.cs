@@ -98,10 +98,12 @@ namespace Hunted_Mobile.ViewModel {
                 StartGameWithoutLoadingGame();
             }
         }
+
         private void SaveCurrentGame() {
             gameSessionPreference.SetGame(gameModel.Id);
             gameSessionPreference.SetUser(currentUser.Id);
         }
+
         private async void StartGame() {
             GameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
             NavigateToMapPage();

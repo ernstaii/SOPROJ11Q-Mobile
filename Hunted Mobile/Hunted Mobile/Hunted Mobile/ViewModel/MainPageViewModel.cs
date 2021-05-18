@@ -137,7 +137,7 @@ namespace Hunted_Mobile.ViewModel {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new EnterUsername(InviteKeyModel));
         }
 
-        private async void LoadPreviousGame() {
+        public async void LoadPreviousGame() {
             int gameId = gameSessionPreference.GetGame(),
                 userId = gameSessionPreference.GetUser();
 
