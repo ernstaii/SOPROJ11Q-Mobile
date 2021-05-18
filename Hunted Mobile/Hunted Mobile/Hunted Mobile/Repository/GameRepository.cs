@@ -14,19 +14,7 @@ namespace Hunted_Mobile.Repository {
             HttpClientResponse response = new HttpClientResponse();
             await response.Convert(HttpClientRequestService.Get($"games/{gameId}"));
 
-            return new Game() {
-                Id = response.GetNumberValue("id"),
-                Duration = response.GetNumberValue("duration"),
-                Interval = response.GetNumberValue("interval"),
-                EndTime = DateTime.Now.AddSeconds(response.GetNumberValue("time_left")),
-                StartTime = DateTime.Now,
-                Status = response.GetStringValue("status"),
-                ThievesScore = response.GetNumberValue("thieves_score"),
-                PoliceScore = response.GetNumberValue("police_score"),
-                PoliceStationLocation = new LocationJsonService().ToObjectFromCsv(
-                    response.GetStringValue("police_station_location")
-                )
-            };
+            return new GameJsonService().ToObject(response.ResponseContent);
         }
 
         public async Task<bool> UpdateThievesScore(int gameId, int score) {

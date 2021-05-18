@@ -45,4 +45,21 @@ namespace Hunted_Mobile.Model.Response.Json {
     public struct LocationData : JsonResponseData {
         public string location;
     }
+
+    public struct GameData : JsonResponseData {
+        public int id;
+        public string status;
+        public int duration;
+        public int interval;
+        public int time_left;
+        public string police_station_location;
+        public int thieves_score;
+        public int police_score;
+        public DateTime last_interval_at;
+        public DateTime started_at;
+        public object logo;
+        public string colour_theme;
+        public DateTime created_at;
+        public DateTime updated_at;
+    }
 }
