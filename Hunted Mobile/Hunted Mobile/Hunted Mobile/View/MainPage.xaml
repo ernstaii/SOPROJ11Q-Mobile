@@ -21,10 +21,18 @@
                 <Label TextColor="Red" x:Name="InviteKey_ValueError"/>
 
                 <!-- Submit InviteCode to join a game -->
+                <Button Text="Vorig spel opnieuw deelnemen"
+                    IsVisible="{Binding DisplayJoinGameButton}"
+                    BackgroundColor="RoyalBlue"
+                    TextColor="White"
+                    CornerRadius="30" 
+                    IsEnabled="{Binding SubmitButtonIsEnable}"
+                    Command="{Binding NavigateToMapPageCommand}"
+                    Margin="0, 20"/>
                 <Button Text="Spel deelnemen"
                     CornerRadius="30" 
                     IsEnabled="{Binding SubmitButtonIsEnable}"
-                    Command="{Binding ButtonSelectedCommand}"
+                    Command="{Binding NavigateToEnterUserNamePageCommand}"
                     Margin="0, 20"/>
             </StackLayout>
         </StackLayout>

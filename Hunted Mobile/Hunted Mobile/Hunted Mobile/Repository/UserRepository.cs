@@ -92,5 +92,26 @@ namespace Hunted_Mobile.Repository {
 
             return response.ResponseContent != null;
         }
+
+        public async Task<Player> GetUser(int userId) {
+            HttpClientResponse response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Get($"users/{userId}"));
+
+            var role = response.GetStringValue("role");
+            var user = new Player() {
+                Id = userId,
+                UserName = response.GetStringValue("username"),
+                Location = new Location(response.GetStringValue("location")),
+                CaughtAt = response.GetStringValue("caught_at"),
+                Status = response.GetStringValue("status"),
+                InviteKey = new InviteKey() {
+                    Role = role
+                },
+            };
+
+            if(role == PlayerRole.THIEF) return new Thief(user);
+            else if(role == PlayerRole.POLICE) return new Police(user);
+            else throw new ArgumentException("something");
+        }
     }
 }

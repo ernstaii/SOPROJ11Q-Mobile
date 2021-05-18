@@ -10,14 +10,22 @@ using System.Windows.Input;
 
 using Xamarin.Forms;
 using System.Linq;
+using Hunted_Mobile.Enum;
+using Hunted_Mobile.Service.Preference;
+using Hunted_Mobile.Model.GameModels;
 
 namespace Hunted_Mobile.ViewModel {
     public class MainPageViewModel : BaseViewModel {
         private InviteKey inviteKeyModel = new InviteKey();
-        private bool isloading = false;
+        private bool isloading;
         private ObservableCollection<InviteKey> inviteKeys = new ObservableCollection<InviteKey>();
         private readonly MainPage page;
+        private Game gameModel;
+        private Player playingUser;
         private bool isOverlayVisible;
+        private bool checkIfUserCanJoinAGame;
+        private bool displayJoinGameButton;
+        private readonly GameSessionPreference gameSessionPreference;
 
         public InviteKey InviteKeyModel {
             get => inviteKeyModel;
@@ -32,6 +40,14 @@ namespace Hunted_Mobile.ViewModel {
             set {
                 isloading = value;
                 OnPropertyChanged("SubmitButtonIsEnable");
+            }
+        }
+
+        public bool DisplayJoinGameButton {
+            get => displayJoinGameButton;
+            set {
+                displayJoinGameButton = value;
+                OnPropertyChanged(nameof(DisplayJoinGameButton));
             }
         }
 
@@ -55,11 +71,13 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public bool IsValid { get; set; }
-
         public InviteKey SelectedPreferenceGame { get; set; }
 
         public MainPageViewModel(MainPage page) {
             this.page = page;
+            gameSessionPreference = new GameSessionPreference();
+
+            LoadPreviousGame();
         }
 
         /// <summary>
@@ -73,7 +91,8 @@ namespace Hunted_Mobile.ViewModel {
 
                 if(result.Count == 1) {
                     InviteKeyModel = result.First();
-                } else if(result.Count > 1) {
+                }
+                else if(result.Count > 1) {
                     InviteKeys.Clear();
 
                     foreach(var inviteKey in result) {
@@ -85,22 +104,24 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        /// <summary>
-        /// Navigate to the EnterUsernamePage with a valid InviteKey
-        /// </summary>
-        public ICommand ButtonSelectedCommand => new Command(async (e) => {
+        public ICommand NavigateToEnterUserNamePageCommand => new Command(async (e) => {
             SubmitButtonIsEnable = false;
 
             await GetInviteKey();
 
             // Navigate when InviteKey is valid
-            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, page) && !IsOverlayVisible) { 
+            if(IsValid = ValidationHelper.IsFormValid(InviteKeyModel, page) && !IsOverlayVisible) {
                 await NavigateToEnterUsernamePage();
             }
 
             SubmitButtonIsEnable = true;
         });
 
+        public ICommand NavigateToMapPageCommand => new Command(async (e) => {
+            SubmitButtonIsEnable = false;
+            await NavigateToMapPage();
+            SubmitButtonIsEnable = true;
+        });
 
         /// <summary>
         /// Set selected InviteKey as InviteKeymodel and navigate to the next page
@@ -116,6 +137,57 @@ namespace Hunted_Mobile.ViewModel {
 
         public async Task NavigateToEnterUsernamePage() {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new EnterUsername(InviteKeyModel));
+        }
+
+        private async void LoadPreviousGame() {
+            int gameId = gameSessionPreference.GetGame(),
+                userId = gameSessionPreference.GetUser();
+
+            if(gameId > 0 && userId > 0) {
+                await GetGame();
+
+                if(checkIfUserCanJoinAGame) {
+                    await GetUser();
+                    DisplayJoinGameButton = true;
+                }
+            }
+        }
+
+        private async Task GetGame() {
+            gameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
+            checkIfUserCanJoinAGame = gameModel.Status == GameStatus.ONGOING || gameModel.Status == GameStatus.PAUSED || gameModel.Status == GameStatus.CONFIG;
+
+            if(!checkIfUserCanJoinAGame) {
+                gameSessionPreference.ClearUserAndGame();
+            }
+        }
+
+        private async Task GetUser() {
+            playingUser = await UnitOfWork.Instance.UserRepository.GetUser(gameModel.Id);
+        }
+
+        private async Task NotifyGame() {
+            await UnitOfWork.Instance.NotificationRepository.Create(
+                playingUser.UserName + " neemt weer deel aan het spel!",
+                gameModel.Id,
+                playingUser.Id
+            );
+        }
+
+        private async Task NavigateToMapPage() {
+            try {
+                Map mapModel = new Map() {
+                    PlayingUser = playingUser,
+                };
+
+                await UnitOfWork.Instance.UserRepository.Update(playingUser.Id, playingUser.Location);
+                await NotifyGame();
+                var mapPage = new MapPage(new MapViewModel(gameModel, mapModel, new Service.Gps.GpsService()));
+                await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
+            }
+            catch(Exception ex) {
+                Console.WriteLine(ex.ToString());
+            }
         }
     }
 }
