@@ -93,7 +93,7 @@ namespace Hunted_Mobile.Repository {
             return response.ResponseContent != null;
         }
 
-        public async Task<Player> GetUser(int userId) {
+        public async Task<Player> GetUser(int userId, int gameId) {
             HttpClientResponse response = new HttpClientResponse();
             await response.Convert(HttpClientRequestService.Get($"users/{userId}"));
 
@@ -107,7 +107,8 @@ namespace Hunted_Mobile.Repository {
                 CaughtAt = response.GetStringValue("caught_at"),
                 Status = response.GetStringValue("status"),
                 InviteKey = new InviteKey() {
-                    Role = role
+                    Role = role,
+                    GameId = gameId,
                 },
             };
 

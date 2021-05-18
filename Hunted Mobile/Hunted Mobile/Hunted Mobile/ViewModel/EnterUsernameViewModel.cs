@@ -49,7 +49,6 @@ namespace Hunted_Mobile.ViewModel {
         public async Task CreateUser() {
             if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
                 UserModel = await UnitOfWork.Instance.UserRepository.Create(UserModel);
-                GameSessionPreference.ClearUserAndGame();
             }
         }
 

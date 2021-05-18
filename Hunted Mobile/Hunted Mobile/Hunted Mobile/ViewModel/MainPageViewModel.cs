@@ -143,7 +143,7 @@ namespace Hunted_Mobile.ViewModel {
                 await GetGame(gameId);
 
                 if(checkIfUserCanJoinAGame) {
-                    await GetUser(userId);
+                    await GetUser(userId, gameId);
 
                     if(playingUser == null) {
                         GameSessionPreference.ClearUserAndGame();
@@ -163,8 +163,8 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private async Task GetUser(int userId) {
-            playingUser = await UnitOfWork.Instance.UserRepository.GetUser(userId);
+        private async Task GetUser(int userId, int gameId) {
+            playingUser = await UnitOfWork.Instance.UserRepository.GetUser(userId, gameId);
         }
 
         private async Task NotifyGame() {
