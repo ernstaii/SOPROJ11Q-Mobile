@@ -47,12 +47,12 @@ namespace Hunted_Mobile.Model {
                 foreach(var item in e.NewItems) {
                     if(item is Player) {
                         if(!((Player) item).IsValid) {
-                            e.NewItems.Remove(item);
+                            throw new OperationCanceledException("Could not add invalid player " + item);
                         }
                     }
                     else if(item is Loot) {
                         if(!((Loot) item).IsValid) {
-                            e.NewItems.Remove(item);
+                            throw new OperationCanceledException("Could not add invalid loot " + loot);
                         }
                     }
                 }

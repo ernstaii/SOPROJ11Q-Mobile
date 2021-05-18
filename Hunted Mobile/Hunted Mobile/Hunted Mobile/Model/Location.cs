@@ -13,12 +13,12 @@ namespace Hunted_Mobile.Model {
         /// <summary>
         /// Horizontal map coordinate
         /// </summary>
-        public double Latitude { get; set; } = 5.000000;
+        public double Latitude { get; set; } = double.NaN;
 
         /// <summary>
         /// Vertical map coordinate
         /// </summary>
-        public double Longitude { get; set; } = 51.000000;
+        public double Longitude { get; set; } = double.NaN;
 
         public Location() {
         }
@@ -76,6 +76,10 @@ namespace Hunted_Mobile.Model {
 
         public bool Equals(Location location) {
             return location.Latitude.Equals(Latitude) && location.Longitude.Equals(Longitude);
+        }
+
+        public bool IsSet() {
+            return !Latitude.Equals(double.NaN) && !Longitude.Equals(double.NaN);
         }
     }
 }

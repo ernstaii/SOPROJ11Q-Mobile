@@ -484,7 +484,18 @@ namespace Hunted_Mobile.ViewModel {
         private void IntervalOfGame(IntervalEventData data) {
             StartIntervalTimer();
 
-            mapModel.Players = data.Players.Where(player => player.Id != mapModel.PlayingUser.Id).ToList();
+            mapModel.Players.Clear();
+            Location playingUserLocation = mapModel.PlayingUser.Location;
+            foreach(Player player in data.Players) {
+                if(player.Id == mapModel.PlayingUser.Id) {
+                    mapModel.PlayingUser = player;
+                }
+                else {
+                    mapModel.Players.Add(player);
+                }
+            }
+            mapModel.PlayingUser.Location = playingUserLocation;
+
             mapModel.Loot = data.Loot;
 
             DisplayOtherPins();
@@ -615,7 +626,8 @@ namespace Hunted_Mobile.ViewModel {
         /// Action to execute when the device location has updated
         /// </summary>
         private async void MyLocationUpdated(Location newLocation) {
-            bool wasWithinBoundary = mapModel.PlayingUser.Location == null
+            // Unset coordinates are considered within bounds to prevent incorrect notifications
+            bool wasWithinBoundary = !mapModel.PlayingUser.Location.IsSet()
                 || mapModel.GameBoundary.Contains(mapModel.PlayingUser.Location);
             bool isWithinBoundary = mapModel.GameBoundary.Contains(newLocation);
 
