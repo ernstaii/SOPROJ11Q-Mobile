@@ -55,13 +55,13 @@ namespace Hunted_Mobile.Service {
 
         public event SocketEvent StartGame;
         public event SocketEvent<EventData> PauseGame;
-        public event SocketEvent<JObject> ResumeGame;
+        public event SocketEvent<EventData> ResumeGame;
         public event SocketEvent<JObject> NotificationEvent;
         public event SocketEvent<JObject> EndGame;
         public event SocketEvent<IntervalEventData> IntervalEvent;
         public event SocketEvent<JObject> ThiefCaught;
         public event SocketEvent<JObject> ThiefReleased;
-        public event SocketEvent<JObject> PlayerJoined;
+        public event SocketEvent<PlayerEventData> PlayerJoined;
 
         public WebSocketService(int gameId) {
             gameIdString = gameId.ToString();
@@ -74,13 +74,13 @@ namespace Hunted_Mobile.Service {
 
             Bind("game.start", () => StartGame());
             Bind("game.pause", (json) => InvokeEvent(PauseGame, new EventJsonService().ToObject(json)));
-            Bind<JObject>("game.resume", (data) => ResumeGame(data));
+            Bind("game.resume", (json) => InvokeEvent(ResumeGame, new EventJsonService().ToObject(json)));
             Bind<JObject>("game.notification", (data) => NotificationEvent(data));
             Bind<JObject>("game.end", (data) => EndGame(data));
             Bind("game.interval", (json) => InvokeEvent(IntervalEvent, new IntervalEventJsonService().ToObject(json)));
             Bind<JObject>("thief.caught", (data) => ThiefCaught(data));
             Bind<JObject>("thief.released", (data) => ThiefReleased(data));
-            Bind<JObject>("player.joined", (data) => PlayerJoined(data));
+            Bind("player.joined", (json) => InvokeEvent(PlayerJoined, new PlayerEventJsonService().ToObject(json)));
         }
 
         private void InvokeEvent<T>(SocketEvent<T> @event, T data) {

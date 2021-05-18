@@ -599,9 +599,9 @@ namespace Hunted_Mobile.ViewModel {
             StopIntervalTimer();
         }
 
-        private void ResumeGame(JObject data) {
+        private void ResumeGame(EventData data) {
             IsEnabled = true;
-            StartCountdown(Convert.ToDouble(data.GetValue("timeLeft")));
+            StartCountdown(data.TimeLeft);
 
             StartIntervalTimer();
         }

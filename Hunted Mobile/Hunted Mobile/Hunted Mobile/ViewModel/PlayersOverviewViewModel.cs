@@ -54,21 +54,8 @@ namespace Hunted_Mobile.ViewModel {
             socketService.PlayerJoined += AddUser;
         }
 
-        private void AddUser(JObject data) {
-            JObject jUser = (JObject) data.GetValue("user");
-
-            var newUser = new Player() {
-                Id = int.Parse(jUser.GetValue("id")?.ToString()),
-                UserName = jUser.GetValue("username")?.ToString(),
-            };
-            string role = jUser.GetValue("role")?.ToString();
-            if(role == "thief") {
-                Thief thief = new Thief(newUser);
-                thief.CaughtAt = jUser.GetValue("caught_at")?.ToString();
-                users.Add(thief);
-            }
-            else users.Add(new Police(newUser));
-
+        private void AddUser(PlayerEventData data) {
+            users.Add(data.Player);
             Users = users; // Trigger OnPropertyChanged
         }
 
