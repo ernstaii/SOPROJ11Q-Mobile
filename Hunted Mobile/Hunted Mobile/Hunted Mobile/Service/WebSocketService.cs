@@ -1,9 +1,6 @@
 ﻿using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Service.Json;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
 using PusherClient;
 
 using System;
@@ -53,14 +50,14 @@ namespace Hunted_Mobile.Service {
         public delegate void SocketEvent();
         public delegate void SocketEvent<T>(T data);
 
-        public event SocketEvent StartGame;
+        public event SocketEvent<EventData> StartGame;
         public event SocketEvent<EventData> PauseGame;
         public event SocketEvent<EventData> ResumeGame;
         public event SocketEvent<EventData> NotificationEvent;
-        public event SocketEvent<JObject> EndGame;
+        public event SocketEvent<EventData> EndGame;
         public event SocketEvent<IntervalEventData> IntervalEvent;
-        public event SocketEvent<JObject> ThiefCaught;
-        public event SocketEvent<JObject> ThiefReleased;
+        public event SocketEvent<PlayerEventData> ThiefCaught;
+        public event SocketEvent<PlayerEventData> ThiefReleased;
         public event SocketEvent<PlayerEventData> PlayerJoined;
 
         public WebSocketService(int gameId) {
@@ -72,14 +69,14 @@ namespace Hunted_Mobile.Service {
                 pusher.SubscribeAsync(channelName);
             }
 
-            Bind("game.start", () => StartGame());
+            Bind("game.start", (json) => InvokeEvent(StartGame, new EventJsonService().ToObject(json)));
             Bind("game.pause", (json) => InvokeEvent(PauseGame, new EventJsonService().ToObject(json)));
             Bind("game.resume", (json) => InvokeEvent(ResumeGame, new EventJsonService().ToObject(json)));
             Bind("game.notification", (json) => InvokeEvent(NotificationEvent, new EventJsonService().ToObject(json)));
-            Bind<JObject>("game.end", (data) => EndGame(data));
+            Bind("game.end", (json) => InvokeEvent(EndGame, new EventJsonService().ToObject(json)));
             Bind("game.interval", (json) => InvokeEvent(IntervalEvent, new IntervalEventJsonService().ToObject(json)));
-            Bind<JObject>("thief.caught", (data) => ThiefCaught(data));
-            Bind<JObject>("thief.released", (data) => ThiefReleased(data));
+            Bind("thief.caught", (json) => InvokeEvent(ThiefCaught, new PlayerEventJsonService().ToObject(json)));
+            Bind("thief.released", (json) => InvokeEvent(ThiefReleased, new PlayerEventJsonService().ToObject(json)));
             Bind("player.joined", (json) => InvokeEvent(PlayerJoined, new PlayerEventJsonService().ToObject(json)));
         }
 
@@ -101,21 +98,6 @@ namespace Hunted_Mobile.Service {
             pusher.Bind(eventName, (PusherEvent eventData) => {
                 if(eventData.ChannelName.EndsWith(gameIdString)) {
                     action(eventData.Data);
-                }
-            });
-        }
-
-        private void Bind<T>(string eventName, Action<T> action) {
-            pusher.Bind(eventName, (PusherEvent eventData) => {
-                T data = default;
-                try {
-                    if(eventData.ChannelName.EndsWith(gameIdString)) {
-                        data = JsonConvert.DeserializeObject<T>(eventData.Data);
-                        action(data);
-                    }
-                }
-                catch(Exception ex) {
-                    Console.WriteLine("An error occurred while deserializing event data: " + ex.StackTrace);
                 }
             });
         }

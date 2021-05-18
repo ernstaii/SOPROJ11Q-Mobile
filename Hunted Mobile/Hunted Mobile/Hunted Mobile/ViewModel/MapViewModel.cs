@@ -585,7 +585,7 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private void EndGame(JObject data) {
+        private void EndGame(EventData data) {
             GameHasEnded = true;
             IsEnabled = false;
 
@@ -606,7 +606,7 @@ namespace Hunted_Mobile.ViewModel {
             StartIntervalTimer();
         }
 
-        private void ThiefStatusChanged(JObject data) {
+        private void ThiefStatusChanged(PlayerEventData data) {
             Task.Run(async () => {
                 await PollUsers();
                 DisplayOtherPins();

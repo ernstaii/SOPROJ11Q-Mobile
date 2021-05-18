@@ -1,6 +1,7 @@
 ﻿using Hunted_Mobile.Enum;
 using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
+using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
 using Hunted_Mobile.View;
@@ -82,7 +83,7 @@ namespace Hunted_Mobile.ViewModel {
             webSocketService.StartGame += StartGame;
         }
 
-        private async void StartGame() {
+        private async void StartGame(EventData data) {
             GameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
             NavigateToMapPage();
         }
@@ -113,7 +114,7 @@ namespace Hunted_Mobile.ViewModel {
         public async Task CheckForStatus() {
             Game gameStatus = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
             if(gameStatus.Status == GameStatus.ONGOING || gameStatus.Status == GameStatus.PAUSED || gameStatus.Status == GameStatus.FINISHED) {
-                StartGame();
+                StartGame(null);
             }
         }
     }

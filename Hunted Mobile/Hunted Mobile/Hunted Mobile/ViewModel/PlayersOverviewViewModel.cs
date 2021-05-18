@@ -2,8 +2,6 @@
 using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Service;
 
-using Newtonsoft.Json.Linq;
-
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -55,24 +53,21 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void AddUser(PlayerEventData data) {
-            users.Add(data.Player);
-            Users = users; // Trigger OnPropertyChanged
+            Users.Add(data.Player);
         }
 
         private void UpdateUsers(IntervalEventData data) {
             Users = new ObservableCollection<Player>(data.Players);
         }
 
-        private void UpdateUserState(Newtonsoft.Json.Linq.JObject data) {
-            JObject jUserToUpdate = (JObject) data.GetValue("user");
-            int id = int.Parse(jUserToUpdate.GetValue("id")?.ToString());
+        private void UpdateUserState(PlayerEventData data) {
             foreach(Player player in Users) {
-                if(player.Id == id && player is Thief) {
-                    ((Thief)player).CaughtAt = jUserToUpdate.GetValue("caught_at")?.ToString();
+                if(player.Id == data.Player.Id && player is Thief) {
+                    Users.Remove(player);
+                    Users.Add(data.Player);
                     break;
                 }
             }
-            Users = Users; // Trigger OnPropertyChanged
         }
     }
 }
