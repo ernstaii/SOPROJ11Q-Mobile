@@ -118,9 +118,7 @@ namespace Hunted_Mobile.ViewModel {
         });
 
         public ICommand NavigateToMapPageCommand => new Command(async (e) => {
-            SubmitButtonIsEnable = false;
-            await NavigateToMapPage();
-            SubmitButtonIsEnable = true;
+            await NavigateToExistingGame();
         });
 
         /// <summary>
@@ -174,14 +172,31 @@ namespace Hunted_Mobile.ViewModel {
             );
         }
 
+        private async Task NavigateToExistingGame() {
+            SubmitButtonIsEnable = false;
+
+            await UnitOfWork.Instance.UserRepository.Update(playingUser.Id, playingUser.Location);
+            await NotifyGame();
+
+            if(gameModel.Status == GameStatus.CONFIG) {
+                await NavigateToLobbyPage();
+            }
+            else {
+                await NavigateToMapPage();
+            }
+            SubmitButtonIsEnable = true;
+        }
+
+        private async Task NavigateToLobbyPage() {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new Lobby((Player) playingUser), true);
+        }
+
         private async Task NavigateToMapPage() {
             try {
                 Map mapModel = new Map() {
                     PlayingUser = playingUser,
                 };
 
-                await UnitOfWork.Instance.UserRepository.Update(playingUser.Id, playingUser.Location);
-                await NotifyGame();
                 var mapPage = new MapPage(new MapViewModel(gameModel, mapModel, new Service.Gps.GpsService()));
                 await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
             }
