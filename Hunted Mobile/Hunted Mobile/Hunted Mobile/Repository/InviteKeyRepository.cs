@@ -16,24 +16,16 @@ namespace Hunted_Mobile.Repository {
 
             List<InviteKey> result = new List<InviteKey>();
 
-            try {
-                InviteKey key = new InviteKeyJsonService().ToObject(response.ResponseContent);
-                key.ErrorMessages = response.ErrorMessages;
+            InviteKey key = new InviteKeyJsonService().ToObject(response.ResponseContent);
 
-                result.Add(key);
-            }
-            catch(Exception) {
-                result.Add(new InviteKey() {
-                    Value = inviteCode,
-                    GameId = 0,
-                    UserId = 0,
-                    Role = null,
-                    ErrorMessages = response.ErrorMessages.Count() > 0 ? response.ErrorMessages : new Dictionary<string, string>() {
-                        { "value", response.Status == HttpStatusCode.NotFound ? "De code is niet gevonden" : "Er is iets misgegaan"}
-                    }
-                });
+            key.Value = inviteCode;
+            if(string.IsNullOrEmpty(key.Role)) {
+                key.ErrorMessages = response.ErrorMessages.Count() > 0 ? response.ErrorMessages : new Dictionary<string, string>() {
+                    { "value", response.Status == HttpStatusCode.NotFound ? "De code is niet gevonden" : "Er is iets misgegaan" }
+                };
             }
 
+            result.Add(key);
             return result;
         }
 
