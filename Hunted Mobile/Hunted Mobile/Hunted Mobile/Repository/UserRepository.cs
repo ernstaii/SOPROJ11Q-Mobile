@@ -16,22 +16,10 @@ namespace Hunted_Mobile.Repository {
                 invite_key = player.InviteKey.Value,
             }));
 
-            var responseLoc = response.GetStringValue("location");
+            Player newPlayer = new PlayerJsonService().ToObject(response.ResponseContent, player.InviteKey);
+            newPlayer.ErrorMessages = response.ErrorMessages;
 
-            Type t = typeof(Thief);
-
-            Player newUser = new Player() {
-                Id = response.GetNumberValue("id"),
-                InviteKey = player.InviteKey,
-                UserName = player.UserName,
-                ErrorMessages = response.ErrorMessages,
-                Location = string.IsNullOrWhiteSpace(responseLoc) ? null : new LocationJsonService().ToObjectFromCsv(responseLoc)
-            };
-            newUser.InviteKey.UserId = newUser.Id;
-
-            if(newUser.InviteKey.Role == "thief") return new Thief(newUser);
-            else if(newUser.InviteKey.Role == "police") return new Police(newUser);
-            else return newUser;
+            return newPlayer;
         }
 
         // Get all users that are linked to a game

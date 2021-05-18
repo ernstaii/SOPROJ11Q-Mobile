@@ -17,13 +17,10 @@ namespace Hunted_Mobile.Repository {
             List<InviteKey> result = new List<InviteKey>();
 
             try {
-                result.Add(new InviteKey() {
-                    Value = inviteCode,
-                    GameId = response.GetNumberValue("game_id"),
-                    UserId = 0,
-                    Role = response.GetStringValue("role").ToString(),
-                    ErrorMessages = response.ErrorMessages
-                });
+                InviteKey key = new InviteKeyJsonService().ToObject(response.ResponseContent);
+                key.ErrorMessages = response.ErrorMessages;
+
+                result.Add(key);
             }
             catch(Exception) {
                 result.Add(new InviteKey() {

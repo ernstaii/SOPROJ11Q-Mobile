@@ -40,7 +40,23 @@ namespace Hunted_Mobile.Service.Json {
             else if(data.role == "police") {
                 return new Police(player);
             }
-            else throw new ArgumentException("User json data did not contain role");
+            else return player;
+        }
+
+        public Player ToObject(string json, InviteKey inviteKey) {
+            Player player = ToObject(json);
+            player.InviteKey = inviteKey;
+            inviteKey.UserId = player.Id;
+
+            if(inviteKey.Role == "thief") {
+                return new Thief(player) {
+                    CaughtAt = player is Thief ? ((Thief) player).CaughtAt : string.Empty
+                };
+            }
+            else if(inviteKey.Role == "police") {
+                return new Police(player);
+            }
+            else throw new ArgumentException("InviteKey did not have a value for Role");
         }
     }
 }
