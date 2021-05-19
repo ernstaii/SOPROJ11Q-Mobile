@@ -5,6 +5,7 @@ using Hunted_Mobile.Service.Json;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using Xamarin.Forms;
 
 namespace Hunted_Mobile.Repository {
     public class LootRepository {

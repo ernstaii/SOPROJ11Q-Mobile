@@ -6,6 +6,8 @@ using PusherClient;
 using System;
 using System.Threading.Tasks;
 
+using Xamarin.Forms;
+
 namespace Hunted_Mobile.Service {
     /// <summary>
     /// Represents a single socket connection to our API that will be reused during the runtime of the application
@@ -33,7 +35,7 @@ namespace Hunted_Mobile.Service {
         }
 
         private static void ErrorOccurred(object sender, PusherException error) {
-            Console.WriteLine(error.ToString());
+            DependencyService.Get<Toast>().Show("Er was een probleem in een event");
         }
 
         /// <summary>
@@ -59,6 +61,7 @@ namespace Hunted_Mobile.Service {
         public event SocketEvent<PlayerEventData> ThiefCaught;
         public event SocketEvent<PlayerEventData> ThiefReleased;
         public event SocketEvent<PlayerEventData> PlayerJoined;
+        public event SocketEvent<ScoreUpdatedEventData> ScoreUpdated;
 
         public WebSocketService(int gameId) {
             gameIdString = gameId.ToString();
@@ -78,6 +81,7 @@ namespace Hunted_Mobile.Service {
             Bind("thief.caught", (json) => InvokeEvent(ThiefCaught, new PlayerEventJsonService().ToObject(json)));
             Bind("thief.released", (json) => InvokeEvent(ThiefReleased, new PlayerEventJsonService().ToObject(json)));
             Bind("player.joined", (json) => InvokeEvent(PlayerJoined, new PlayerEventJsonService().ToObject(json)));
+            Bind("score.updated", (json) => InvokeEvent(ScoreUpdated, new ScoreUpdatedEventJsonService().ToObject(json)));
         }
 
         private void InvokeEvent<T>(SocketEvent<T> @event, T data) {
