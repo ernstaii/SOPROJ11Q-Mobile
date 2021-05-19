@@ -5,19 +5,23 @@ using System.Text;
 using Xamarin.Forms;
 
 namespace Hunted_Mobile.Model {
-    public class Countdown : BindableObject{
-        public TimeSpan _remainTime;
-
+    public class Countdown : BindableObject {
+        private TimeSpan remainTime;
+        public bool InitialTimerStart { get; set; } = true;
         public event Action Completed;
         public event Action Ticked;
 
+        public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
-        public TimeSpan RemainTime {
-            get { return _remainTime; }
+        public Countdown() {
+            StartDate = DateTime.Now;
+        }
 
+        public TimeSpan RemainTime {
+            get => remainTime;
             set {
-                _remainTime = value;
+                remainTime = value;
                 OnPropertyChanged();
             }
         }
@@ -25,7 +29,6 @@ namespace Hunted_Mobile.Model {
         public void Start(int seconds = 1) {
             Device.StartTimer(TimeSpan.FromSeconds(seconds), () => {
                 RemainTime = (EndDate - DateTime.Now);
-
                 var ticked = RemainTime.TotalSeconds > 1;
 
                 if(ticked) {

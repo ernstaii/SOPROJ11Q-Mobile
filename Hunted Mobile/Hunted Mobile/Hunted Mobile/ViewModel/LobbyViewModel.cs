@@ -84,13 +84,29 @@ namespace Hunted_Mobile.ViewModel {
             webSocketService.StartGame += StartGame;
         }
 
+        private async Task LoadUsers() {
+            Users = await UnitOfWork.Instance.UserRepository.GetAll(GameModel.Id);
+        }
+
+        private async Task CheckForStatus() {
+            GameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
+
+            if(GameModel.Status == GameStatus.ONGOING || GameModel.Status == GameStatus.PAUSED || GameModel.Status == GameStatus.FINISHED) {
+                StartGameWithoutLoadingGame();
+            }
+        }
+
         private async void StartGame() {
             GameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
             NavigateToMapPage();
         }
 
+        private void StartGameWithoutLoadingGame() {
+            NavigateToMapPage();
+        }
+
         // To manually navigate to a different page, the mainthread need to be approached
-        public void NavigateToMapPage() {
+        private void NavigateToMapPage() {
             try {
                 Map mapModel = new Map() {
                     PlayingUser = currentUser
@@ -105,17 +121,6 @@ namespace Hunted_Mobile.ViewModel {
             }
             catch(Exception ex) {
                 Console.WriteLine(ex.ToString());
-            }
-        }
-
-        public async Task LoadUsers() {
-            Users = await UnitOfWork.Instance.UserRepository.GetAll(GameModel.Id);
-        }
-
-        public async Task CheckForStatus() {
-            Game gameStatus = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
-            if(gameStatus.Status == GameStatus.ONGOING || gameStatus.Status == GameStatus.PAUSED || gameStatus.Status == GameStatus.FINISHED) {
-                StartGame();
             }
         }
     }
