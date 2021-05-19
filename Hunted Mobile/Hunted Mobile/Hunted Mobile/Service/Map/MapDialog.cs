@@ -164,6 +164,7 @@ namespace Hunted_Mobile.Service.Map {
         public void DisplayEndScreen() {
             SetContent("Het spel is afgelopen!", "Ga terug naar de spelleider!");
             HandleButtonText = "Terug naar hoofdscherm";
+            HandleButtonIsVisible = true;
             SetActionButtons(true, false);
         }
 

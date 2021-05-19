@@ -325,8 +325,8 @@ namespace Hunted_Mobile.ViewModel {
             OnCountdownTicked();
         }
 
-        private async void SetGameLogo() {
-            var url = await UnitOfWork.Instance.GameRepository.GetLogoUrl(gameModel.Id);
+        private void SetGameLogo() {
+            var url = UnitOfWork.Instance.GameRepository.GetLogoUrl(gameModel.Id);
 
             LogoImage = new Image {
                 Source = ImageSource.FromUri(
