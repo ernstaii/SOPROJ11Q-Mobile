@@ -34,4 +34,15 @@ namespace Hunted_Mobile.Service.Json {
             };
         }
     }
+
+    public class ScoreUpdatedEventJsonService : JsonConversionService<ScoreUpdatedEventData, Model.Response.Json.ScoreUpdatedEventData> {
+        public override ScoreUpdatedEventData ToObject(Model.Response.Json.ScoreUpdatedEventData data) {
+            return new ScoreUpdatedEventData {
+                Message = data.message,
+                PoliceScore = data.police_score,
+                ThiefScore = data.thief_score,
+                TimeLeft = data.timeLeft
+            };
+        }
+    }
 }

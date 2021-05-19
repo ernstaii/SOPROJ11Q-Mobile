@@ -3,6 +3,8 @@ using Hunted_Mobile.Model.Response.Json;
 
 using System;
 
+using Xamarin.Forms;
+
 namespace Hunted_Mobile.Service.Json {
     public class LocationJsonService : JsonConversionService<Location, LocationData> {
         public LocationJsonService() {
@@ -20,8 +22,8 @@ namespace Hunted_Mobile.Service.Json {
 
                 return new Location(latitude, longitude);
             }
-            catch(Exception ex) {
-                Console.WriteLine(ex.Message + " occurred while parsing comma separated location: " + commaSeparatedValues);
+            catch(Exception) {
+                DependencyService.Get<Toast>().Show("Er was een probleem met het splitsen van de locatie variabelen");
 
                 return new Location();
             }

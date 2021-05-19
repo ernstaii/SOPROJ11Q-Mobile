@@ -17,4 +17,9 @@ namespace Hunted_Mobile.Model.Response.Json {
     public class UserEventData : EventData {
         public UserData user;
     }
+
+    public class ScoreUpdatedEventData : EventData {
+        public int thief_score;
+        public int police_score;
+    }
 }

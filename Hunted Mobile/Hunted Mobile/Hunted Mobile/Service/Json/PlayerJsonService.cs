@@ -1,4 +1,5 @@
-﻿using Hunted_Mobile.Model;
+﻿using Hunted_Mobile.Enum;
+using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Model.Response.Json;
 
@@ -32,12 +33,12 @@ namespace Hunted_Mobile.Service.Json {
                 UserName = data.username
             };
 
-            if(data.role == "thief") {
+            if(data.role == PlayerRole.THIEF) {
                 var thief = new Thief(player);
                 thief.CaughtAt = data.caught_at;
                 return thief;
             }
-            else if(data.role == "police") {
+            else if(data.role == PlayerRole.POLICE) {
                 return new Police(player);
             }
             else return player;
@@ -48,12 +49,12 @@ namespace Hunted_Mobile.Service.Json {
             player.InviteKey = inviteKey;
             inviteKey.UserId = player.Id;
 
-            if(inviteKey.Role == "thief") {
+            if(inviteKey.Role == PlayerRole.THIEF) {
                 return new Thief(player) {
                     CaughtAt = player is Thief ? ((Thief) player).CaughtAt : string.Empty
                 };
             }
-            else if(inviteKey.Role == "police") {
+            else if(inviteKey.Role == PlayerRole.POLICE) {
                 return new Police(player);
             }
             else throw new ArgumentException("InviteKey did not have a value for Role");

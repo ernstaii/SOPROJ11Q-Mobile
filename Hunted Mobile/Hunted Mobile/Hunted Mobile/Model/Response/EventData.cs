@@ -18,4 +18,9 @@ namespace Hunted_Mobile.Model.Response {
     public class PlayerEventData : EventData {
         public Player Player { get; set; }
     }
+
+    public class ScoreUpdatedEventData : EventData {
+        public int ThiefScore { get; set; }
+        public int PoliceScore { get; set; }
+    }
 }

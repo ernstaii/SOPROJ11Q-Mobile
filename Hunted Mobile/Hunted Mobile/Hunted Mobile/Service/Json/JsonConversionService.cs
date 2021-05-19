@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
+using Xamarin.Forms;
+
 namespace Hunted_Mobile.Service.Json {
     public abstract class JsonConversionService<NativeType, DataType> where DataType : JsonResponseData {
         protected readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings {
@@ -18,7 +20,8 @@ namespace Hunted_Mobile.Service.Json {
         }
 
         public virtual string ToJson(NativeType @object) {
-            throw new NotImplementedException();
+            DependencyService.Get<Toast>().Show("Kon " + @object.GetType().FullName + " niet omzetten naar JSON");
+            return string.Empty;
         }
 
         public NativeType ToObject(string json) {
@@ -56,22 +59,41 @@ namespace Hunted_Mobile.Service.Json {
         }
 
         protected JArray ToJArray(string json) {
-            return JArray.Parse(json);
+            try {
+                return JArray.Parse(json);
+            }
+            catch(Exception) {
+                DependencyService.Get<Toast>().Show("Kon JSON niet omzetten naar array");
+                return new JArray();
+            }
         }
 
         protected JObject ToJObject(string json) {
             if(json == null) {
+                DependencyService.Get<Toast>().Show("Er werd lege JSON data verwerkt");
                 return new JObject();
             }
             else return JsonConvert.DeserializeObject<JObject>(json, serializerSettings);
         }
 
         protected string ConvertToJson(JsonResponseData data) {
-            return JsonConvert.SerializeObject(data, serializerSettings);
+            try {
+                return JsonConvert.SerializeObject(data, serializerSettings);
+            }
+            catch(Exception) {
+                DependencyService.Get<Toast>().Show("Kon data niet omzetten naar JSON");
+                return string.Empty;
+            }
         }
 
         protected DataType ConvertFromJson(string json) {
-            return JsonConvert.DeserializeObject<DataType>(json, serializerSettings);
+            try {
+                return JsonConvert.DeserializeObject<DataType>(json, serializerSettings);
+            }
+            catch(Exception) {
+                DependencyService.Get<Toast>().Show("Kon JSON niet omzetten naar object");
+                return default;
+            }
         }
     }
 }
