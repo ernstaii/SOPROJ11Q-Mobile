@@ -1,8 +1,6 @@
-﻿using Hunted_Mobile.Enum;
-using Hunted_Mobile.Model.GameModels;
+﻿using Hunted_Mobile.Model.GameModels;
+using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Service;
-
-using Newtonsoft.Json.Linq;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -54,50 +52,22 @@ namespace Hunted_Mobile.ViewModel {
             socketService.PlayerJoined += AddUser;
         }
 
-        private void AddUser(JObject data) {
-            JObject jUser = (JObject) data.GetValue("user");
-
-            var newUser = new Player() {
-                Id = int.Parse(jUser.GetValue("id")?.ToString()),
-                UserName = jUser.GetValue("username")?.ToString(),
-                CaughtAt = jUser.GetValue("caught_at")?.ToString(),
-            };
-            string role = jUser.GetValue("role")?.ToString();
-            if(role == PlayerRole.THIEF) {
-                users.Add(new Thief(newUser));
-            }
-            else users.Add(new Police(newUser));
-
-            Users = users; // Trigger OnPropertyChanged
+        private void AddUser(PlayerEventData data) {
+            Users.Add(data.Player);
         }
 
-        private void UpdateUsers(JObject data) {
-            ObservableCollection<Player> updatedUsers = new ObservableCollection<Player>();
-            foreach(JObject jUser in data.GetValue("users")) {
-                var newUser = new Player() {
-                    Id = int.Parse(jUser.GetValue("id")?.ToString()),
-                    UserName = jUser.GetValue("username")?.ToString(),
-                    CaughtAt = jUser.GetValue("caught_at")?.ToString(),
-                };
-                string role = jUser.GetValue("role")?.ToString();
-                if(role == PlayerRole.THIEF) {
-                    updatedUsers.Add(new Thief(newUser));
-                }
-                else updatedUsers.Add(new Police(newUser));
-            }
-            Users = updatedUsers; // Trigger OnPropertyChanged
+        private void UpdateUsers(IntervalEventData data) {
+            Users = new ObservableCollection<Player>(data.Players);
         }
 
-        private void UpdateUserState(Newtonsoft.Json.Linq.JObject data) {
-            JObject jUserToUpdate = (JObject) data.GetValue("user");
-            int id = int.Parse(jUserToUpdate.GetValue("id")?.ToString());
+        private void UpdateUserState(PlayerEventData data) {
             foreach(Player player in Users) {
-                if(player.Id == id) {
-                    player.CaughtAt = jUserToUpdate.GetValue("caught_at")?.ToString();
+                if(player.Id == data.Player.Id && player is Thief) {
+                    Users.Remove(player);
+                    Users.Add(data.Player);
                     break;
                 }
             }
-            Users = Users; // Trigger OnPropertyChanged
         }
     }
 }

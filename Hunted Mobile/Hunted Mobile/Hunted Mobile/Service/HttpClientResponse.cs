@@ -11,14 +11,15 @@ using Xamarin.Forms;
 
 namespace Hunted_Mobile.Service {
     public class HttpClientResponse {
+        protected JObject item;
+        protected JArray items;
+
         public HttpStatusCode Status => ResponseMessage != null ? ResponseMessage.StatusCode : HttpStatusCode.NoContent;
         public bool IsSuccessful => ResponseMessage != null && ResponseMessage.IsSuccessStatusCode;
         public bool HasMultipleResults { get; set; }
         public HttpResponseMessage ResponseMessage { get; set; }
 
         public string ResponseContent { get; set; }
-        public JObject Item { get; set; }
-        public JArray Items { get; set; }
 
         // Properties for getting and displaying errors
         public Dictionary<string, string> ErrorMessages { get; set; } = new Dictionary<string, string>();
@@ -50,7 +51,6 @@ namespace Hunted_Mobile.Service {
             }
             catch(Exception) {
                 hasServerErrors = true;
-                DependencyService.Get<Toast>().Show("Er was een probleem met het uitvoeren van een request");
             }
         }
 
@@ -60,21 +60,19 @@ namespace Hunted_Mobile.Service {
             }
             catch(Exception) {
                 hasServerErrors = true;
-                DependencyService.Get<Toast>().Show("Er was een probleem met het uitlezen van de response");
             }
         }
 
         protected void ConvertResponseContent() {
             try {
                 if(HasMultipleResults)
-                    Items = JArray.Parse(ResponseContent);
+                    items = JArray.Parse(ResponseContent);
 
                 if(!HasMultipleResults || HasMultipleResults && !IsSuccessful)
-                    Item = (JObject) JsonConvert.DeserializeObject(ResponseContent);
+                    item = (JObject) JsonConvert.DeserializeObject(ResponseContent);
             }
             catch(Exception) {
                 hasServerErrors = true;
-                DependencyService.Get<Toast>().Show("Er was een probleem met het converteren van de response");
             }
         }
 
@@ -90,24 +88,23 @@ namespace Hunted_Mobile.Service {
             }
             catch(Exception) {
                 hasServerErrors = true;
-                DependencyService.Get<Toast>().Show("Er was een probleem met de server");
             }
         }
 
         protected JToken GetValue(string key) {
-            return Item.GetValue(key);
+            return item.GetValue(key);
         }
 
-        public string GetStringValue(string key) {
+        protected string GetStringValue(string key) {
             var result = GetValue(key);
 
-            return result != null ? result.ToString() : null;
+            return result != null ? result.ToString() : "";
         }
 
-        public int GetNumberValue(string key) {
-            var result = GetValue(key);
+        protected int GetNumberValue(string key) {
+            int.TryParse(GetValue(key)?.ToString(), out int output);
 
-            return result == null ? 0 : ((int) result);
+            return output;
         }
     }
 }

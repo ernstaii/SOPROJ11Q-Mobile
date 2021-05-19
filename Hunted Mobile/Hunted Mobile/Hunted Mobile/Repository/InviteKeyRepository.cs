@@ -1,7 +1,6 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Service;
-
-using Newtonsoft.Json.Linq;
+using Hunted_Mobile.Service.Json;
 
 using System;
 using System.Collections.Generic;
@@ -17,27 +16,16 @@ namespace Hunted_Mobile.Repository {
 
             List<InviteKey> result = new List<InviteKey>();
 
-            try {
-                result.Add(new InviteKey() {
-                    Value = inviteCode,
-                    GameId = response.GetNumberValue("game_id"),
-                    UserId = 0,
-                    Role = response.GetStringValue("role").ToString(),
-                    ErrorMessages = response.ErrorMessages
-                });
-            }
-            catch(Exception) {
-                result.Add(new InviteKey() {
-                    Value = inviteCode,
-                    GameId = 0,
-                    UserId = 0,
-                    Role = null,
-                    ErrorMessages = response.ErrorMessages.Count() > 0 ? response.ErrorMessages : new Dictionary<string, string>() {
-                        { "value", response.Status == HttpStatusCode.NotFound ? "De code is niet gevonden" : "Er is iets misgegaan"}
-                    }
-                });
+            InviteKey key = new InviteKeyJsonService().ToObject(response.ResponseContent);
+
+            key.Value = inviteCode;
+            if(string.IsNullOrEmpty(key.Role)) {
+                key.ErrorMessages = response.ErrorMessages.Count() > 0 ? response.ErrorMessages : new Dictionary<string, string>() {
+                    { "value", response.Status == HttpStatusCode.NotFound ? "De code is niet gevonden" : "Er is iets misgegaan" }
+                };
             }
 
+            result.Add(key);
             return result;
         }
 
@@ -49,19 +37,9 @@ namespace Hunted_Mobile.Repository {
 
             List<InviteKey> inviteKeys = new List<InviteKey>();
 
-            foreach(JObject item in response.Items) {
-                string role = item.GetValue("role")?.ToString();
-                var userId = item.GetValue("user_id");
-                if(!userId.HasValues) {
-                    userId = -1;
-                }
-                string value = item.GetValue("value")?.ToString();
-                inviteKeys.Add(new InviteKey() {
-                    GameId = gameId,
-                    Role = role,
-                    UserId = (int) userId,
-                    Value = value
-                });
+            foreach(InviteKey inviteKey in new InviteKeyJsonService().ToObjects(response.ResponseContent)) {
+                inviteKey.GameId = gameId;
+                inviteKeys.Add(inviteKey);
             }
 
             return inviteKeys;

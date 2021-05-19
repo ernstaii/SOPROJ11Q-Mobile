@@ -1,13 +1,8 @@
-﻿using Hunted_Mobile.Model;
-using Hunted_Mobile.Model.GameModels;
+﻿using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Service;
+using Hunted_Mobile.Service.Json;
 
-using Newtonsoft.Json.Linq;
-
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -21,27 +16,11 @@ namespace Hunted_Mobile.Repository {
             };
             await response.Convert(HttpClientRequestService.Get($"games/{gameId}/loot"));
             
-            var output = new List<Loot>();
+            var result = new List<Loot>(
+                new LootJsonService().ToObjects(response.ResponseContent)
+            );
 
-            // Looping through the result
-            foreach(JObject item in response.Items) {
-                var location = item.GetValue("location").ToString().Split(',');
-
-                try {
-                    output.Add(new Loot((int) item.GetValue("id")) {
-                        Name = item.GetValue("name").ToString(),
-                        Location = new Location() {
-                            Latitude = double.Parse(location[0]),
-                            Longitude = double.Parse(location[1])
-                        }
-                    });
-                }
-                catch(Exception e) {
-                    DependencyService.Get<Toast>().Show("Er was een probleem met het ophalen van de buit");
-                }
-            }
-
-            return output;
+            return result;
         }
 
         public async Task<bool> Delete(int lootId) {

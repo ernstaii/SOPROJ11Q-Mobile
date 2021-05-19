@@ -7,8 +7,7 @@ namespace Hunted_Mobile.Model.GameModels {
         public string Name { get; set; }
         public bool IsValid => Name != null && Location != null;
 
-        public Loot(int id) {
-            Id = id;
+        public Loot() {
         }
     }
 }

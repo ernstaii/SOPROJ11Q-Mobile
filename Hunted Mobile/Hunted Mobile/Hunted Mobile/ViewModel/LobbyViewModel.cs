@@ -1,11 +1,10 @@
 ﻿using Hunted_Mobile.Enum;
 using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
+using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
-using Hunted_Mobile.View;
-
-using Newtonsoft.Json.Linq;
+using Hunted_Mobile.Service.Preference;
 
 using System;
 using System.Collections.Generic;
@@ -20,9 +19,8 @@ namespace Hunted_Mobile.ViewModel {
         private List<Player> users = new List<Player>();
         private Game gameModel = new Game();
         private readonly Player currentUser;
-        private readonly Lobby page;
         private readonly WebSocketService webSocketService;
-
+        private readonly GameSessionPreference gameSessionPreference;
         private bool isloading;
 
         public Game GameModel {
@@ -58,10 +56,11 @@ namespace Hunted_Mobile.ViewModel {
             get => new ObservableCollection<Player>(Users.Where(user => user is Police).ToList());
         }
 
-        public LobbyViewModel(Lobby page, Player currentUser) {
-            this.page = page;
+        public LobbyViewModel(Player currentUser) {
             this.currentUser = currentUser;
             gameModel.Id = this.currentUser.InviteKey.GameId;
+            gameSessionPreference = new GameSessionPreference();
+            SaveCurrentGame();
 
             webSocketService = new WebSocketService(gameModel.Id);
 
@@ -96,7 +95,12 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private async void StartGame() {
+        private void SaveCurrentGame() {
+            gameSessionPreference.SetGame(gameModel.Id);
+            gameSessionPreference.SetUser(currentUser.Id);
+        }
+
+        private async void StartGame(EventData data) {
             GameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
             NavigateToMapPage();
         }
@@ -119,7 +123,7 @@ namespace Hunted_Mobile.ViewModel {
                     webSocketService.StartGame -= StartGame;
                 });
             }
-            catch(Exception ex) {
+            catch(Exception) {
                 DependencyService.Get<Toast>().Show("Er was een probleem met het navigeren naar het speelveld");
             }
         }

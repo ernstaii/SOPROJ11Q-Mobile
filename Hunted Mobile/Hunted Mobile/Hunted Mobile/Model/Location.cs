@@ -17,26 +17,14 @@ namespace Hunted_Mobile.Model {
         /// <summary>
         /// Horizontal map coordinate
         /// </summary>
-        public double Latitude { get; set; }
+        public double Latitude { get; set; } = double.NaN;
 
         /// <summary>
         /// Vertical map coordinate
         /// </summary>
-        public double Longitude { get; set; }
+        public double Longitude { get; set; } = double.NaN;
 
         public Location() {
-
-        }
-
-        public Location(string commaSeparatedLatitudeLongitude) {
-            string[] split = commaSeparatedLatitudeLongitude.Split(',');
-            try {
-                Latitude = double.Parse(split[0]);
-                Longitude = double.Parse(split[1]);
-            }
-            catch(Exception ex) {
-                DependencyService.Get<Toast>().Show("Er was een probleem met het splitsen van de locatie variabelen");
-            }
         }
 
         public Location(double latitude, double longitude) {
@@ -92,6 +80,10 @@ namespace Hunted_Mobile.Model {
 
         public bool Equals(Location location) {
             return location.Latitude.Equals(Latitude) && location.Longitude.Equals(Longitude);
+        }
+
+        public bool IsSet() {
+            return !Latitude.Equals(double.NaN) && !Longitude.Equals(double.NaN);
         }
     }
 }

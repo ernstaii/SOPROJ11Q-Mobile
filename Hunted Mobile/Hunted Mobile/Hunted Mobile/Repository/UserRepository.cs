@@ -2,12 +2,10 @@
 using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Service;
-
-using Newtonsoft.Json.Linq;
+using Hunted_Mobile.Service.Json;
 
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -21,22 +19,10 @@ namespace Hunted_Mobile.Repository {
                 invite_key = player.InviteKey.Value,
             }));
 
-            var responseLoc = response.GetStringValue("location");
+            Player newPlayer = new PlayerJsonService().ToObject(response.ResponseContent, player.InviteKey);
+            newPlayer.ErrorMessages = response.ErrorMessages;
 
-            Type t = typeof(Thief);
-
-            Player newUser = new Player() {
-                Id = response.GetNumberValue("id"),
-                InviteKey = player.InviteKey,
-                UserName = player.UserName,
-                ErrorMessages = response.ErrorMessages,
-                Location = string.IsNullOrWhiteSpace(responseLoc) ? null : new Location(responseLoc)
-            };
-            newUser.InviteKey.UserId = newUser.Id;
-
-            if(newUser.InviteKey.Role == PlayerRole.THIEF) return new Thief(newUser);
-            else if(newUser.InviteKey.Role == PlayerRole.POLICE) return new Police(newUser);
-            else return newUser;
+            return newPlayer;
         }
 
         // Get all users that are linked to a game
@@ -47,33 +33,9 @@ namespace Hunted_Mobile.Repository {
 
             await usersResponse.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users-with-role"));
 
-            var result = new List<Player>();
-
-            // Looping through the result
-            foreach(JObject item in usersResponse.Items) {
-                try {
-                    string role = item.GetValue("role")?.ToString();
-                    int userId = (int) item.GetValue("id");
-
-                    Player user = new Player() {
-                        Id = userId,
-                        UserName = item.GetValue("username")?.ToString(),
-                        Location = new Location(item.GetValue("location")?.ToString()),
-                        CaughtAt = item.GetValue("caught_at")?.ToString(),
-                        Status = item.GetValue("status")?.ToString(),
-                        InviteKey = new InviteKey() {
-                            Role = role
-                        },
-                    };
-
-                    if(role == PlayerRole.THIEF) result.Add(new Thief(user));
-                    else if(role == PlayerRole.POLICE) result.Add(new Police(user));
-                    else result.Add(user);
-                }
-                catch(Exception ex) {
-                    DependencyService.Get<Toast>().Show("Er was een probleem met het ophalen van de spelers");
-                }
-            }
+            var result = new List<Player>(
+                new PlayerJsonService().ToObjects(usersResponse.ResponseContent)
+            );
 
             return result;
         }
@@ -93,6 +55,30 @@ namespace Hunted_Mobile.Repository {
             }));
 
             return response.ResponseContent != null;
+        }
+
+        public async Task<Player> GetUser(int userId, int gameId) {
+            HttpClientResponse response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Get($"users/{userId}"));
+
+            if(response.Status == System.Net.HttpStatusCode.NotFound) return null;
+
+            var role = response.GetStringValue("role");
+            var user = new Player() {
+                Id = userId,
+                UserName = response.GetStringValue("username"),
+                Location = new Location(response.GetStringValue("location")),
+                CaughtAt = response.GetStringValue("caught_at"),
+                Status = response.GetStringValue("status"),
+                InviteKey = new InviteKey() {
+                    Role = role,
+                    GameId = gameId,
+                },
+            };
+
+            if(role == PlayerRole.THIEF) return new Thief(user);
+            else if(role == PlayerRole.POLICE) return new Police(user);
+            return user;
         }
     }
 }

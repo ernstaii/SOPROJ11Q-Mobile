@@ -1,9 +1,4 @@
-﻿using Hunted_Mobile.Model;
-using Hunted_Mobile.ViewModel;
-
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Hunted_Mobile.ViewModel;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -11,9 +6,12 @@ using Xamarin.Forms.Xaml;
 namespace Hunted_Mobile.View {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EnterUsername : ContentPage {
-        public EnterUsername(InviteKey inviteKeyModel) {
+        public EnterUsername(EnterUsernameViewModel enterUsernameViewModel) {
             InitializeComponent();
-            BindingContext = new EnterUsernameViewModel(this, inviteKeyModel);
+
+            enterUsernameViewModel.View = this;
+
+            BindingContext = enterUsernameViewModel;
         }
     }
 }
