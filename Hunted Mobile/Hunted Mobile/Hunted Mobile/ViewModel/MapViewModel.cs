@@ -46,7 +46,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly GpsService gpsService;
         private readonly WebSocketService webSocketService;
         private Loot selectedLoot = new Loot();
-        private readonly Game gameModel;
+        private Game gameModel;
         private readonly View.Messages messagesView;
         private PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
@@ -58,6 +58,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Countdown countdown;
         private MapViewService mapViewService;
         private readonly DateTime dateTimeNow;
+        private string logoImage;
 #pragma warning disable IDE1006 // Naming Styles
         private MapView mapView {
             get => mapViewService?.MapView;
@@ -75,6 +76,21 @@ namespace Hunted_Mobile.ViewModel {
             set {
                 MapDialog.SelectedDialog = value;
                 ToggleEnableStatusOnMapView();
+            }
+        }
+        public string LogoImage {
+            get => logoImage;
+            set {
+                logoImage = value;
+                OnPropertyChanged("LogoImage");
+            }
+        }
+
+        public Game GameModel {
+            get => gameModel;
+            set {
+                gameModel = value;
+                OnPropertyChanged("GameModel");
             }
         }
 
@@ -156,6 +172,7 @@ namespace Hunted_Mobile.ViewModel {
             dateTimeNow = DateTime.Now;
             BeforeStartCountdown();
             StartCountdown(0);
+            SetGameLogo();
 
             chatIcon = UnitOfWork.Instance.ResourceRepository.GetGuiImage("chat.png");
             OnPropertyChanged(nameof(ChatIcon));
@@ -307,6 +324,12 @@ namespace Hunted_Mobile.ViewModel {
         void OnCountdownCompleted() {
             countdown.RemainTime = new TimeSpan(0, 0, 0);
             OnCountdownTicked();
+        }
+
+        private void SetGameLogo() {
+            LogoImage = UnitOfWork.Instance.GameRepository.GetLogoUrl(gameModel.Id);
+
+            OnPropertyChanged(nameof(LogoImage));
         }
 
         private void ScoreUpdated(ScoreUpdatedEventData data) {
@@ -497,7 +520,8 @@ namespace Hunted_Mobile.ViewModel {
             if(overwritableScreens.Contains(MapDialogOption) && !isWithinBoundary) {
                 MapDialogOption = MapDialogOptions.DISPLAY_BOUNDARY_SCREEN;
                 MapDialog.DisplayBoundaryScreen();
-            } else if (isWithinBoundary && MapDialogOption == MapDialogOptions.DISPLAY_BOUNDARY_SCREEN) {
+            }
+            else if(isWithinBoundary && MapDialogOption == MapDialogOptions.DISPLAY_BOUNDARY_SCREEN) {
                 MapDialogOption = MapDialogOptions.NONE;
             }
 

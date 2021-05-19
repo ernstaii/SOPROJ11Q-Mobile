@@ -18,7 +18,8 @@ namespace Hunted_Mobile.Service.Json {
                 Status = data.status,
                 ThievesScore = data.thieves_score,
                 TimeLeft = data.time_left,
-                EndTime = DateTime.Now.AddSeconds(data.time_left)
+                EndTime = DateTime.Now.AddSeconds(data.time_left),
+                ColourTheme = data.colour_theme,
             };
         }
     }

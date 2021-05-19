@@ -164,12 +164,13 @@ namespace Hunted_Mobile.Service.Map {
         public void DisplayEndScreen() {
             SetContent("Het spel is afgelopen!", "Ga terug naar de spelleider!");
             HandleButtonText = "Terug naar hoofdscherm";
+
             SetActionButtons(true, false);
+            HasSingleClickEvent = true;
         }
 
         public void DisplayBoundaryScreen() {
             SetContent("Keer terug!", "Je bevindt je buiten de spelgrens! Ga zo snel mogelijk terug.");
-            HandleButtonText = "Terug naar hoofdscherm";
             SetActionButtons(false);
         }
     }

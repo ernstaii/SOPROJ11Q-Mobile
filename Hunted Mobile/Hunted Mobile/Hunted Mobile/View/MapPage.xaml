@@ -19,7 +19,7 @@
                          CornerRadius="30" 
                          BackgroundColor="White"
                          BorderWidth="1"
-                         BorderColor="RoyalBlue"
+                         BorderColor="{Binding GameModel.ColourTheme}"
                          AbsoluteLayout.LayoutFlags="PositionProportional"  
                          AbsoluteLayout.LayoutBounds=".98,0.01,60,60" />
 
@@ -33,7 +33,7 @@
                         <Label 
                             Text="{Binding CounterDisplay}"
                             FontSize="18"
-                            TextColor="RoyalBlue"/>
+                            TextColor="{Binding GameModel.ColourTheme}"/>
                     </StackLayout>
 				</Frame>
 			</StackLayout>
@@ -96,7 +96,7 @@
                     BackgroundColor="White"
                     BorderWidth="1"
                     BorderColor="LightGray"
-                    TextColor="RoyalBlue"
+                    TextColor="{Binding GameModel.ColourTheme}"
                     AbsoluteLayout.LayoutFlags="PositionProportional"  
                     AbsoluteLayout.LayoutBounds=".5,0.98,60,60" />
 
@@ -117,13 +117,13 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Notify user functionality -->
-                    <Label Text="AUT. TRILLEN" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" HorizontalTextAlignment="Center"/>
-                    <Label Text="TRILLEN" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Column="1" HorizontalTextAlignment="Center"/>
+                    <Label Text="AUT. TRILLEN" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" HorizontalTextAlignment="Center"/>
+                    <Label Text="TRILLEN" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" Grid.Column="1" HorizontalTextAlignment="Center"/>
 
                     <!-- Other functionality -->
-                    <Label Text="BUIT" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Row="2" HorizontalTextAlignment="Center"/>
-                    <Label Text="SPELERS" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Row="2" Grid.Column="1" HorizontalTextAlignment="Center"/>
-                    <Label Text="GADGETS" FontSize="12" FontAttributes="Bold" TextColor="RoyalBlue" Grid.Row="2" Grid.Column="2" HorizontalTextAlignment="Center"/>
+                    <Label Text="BUIT" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" Grid.Row="2" HorizontalTextAlignment="Center"/>
+                    <Label Text="SPELERS" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" Grid.Row="2" Grid.Column="1" HorizontalTextAlignment="Center"/>
+                    <Label Text="GADGETS" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" Grid.Row="2" Grid.Column="2" HorizontalTextAlignment="Center"/>
 
                     <!-- Navigation to players overview -->
                     <Button Text="P"
@@ -136,11 +136,25 @@
                             BackgroundColor="White"
                             FontAttributes="Bold"
                             BorderWidth="1"
-                            BorderColor="RoyalBlue"
-                            TextColor="RoyalBlue"
+                            BorderColor="{Binding GameModel.ColourTheme}"
+                            TextColor="{Binding GameModel.ColourTheme}"
                             Grid.Row="3"
                             Grid.Column="1"/>
 
+                    <!-- <Image Source="https://aka.ms/campus.jpg" Grid.Row="3"/>  -->
+                    <!-- <Image Source="" Grid.Row="3"/> -->
+                    <Image Grid.Row="1"
+                           Grid.Column="2"
+                           WidthRequest="60" 
+                           HeightRequest="60"
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center">
+                        <Image.Source>
+                            <UriImageSource Uri="{Binding LogoImage}" />
+                        </Image.Source>
+                    </Image>
+
+                    <!-- colour_theme -->
                     <!-- Close menu functionality -->
                     <Button Text="X"
                             Command="{Binding CloseMainMapMenuCommand}"
@@ -152,8 +166,8 @@
                             BackgroundColor="White"
                             FontAttributes="Bold"
                             BorderWidth="1"
-                            BorderColor="RoyalBlue"
-                            TextColor="RoyalBlue"
+                            BorderColor="{Binding GameModel.ColourTheme}"
+                            TextColor="{Binding GameModel.ColourTheme}"
                             Grid.Row="4"
                             Grid.ColumnSpan="3"/>
                 </Grid>

@@ -2,6 +2,7 @@
 using Hunted_Mobile.Service;
 using Hunted_Mobile.Service.Json;
 
+using System;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
@@ -18,6 +19,12 @@ namespace Hunted_Mobile.Repository {
             await response.Convert(HttpClientRequestService.Patch($"games/{gameId}/thieves-score/{score}"));
 
             return response.IsSuccessful;
+        }
+
+        public string GetLogoUrl(int gameId) {
+            var url = HttpClientRequestService.GetUrl($"games/{gameId}/logo");
+
+            return url;
         }
 
         public async Task<bool> UpdatePoliceScore(int gameId, int score) {
