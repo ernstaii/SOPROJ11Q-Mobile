@@ -142,14 +142,17 @@
                             Grid.Column="1"/>
 
                     <!-- <Image Source="https://aka.ms/campus.jpg" Grid.Row="3"/>  -->
-                    <!-- <Image Source="{Binding LogoImage}" Grid.Row="3"/> -->
-                    <Image Source="{Binding LogoImage}" 
-                           Grid.Row="1"
+                    <!-- <Image Source="" Grid.Row="3"/> -->
+                    <Image Grid.Row="1"
                            Grid.Column="2"
                            WidthRequest="60" 
                            HeightRequest="60"
                            HorizontalOptions="Center" 
-                           VerticalOptions="Center" />
+                           VerticalOptions="Center">
+                        <Image.Source>
+                            <UriImageSource Uri="{Binding LogoImage}" />
+                        </Image.Source>
+                    </Image>
 
                     <!-- colour_theme -->
                     <!-- Close menu functionality -->

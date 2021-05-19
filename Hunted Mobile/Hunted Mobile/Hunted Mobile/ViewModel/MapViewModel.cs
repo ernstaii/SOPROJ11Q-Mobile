@@ -58,7 +58,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Countdown countdown;
         private MapViewService mapViewService;
         private readonly DateTime dateTimeNow;
-        private Image logoImage;
+        private string logoImage;
 #pragma warning disable IDE1006 // Naming Styles
         private MapView mapView {
             get => mapViewService?.MapView;
@@ -78,13 +78,14 @@ namespace Hunted_Mobile.ViewModel {
                 ToggleEnableStatusOnMapView();
             }
         }
-        public Image LogoImage {
+        public string LogoImage {
             get => logoImage;
             set {
                 logoImage = value;
                 OnPropertyChanged("LogoImage");
             }
         }
+
         public Game GameModel {
             get => gameModel;
             set {
@@ -326,13 +327,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void SetGameLogo() {
-            var url = UnitOfWork.Instance.GameRepository.GetLogoUrl(gameModel.Id);
-
-            LogoImage = new Image {
-                Source = ImageSource.FromUri(
-                   new Uri(url)
-                )
-            };
+            LogoImage = UnitOfWork.Instance.GameRepository.GetLogoUrl(gameModel.Id);
 
             OnPropertyChanged(nameof(LogoImage));
         }
