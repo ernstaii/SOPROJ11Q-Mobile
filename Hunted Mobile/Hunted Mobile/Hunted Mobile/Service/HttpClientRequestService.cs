@@ -40,7 +40,7 @@ namespace Hunted_Mobile.Service {
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        protected static string GetUrl(string path) {
+        public static string GetUrl(string path) {
             return $"{AppSettings.WebAddress}/api/{path}";
         }
 

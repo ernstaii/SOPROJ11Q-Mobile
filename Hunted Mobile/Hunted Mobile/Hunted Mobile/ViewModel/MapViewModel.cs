@@ -46,7 +46,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly GpsService gpsService;
         private readonly WebSocketService webSocketService;
         private Loot selectedLoot = new Loot();
-        private readonly Game gameModel;
+        private Game gameModel;
         private readonly View.Messages messagesView;
         private PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
@@ -83,6 +83,13 @@ namespace Hunted_Mobile.ViewModel {
             set {
                 logoImage = value;
                 OnPropertyChanged("LogoImage");
+            }
+        }
+        public Game GameModel {
+            get => gameModel;
+            set {
+                gameModel = value;
+                OnPropertyChanged("GameModel");
             }
         }
 
@@ -326,6 +333,8 @@ namespace Hunted_Mobile.ViewModel {
                    new Uri(url)
                 )
             };
+
+            OnPropertyChanged(nameof(LogoImage));
         }
 
         private void ScoreUpdated(ScoreUpdatedEventData data) {

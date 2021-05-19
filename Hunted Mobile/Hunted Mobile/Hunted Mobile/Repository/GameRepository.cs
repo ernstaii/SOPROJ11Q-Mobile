@@ -22,19 +22,19 @@ namespace Hunted_Mobile.Repository {
         }
 
         public async Task<string> GetLogoUrl(int gameId) {
-            HttpClientResponse response = new HttpClientResponse();
-            await response.Convert(HttpClientRequestService.Get($"games/{gameId}/logo"));
+            /*HttpClientResponse response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Get($"games/{gameId}/logo"));*/
 
-            string test = "";
+            /*string test = "";
 
             try {
                 test = response.ResponseContent;
             }
             catch(Exception e) {
 
-            }
+            }*/
 
-            return test;
+            return HttpClientRequestService.GetUrl($"games/{gameId}/logo");
         }
 
         public async Task<bool> UpdatePoliceScore(int gameId, int score) {
