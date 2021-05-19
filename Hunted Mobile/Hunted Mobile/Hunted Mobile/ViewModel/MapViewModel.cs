@@ -53,7 +53,6 @@ namespace Hunted_Mobile.ViewModel {
         private Thief selectedThief;
         private bool openMainMapMenu = false;
         private bool mainMapMenuButtonVisible = true;
-        private bool isHoldingButton = false;
         private readonly Resource chatIcon;
         private readonly Countdown countdown;
         private MapViewService mapViewService;
@@ -69,7 +68,6 @@ namespace Hunted_Mobile.ViewModel {
 
         public string CounterDisplay => countdown.RemainTime.ToString(@"hh\:mm\:ss");
         public MapDialog MapDialog { get; private set; } = new MapDialog();
-        public bool PlayerWasWithinGameBoundaries => mapModel.PlayingUser.Location == null || mapModel.GameBoundary.Contains(mapModel.PlayingUser.Location);
 
         public MapDialogOptions MapDialogOption {
             get => MapDialog.SelectedDialog;
@@ -104,13 +102,6 @@ namespace Hunted_Mobile.ViewModel {
             set {
                 selectedThief = value;
                 OnPropertyChanged("SelectedThief");
-            }
-        }
-
-        public bool IsHoldingButton {
-            get => isHoldingButton;
-            set {
-                isHoldingButton = value;
             }
         }
 
@@ -196,12 +187,9 @@ namespace Hunted_Mobile.ViewModel {
                 holdingButtonTimer.Stop();
                 holdingButtonTimer = null;
             }
-
-            IsHoldingButton = false;
         });
 
         public ICommand HoldingMapDialogActionButtonCommand => new Xamarin.Forms.Command((e) => {
-            IsHoldingButton = true;
             holdingButtonTimer = new Timer();
 
             // Interval is set with milisecondes
@@ -226,7 +214,6 @@ namespace Hunted_Mobile.ViewModel {
         });
 
         public ICommand CloseMapDialogCommand => new Xamarin.Forms.Command((e) => {
-            IsHoldingButton = false;
             MapDialogOption = MapDialogOptions.NONE;
         });
 
@@ -475,7 +462,7 @@ namespace Hunted_Mobile.ViewModel {
             StartIntervalTimer();
 
             // Check if user is still in boundaries
-            HandlePlayerBoundaries(mapModel.PlayingUser.Location);
+            HandlePlayerBoundaries(WasWithinBoundary(), IsWithinBoundary(mapModel.PlayingUser.Location));
         }
 
         private void ThiefStatusChanged(JObject data) {
@@ -485,11 +472,20 @@ namespace Hunted_Mobile.ViewModel {
             });
         }
 
+        private bool WasWithinBoundary() {
+            return mapModel.PlayingUser.Location == null || mapModel.GameBoundary.Contains(mapModel.PlayingUser.Location);
+        }
+
+        private bool IsWithinBoundary(Location newLocation) {
+            return mapModel.GameBoundary.Contains(newLocation);
+        }
+
         /// <summary>
         /// Action to execute when the device location has updated
         /// </summary>
         private async void MyLocationUpdated(Location newLocation) {
-            var oldLocation = mapModel.PlayingUser.Location;
+            bool wasWithinBoundary = WasWithinBoundary();
+            bool isWithinBoundary = IsWithinBoundary(newLocation);
             mapModel.PlayingUser.Location = newLocation;
 
             // Send update to the map view
@@ -504,13 +500,10 @@ namespace Hunted_Mobile.ViewModel {
                 await UnitOfWork.Instance.UserRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
             }
 
-            HandlePlayerBoundaries(oldLocation, newLocation);
+            HandlePlayerBoundaries(wasWithinBoundary, isWithinBoundary);
         }
 
-        private async void HandlePlayerBoundaries(Location oldLocation, Location newLocation = null) {
-            if(newLocation == null) newLocation = oldLocation;
-
-            bool isWithinBoundary = CheckIfPlayerIsWithinGameBoundaries(newLocation);
+        private async void HandlePlayerBoundaries(bool wasWithinBoundary, bool isWithinBoundary) {
             var overwritableScreens = new MapDialogOptions[] {
                 MapDialogOptions.NONE,
                 MapDialogOptions.DISPLAY_ARREST_THIEF_SUCCESFULLY,
@@ -525,10 +518,10 @@ namespace Hunted_Mobile.ViewModel {
                 MapDialogOption = MapDialogOptions.NONE;
             }
 
-            if(isWithinBoundary && !PlayerWasWithinGameBoundaries) {
+            if(isWithinBoundary && !wasWithinBoundary) {
                 await PostNotificationAboutPlayer(mapModel.PlayingUser.UserName + " bevindt zich weer binnen de spelgrenzen.");
             }
-            else if(!isWithinBoundary && PlayerWasWithinGameBoundaries) {
+            else if(!isWithinBoundary && wasWithinBoundary) {
                 await PostNotificationAboutPlayer(mapModel.PlayingUser.UserName + " heeft de spelgrenzen verlaten!");
             }
         }
@@ -695,10 +688,6 @@ namespace Hunted_Mobile.ViewModel {
                 gameModel.Id,
                 mapModel.PlayingUser.Id
             );
-        }
-
-        private bool CheckIfPlayerIsWithinGameBoundaries(Location location) {
-            return mapModel.GameBoundary.Contains(location);
         }
     }
 }
