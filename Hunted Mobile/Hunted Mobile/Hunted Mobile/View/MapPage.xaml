@@ -141,6 +141,9 @@
                             Grid.Row="3"
                             Grid.Column="1"/>
 
+                    <!-- <Image Source="https://aka.ms/campus.jpg" Grid.Row="3"/>  -->
+                    <Image Source="{Binding LogoImage}" Grid.Row="3"/>
+
                     <!-- Close menu functionality -->
                     <Button Text="X"
                             Command="{Binding CloseMainMapMenuCommand}"

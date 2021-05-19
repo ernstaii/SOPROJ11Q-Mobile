@@ -35,6 +35,22 @@ namespace Hunted_Mobile.Repository {
             return response.IsSuccessful;
         }
 
+        public async Task<string> GetLogoUrl(int gameId) {
+            HttpClientResponse response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Get($"games/{gameId}/logo"));
+
+            string test = "";
+
+            try {
+                test = response.ResponseContent;
+            }
+            catch(Exception e) {
+
+            }
+
+            return test;
+        }
+
         public async Task<bool> UpdatePoliceScore(int gameId, int score) {
             var response = new HttpClientResponse();
             await response.Convert(HttpClientRequestService.Patch($"games/{gameId}/police-score/{score}"));

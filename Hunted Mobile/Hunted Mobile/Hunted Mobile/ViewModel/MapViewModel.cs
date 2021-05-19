@@ -56,7 +56,8 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Resource chatIcon;
         private readonly Countdown countdown;
         private MapViewService mapViewService;
-        private DateTime dateTimeNow;
+        private readonly DateTime dateTimeNow;
+        private Image logoImage;
 #pragma warning disable IDE1006 // Naming Styles
         private MapView mapView {
             get => mapViewService?.MapView;
@@ -74,6 +75,13 @@ namespace Hunted_Mobile.ViewModel {
             set {
                 MapDialog.SelectedDialog = value;
                 ToggleEnableStatusOnMapView();
+            }
+        }
+        public Image LogoImage {
+            get => logoImage;
+            set {
+                logoImage = value;
+                OnPropertyChanged("LogoImage");
             }
         }
 
@@ -154,6 +162,7 @@ namespace Hunted_Mobile.ViewModel {
             dateTimeNow = DateTime.Now;
             BeforeStartCountdown();
             StartCountdown(0);
+            SetGameLogo();
 
             chatIcon = UnitOfWork.Instance.ResourceRepository.GetGuiImage("chat.png");
             OnPropertyChanged(nameof(ChatIcon));
@@ -305,6 +314,16 @@ namespace Hunted_Mobile.ViewModel {
         void OnCountdownCompleted() {
             countdown.RemainTime = new TimeSpan(0, 0, 0);
             OnCountdownTicked();
+        }
+
+        private async void SetGameLogo() {
+            var url = await UnitOfWork.Instance.GameRepository.GetLogoUrl(gameModel.Id);
+
+            LogoImage = new Image {
+                Source = ImageSource.FromUri(
+                   new Uri(url)
+                )
+            };
         }
 
         private void ScoreUpdated(JObject data) {
@@ -513,7 +532,8 @@ namespace Hunted_Mobile.ViewModel {
             if(overwritableScreens.Contains(MapDialogOption) && !isWithinBoundary) {
                 MapDialogOption = MapDialogOptions.DISPLAY_BOUNDARY_SCREEN;
                 MapDialog.DisplayBoundaryScreen();
-            } else if (isWithinBoundary && MapDialogOption == MapDialogOptions.DISPLAY_BOUNDARY_SCREEN) {
+            }
+            else if(isWithinBoundary && MapDialogOption == MapDialogOptions.DISPLAY_BOUNDARY_SCREEN) {
                 MapDialogOption = MapDialogOptions.NONE;
             }
 
