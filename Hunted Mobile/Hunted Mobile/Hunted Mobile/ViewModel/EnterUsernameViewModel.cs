@@ -2,6 +2,7 @@
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
+using Hunted_Mobile.Service.Preference;
 using Hunted_Mobile.View;
 
 using System.Linq;
