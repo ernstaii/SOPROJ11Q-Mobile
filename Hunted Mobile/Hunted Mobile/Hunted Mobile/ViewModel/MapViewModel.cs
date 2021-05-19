@@ -640,8 +640,10 @@ namespace Hunted_Mobile.ViewModel {
                 mapViewService.AddClosestThiefPin(GetClosestThief());
             }
 
-            foreach(var loot in mapModel.GetLoot()) {
-                mapViewService.AddLootPin(loot);
+            if(mapModel.PlayingUser is Thief) {
+                foreach(var loot in mapModel.GetLoot()) {
+                    mapViewService.AddLootPin(loot);
+                }
             }
         }
 
