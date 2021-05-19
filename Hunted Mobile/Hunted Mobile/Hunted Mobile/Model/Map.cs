@@ -55,11 +55,11 @@ namespace Hunted_Mobile.Model {
         }
 
         public IEnumerable<Loot> GetLoot() {
-            return loot.Where(item => item.IsValid).ToList().AsReadOnly();
+            return loot.AsReadOnly();
         }
 
         public void SetLoot(IEnumerable<Loot> loot) {
-            this.loot = new List<Loot>(loot);
+            this.loot = loot.Where(item => item.IsValid).ToList();
         }
 
         public Loot FindLoot(Location location) {
