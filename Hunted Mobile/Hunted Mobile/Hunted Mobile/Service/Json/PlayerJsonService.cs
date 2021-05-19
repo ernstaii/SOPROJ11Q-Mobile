@@ -17,7 +17,7 @@ namespace Hunted_Mobile.Service.Json {
                 location = player.Location.ToCsvString(),
                 status = player.Status,
                 caught_at = player is Thief ? ((Thief) player).CaughtAt : null,
-                role = player.InviteKey.Role
+                role = player.InviteKey.Role,
             });
         }
 
@@ -30,7 +30,7 @@ namespace Hunted_Mobile.Service.Json {
                 },
                 Location = new LocationJsonService().ToObjectFromCsv(data.location),
                 Status = data.status,
-                UserName = data.username
+                UserName = data.username,
             };
 
             if(data.role == PlayerRole.THIEF) {

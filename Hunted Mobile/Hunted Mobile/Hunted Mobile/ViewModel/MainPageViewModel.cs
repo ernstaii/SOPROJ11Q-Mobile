@@ -197,7 +197,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private async Task NavigateToLobbyPage() {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new Lobby((Player) playingUser), true);
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new Lobby(new LobbyViewModel(playingUser)), true);
         }
 
         private async Task NavigateToMapPage() {

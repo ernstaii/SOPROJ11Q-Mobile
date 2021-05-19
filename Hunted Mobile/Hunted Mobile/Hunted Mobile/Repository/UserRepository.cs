@@ -63,22 +63,7 @@ namespace Hunted_Mobile.Repository {
 
             if(response.Status == System.Net.HttpStatusCode.NotFound) return null;
 
-            var role = response.GetStringValue("role");
-            var user = new Player() {
-                Id = userId,
-                UserName = response.GetStringValue("username"),
-                Location = new Location(response.GetStringValue("location")),
-                CaughtAt = response.GetStringValue("caught_at"),
-                Status = response.GetStringValue("status"),
-                InviteKey = new InviteKey() {
-                    Role = role,
-                    GameId = gameId,
-                },
-            };
-
-            if(role == PlayerRole.THIEF) return new Thief(user);
-            else if(role == PlayerRole.POLICE) return new Police(user);
-            return user;
+            return new PlayerJsonService().ToObject(response.ResponseContent);
         }
     }
 }
