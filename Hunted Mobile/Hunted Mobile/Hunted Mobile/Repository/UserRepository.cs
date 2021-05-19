@@ -63,7 +63,10 @@ namespace Hunted_Mobile.Repository {
 
             if(response.Status == System.Net.HttpStatusCode.NotFound) return null;
 
-            return new PlayerJsonService().ToObject(response.ResponseContent);
+            var user = new PlayerJsonService().ToObject(response.ResponseContent);
+            user.InviteKey.GameId = gameId;
+
+            return user;
         }
     }
 }
