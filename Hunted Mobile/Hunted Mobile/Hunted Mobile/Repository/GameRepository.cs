@@ -2,6 +2,7 @@
 using Hunted_Mobile.Service;
 using Hunted_Mobile.Service.Json;
 
+using System;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
