@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Hunted_Mobile.Model.Response;
+using Hunted_Mobile.Service.Json;
 
 using PusherClient;
 
@@ -35,7 +35,7 @@ namespace Hunted_Mobile.Service {
         }
 
         private static void ErrorOccurred(object sender, PusherException error) {
-            throw error;
+            DependencyService.Get<Toast>().Show("Er was een probleem in een event");
         }
 
         /// <summary>
@@ -47,59 +47,61 @@ namespace Hunted_Mobile.Service {
         }
         #endregion
 
+        private readonly string gameIdString;
+
         public delegate void SocketEvent();
         public delegate void SocketEvent<T>(T data);
 
-        public event SocketEvent StartGame;
-        public event SocketEvent<JObject> PauseGame;
-        public event SocketEvent<JObject> ResumeGame;
-        public event SocketEvent<JObject> NotificationEvent;
-        public event SocketEvent<JObject> EndGame;
-        public event SocketEvent<JObject> IntervalEvent;
-        public event SocketEvent<JObject> ThiefCaught;
-        public event SocketEvent<JObject> ThiefReleased;
-        public event SocketEvent<JObject> PlayerJoined;
-        public event SocketEvent<JObject> ScoreUpdated;
+        public event SocketEvent<EventData> StartGame;
+        public event SocketEvent<EventData> PauseGame;
+        public event SocketEvent<EventData> ResumeGame;
+        public event SocketEvent<EventData> NotificationEvent;
+        public event SocketEvent<EventData> EndGame;
+        public event SocketEvent<IntervalEventData> IntervalEvent;
+        public event SocketEvent<PlayerEventData> ThiefCaught;
+        public event SocketEvent<PlayerEventData> ThiefReleased;
+        public event SocketEvent<PlayerEventData> PlayerJoined;
+        public event SocketEvent<ScoreUpdatedEventData> ScoreUpdated;
 
         public WebSocketService(int gameId) {
-            string gameIdStr = gameId.ToString();
-            string channelName = "game." + gameIdStr;
+            gameIdString = gameId.ToString();
+            string channelName = "game." + gameIdString;
             
             var channel = pusher.GetChannel(channelName);
             if(channel == null || !channel.IsSubscribed) {
                 pusher.SubscribeAsync(channelName);
             }
 
-            Bind("game.start", () => StartGame(), gameIdStr);
-            Bind<JObject>("game.pause", (data) => PauseGame(data), gameIdStr);
-            Bind<JObject>("game.resume", (data) => ResumeGame(data), gameIdStr);
-            Bind<JObject>("game.notification", (data) => NotificationEvent(data), gameIdStr);
-            Bind<JObject>("game.end", (data) => EndGame(data), gameIdStr);
-            Bind<JObject>("game.interval", (data) => IntervalEvent(data), gameIdStr);
-            Bind<JObject>("thief.caught", (data) => ThiefCaught(data), gameIdStr);
-            Bind<JObject>("thief.released", (data) => ThiefReleased(data), gameIdStr);
-            Bind<JObject>("player.joined", (data) => PlayerJoined(data), gameIdStr);
-            Bind<JObject>("score.updated", (data) => ScoreUpdated(data), gameIdStr);
+            Bind("game.start", (json) => InvokeEvent(StartGame, new EventJsonService().ToObject(json)));
+            Bind("game.pause", (json) => InvokeEvent(PauseGame, new EventJsonService().ToObject(json)));
+            Bind("game.resume", (json) => InvokeEvent(ResumeGame, new EventJsonService().ToObject(json)));
+            Bind("game.notification", (json) => InvokeEvent(NotificationEvent, new EventJsonService().ToObject(json)));
+            Bind("game.end", (json) => InvokeEvent(EndGame, new EventJsonService().ToObject(json)));
+            Bind("game.interval", (json) => InvokeEvent(IntervalEvent, new IntervalEventJsonService().ToObject(json)));
+            Bind("thief.caught", (json) => InvokeEvent(ThiefCaught, new PlayerEventJsonService().ToObject(json)));
+            Bind("thief.released", (json) => InvokeEvent(ThiefReleased, new PlayerEventJsonService().ToObject(json)));
+            Bind("player.joined", (json) => InvokeEvent(PlayerJoined, new PlayerEventJsonService().ToObject(json)));
+            Bind("score.updated", (json) => InvokeEvent(ScoreUpdated, new ScoreUpdatedEventJsonService().ToObject(json)));
         }
 
-        private void Bind(string eventName, Action action, string gameIdStr) {
+        private void InvokeEvent<T>(SocketEvent<T> @event, T data) {
+            if(@event != null) {
+                @event(data);
+            }
+        }
+
+        private void Bind(string eventName, Action action) {
             pusher.Bind(eventName, (PusherEvent eventData) => {
-                if(eventData.ChannelName.EndsWith(gameIdStr)) {
+                if(eventData.ChannelName.EndsWith(gameIdString)) {
                     action();
                 }
             });
         }
 
-        private void Bind<T>(string eventName, Action<T> action, string gameIdStr) {
+        private void Bind(string eventName, Action<string> action) {
             pusher.Bind(eventName, (PusherEvent eventData) => {
-                try {
-                    if(eventData.ChannelName.EndsWith(gameIdStr)) {
-                        T data = JsonConvert.DeserializeObject<T>(eventData.Data);
-                        action(data);
-                    }
-                }
-                catch(Exception ex) {
-                    DependencyService.Get<Toast>().Show("Er was een probleem met het deserialiseren van de event data");
+                if(eventData.ChannelName.EndsWith(gameIdString)) {
+                    action(eventData.Data);
                 }
             });
         }

@@ -22,10 +22,10 @@ using Hunted_Mobile.Service.Gps;
 using System.Windows.Input;
 using Xamarin.Forms;
 using System.Timers;
-using Newtonsoft.Json.Linq;
 using Hunted_Mobile.Model.Resource;
 using Hunted_Mobile.View;
 using System.Linq;
+using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Service.Map;
 using Hunted_Mobile.Enum;
 using Hunted_Mobile.Service.Preference;
@@ -45,8 +45,8 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Model.Map mapModel;
         private readonly GpsService gpsService;
         private readonly WebSocketService webSocketService;
-        private Loot selectedLoot = new Loot(0);
-        private Game gameModel;
+        private Loot selectedLoot = new Loot();
+        private readonly Game gameModel;
         private readonly View.Messages messagesView;
         private PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
@@ -57,7 +57,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Resource chatIcon;
         private readonly Countdown countdown;
         private MapViewService mapViewService;
-        private DateTime dateTimeNow;
+        private readonly DateTime dateTimeNow;
 #pragma warning disable IDE1006 // Naming Styles
         private MapView mapView {
             get => mapViewService?.MapView;
@@ -148,7 +148,8 @@ namespace Hunted_Mobile.ViewModel {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
             this.gpsService = gpsService;
-            messagesView = new View.Messages(this.gameModel.Id);
+            var messageViewModel = new MessageViewModel(gameModel.Id);
+            messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameModel.Id);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
             countdown = new Countdown();
@@ -260,7 +261,7 @@ namespace Hunted_Mobile.ViewModel {
 
         private async Task PollLoot() {
             var lootList = await UnitOfWork.Instance.LootRepository.GetAll(gameModel.Id);
-            mapModel.SetLoot(lootList);
+            mapModel.Loot = lootList;
         }
 
         private async Task PollUsers() {
@@ -270,7 +271,7 @@ namespace Hunted_Mobile.ViewModel {
                     userList.Add(user);
                 }
             }
-            mapModel.SetUsers(userList);
+            mapModel.Players = userList;
 
             playersOverview = new PlayersOverviewPage(
                 new PlayersOverviewViewModel(
@@ -308,50 +309,31 @@ namespace Hunted_Mobile.ViewModel {
             OnCountdownTicked();
         }
 
-        private void ScoreUpdated(JObject data) {
-            int.TryParse(data.GetValue("thief_score")?.ToString(), out int thiefScore);
-            int.TryParse(data.GetValue("police_score")?.ToString(), out int policeScore);
-
-            gameModel.ThievesScore = thiefScore;
-            gameModel.PoliceScore = policeScore;
+        private void ScoreUpdated(ScoreUpdatedEventData data) {
+            gameModel.ThievesScore = data.ThiefScore;
+            gameModel.PoliceScore = data.PoliceScore;
 
             OnPropertyChanged(nameof(PlayingUserScore));
             OnPropertyChanged(nameof(PlayingUserScoreDisplay));
         }
 
-        private void IntervalOfGame(JObject data) {
+        private void IntervalOfGame(IntervalEventData data) {
             StartIntervalTimer();
 
-            List<Player> userList = new List<Player>();
+            Location playingUserLocation = mapModel.PlayingUser.Location;
+            mapModel.Players.Clear();
 
-            foreach(JObject user in data.GetValue("users")) {
-                int.TryParse((string) user.GetValue("id"), out int userId);
-
-                if(userId != mapModel.PlayingUser.Id) {
-                    Player newUser = new Player() {
-                        Id = userId,
-                        Location = new Location((string) user.GetValue("location")),
-                        UserName = (string) user.GetValue("username"),
-                    };
-
-                    if(user.GetValue("role").ToString() == PlayerRole.THIEF) newUser = new Thief(newUser);
-                    else newUser = new Police(newUser);
-
-                    userList.Add(newUser);
+            foreach(Player player in data.Players) {
+                if(player.Id == mapModel.PlayingUser.Id) {
+                    mapModel.PlayingUser = player;
+                }
+                else {
+                    mapModel.Players.Add(player);
                 }
             }
+            mapModel.PlayingUser.Location = playingUserLocation;
 
-            List<Loot> lootList = new List<Loot>();
-
-            foreach(JObject loot in data.GetValue("loot")) {
-                lootList.Add(new Loot((int) loot.GetValue("id")) {
-                    Location = new Location(loot.GetValue("location")?.ToString()),
-                    Name = loot.GetValue("name")?.ToString()
-                });
-            }
-
-            mapModel.SetUsers(userList);
-            mapModel.SetLoot(lootList);
+            mapModel.Loot = data.Loot;
 
             DisplayAllPins();
         }
@@ -435,12 +417,12 @@ namespace Hunted_Mobile.ViewModel {
                 webSocketService.IntervalEvent += IntervalOfGame;
                 webSocketService.ScoreUpdated += ScoreUpdated;
             }
-            catch(Exception ex) {
+            catch(Exception) {
                 DependencyService.Get<Toast>().Show("Er was een probleem met het verbinden met de web socket");
             }
         }
 
-        private void EndGame(JObject data) {
+        private void EndGame(EventData data) {
             MapDialogOption = MapDialogOptions.DISPLAY_END_GAME;
             MapDialog.DisplayEndScreen();
             StopCountdown();
@@ -448,7 +430,7 @@ namespace Hunted_Mobile.ViewModel {
             StopIntervalTimer();
         }
 
-        private void PauseGame(JObject data) {
+        private void PauseGame(EventData data) {
             MapDialogOption = MapDialogOptions.DISPLAY_PAUSE;
             MapDialog.DisplayPauseScreen();
             StopCountdown();
@@ -456,16 +438,16 @@ namespace Hunted_Mobile.ViewModel {
             StopIntervalTimer();
         }
 
-        private void ResumeGame(JObject data) {
+        private void ResumeGame(EventData data) {
             MapDialogOption = MapDialogOptions.NONE;
-            StartCountdown(Convert.ToDouble(data.GetValue("timeLeft")));
+            StartCountdown(data.TimeLeft);
             StartIntervalTimer();
 
             // Check if user is still in boundaries
             HandlePlayerBoundaries(WasWithinBoundary(), IsWithinBoundary(mapModel.PlayingUser.Location));
         }
 
-        private void ThiefStatusChanged(JObject data) {
+        private void ThiefStatusChanged(PlayerEventData data) {
             Task.Run(async () => {
                 await PollUsers();
                 DisplayAllPins();
@@ -473,7 +455,8 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private bool WasWithinBoundary() {
-            return mapModel.PlayingUser.Location == null || mapModel.GameBoundary.Contains(mapModel.PlayingUser.Location);
+            // Unset coordinates are considered within bounds to prevent incorrect notifications
+            return !mapModel.PlayingUser.Location.IsSet() || mapModel.GameBoundary.Contains(mapModel.PlayingUser.Location);
         }
 
         private bool IsWithinBoundary(Location newLocation) {
@@ -586,11 +569,7 @@ namespace Hunted_Mobile.ViewModel {
         /// Adds the visual game boundary as a polygon
         /// </summary>
         private async Task AddGameBoundary() {
-            List<Location> locations = await UnitOfWork.Instance.BorderMarkerRepository.GetAll(gameModel.Id);
-            Boundary boundary = new Boundary();
-
-            foreach(Location location in locations)
-                boundary.Points.Add(location);
+            Boundary boundary = await UnitOfWork.Instance.BorderMarkerRepository.GetBoundary(gameModel.Id);
 
             mapModel.GameBoundary = boundary;
             mapView.Map.Layers.Add(CreateBoundaryLayer());
@@ -631,7 +610,7 @@ namespace Hunted_Mobile.ViewModel {
             mapViewService.AddPlayerPin();
             mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
 
-            foreach(var user in mapModel.GetUsers()) {
+            foreach(var user in mapModel.Players) {
                 mapViewService.AddTeamMatePin(user);
             }
 
@@ -641,7 +620,7 @@ namespace Hunted_Mobile.ViewModel {
             }
 
             if(mapModel.PlayingUser is Thief) {
-                foreach(var loot in mapModel.GetLoot()) {
+                foreach(var loot in mapModel.Loot) {
                     mapViewService.AddLootPin(loot);
                 }
             }

@@ -15,7 +15,7 @@ namespace Hunted_Mobile.ViewModel {
     public class EnterUsernameViewModel : BaseViewModel {
         private Player userModel;
         private bool isloading = false;
-        private readonly EnterUsername page;
+        private EnterUsername page;
 
         public bool IsValid { get; set; }
 
@@ -35,8 +35,9 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public EnterUsernameViewModel(EnterUsername page, InviteKey key) {
-            this.page = page;
+        public EnterUsername View { set => page = value; }
+
+        public EnterUsernameViewModel(InviteKey key) {
             userModel = new Player() {
                 InviteKey = key,
             };
@@ -61,13 +62,12 @@ namespace Hunted_Mobile.ViewModel {
 
             // Navigate when InviteKey is valid
             if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
-                if(UserModel is Player) {
-                    var Navigation = Xamarin.Forms.Application.Current.MainPage.Navigation;
+                var navigation = Application.Current.MainPage.Navigation;
 
-                    var previousPage = Navigation.NavigationStack.LastOrDefault();
-                    await Navigation.PushAsync(new Lobby((Player) UserModel), true);
-                    Navigation.RemovePage(previousPage);
-                }
+                var previousPage = navigation.NavigationStack.LastOrDefault();
+                var view = new Lobby(new LobbyViewModel(UserModel));
+                await navigation.PushAsync(view, true);
+                navigation.RemovePage(previousPage);
             }
 
             SubmitButtonIsEnable = true;
