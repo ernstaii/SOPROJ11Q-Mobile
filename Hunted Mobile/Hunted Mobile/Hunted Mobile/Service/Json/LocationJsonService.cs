@@ -15,7 +15,10 @@ namespace Hunted_Mobile.Service.Json {
         }
 
         public Location ToObjectFromCsv(string commaSeparatedValues) {
-            try {
+            if(string.IsNullOrEmpty(commaSeparatedValues)) {
+                return new Location();
+            }
+            else try {
                 string[] split = commaSeparatedValues.Split(',');
                 double latitude = double.Parse(split[0]);
                 double longitude = double.Parse(split[1]);

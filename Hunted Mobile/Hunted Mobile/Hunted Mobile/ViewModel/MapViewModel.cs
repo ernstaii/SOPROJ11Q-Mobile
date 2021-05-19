@@ -45,7 +45,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly GpsService gpsService;
         private readonly WebSocketService webSocketService;
         private Loot selectedLoot = new Loot();
-        private Game gameModel;
+        private readonly Game gameModel;
         private readonly View.Messages messagesView;
         private PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
@@ -56,7 +56,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly Resource chatIcon;
         private readonly Countdown countdown;
         private MapViewService mapViewService;
-        private DateTime dateTimeNow;
+        private readonly DateTime dateTimeNow;
 #pragma warning disable IDE1006 // Naming Styles
         private MapView mapView {
             get => mapViewService?.MapView;
@@ -416,7 +416,7 @@ namespace Hunted_Mobile.ViewModel {
                 webSocketService.IntervalEvent += IntervalOfGame;
                 webSocketService.ScoreUpdated += ScoreUpdated;
             }
-            catch(Exception ex) {
+            catch(Exception) {
                 DependencyService.Get<Toast>().Show("Er was een probleem met het verbinden met de web socket");
             }
         }
