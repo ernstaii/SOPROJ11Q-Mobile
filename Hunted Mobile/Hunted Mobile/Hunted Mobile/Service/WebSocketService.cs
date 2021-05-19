@@ -6,6 +6,8 @@ using PusherClient;
 using System;
 using System.Threading.Tasks;
 
+using Xamarin.Forms;
+
 namespace Hunted_Mobile.Service {
     /// <summary>
     /// Represents a single socket connection to our API that will be reused during the runtime of the application
@@ -95,7 +97,7 @@ namespace Hunted_Mobile.Service {
                     }
                 }
                 catch(Exception ex) {
-                    Console.WriteLine("An error occurred while deserializing event data: " + ex.StackTrace);
+                    DependencyService.Get<Toast>().Show("Er was een probleem met het deserialiseren van de event data");
                 }
             });
         }

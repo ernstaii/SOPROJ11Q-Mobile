@@ -436,7 +436,7 @@ namespace Hunted_Mobile.ViewModel {
                 webSocketService.IntervalEvent += IntervalOfGame;
             }
             catch(Exception ex) {
-                Console.WriteLine("An error occurred when connecting the web socket: " + ex.StackTrace);
+                DependencyService.Get<Toast>().Show("Er was een probleem met het verbinden met de web socket");
             }
         }
 
