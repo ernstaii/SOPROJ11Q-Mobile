@@ -144,6 +144,7 @@
                     <!-- <Image Source="https://aka.ms/campus.jpg" Grid.Row="3"/>  -->
                     <Image Source="{Binding LogoImage}" Grid.Row="3"/>
 
+                    <!-- colour_theme -->
                     <!-- Close menu functionality -->
                     <Button Text="X"
                             Command="{Binding CloseMainMapMenuCommand}"
