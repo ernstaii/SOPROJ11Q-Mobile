@@ -4,6 +4,7 @@ using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
+using Hunted_Mobile.Service.Preference;
 
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace Hunted_Mobile.ViewModel {
         private Game gameModel = new Game();
         private readonly Player currentUser;
         private readonly WebSocketService webSocketService;
-
+        private readonly GameSessionPreference gameSessionPreference;
         private bool isloading;
 
         public Game GameModel {
@@ -58,6 +59,8 @@ namespace Hunted_Mobile.ViewModel {
         public LobbyViewModel(Player currentUser) {
             this.currentUser = currentUser;
             gameModel.Id = this.currentUser.InviteKey.GameId;
+            gameSessionPreference = new GameSessionPreference();
+            SaveCurrentGame();
 
             webSocketService = new WebSocketService(gameModel.Id);
 
@@ -90,6 +93,11 @@ namespace Hunted_Mobile.ViewModel {
             if(GameModel.Status == GameStatus.ONGOING || GameModel.Status == GameStatus.PAUSED || GameModel.Status == GameStatus.FINISHED) {
                 StartGameWithoutLoadingGame();
             }
+        }
+
+        private void SaveCurrentGame() {
+            gameSessionPreference.SetGame(gameModel.Id);
+            gameSessionPreference.SetUser(currentUser.Id);
         }
 
         private async void StartGame(EventData data) {

@@ -25,6 +25,10 @@ namespace Hunted_Mobile {
             try {
                 var assembly = IntrospectionExtensions.GetTypeInfo(typeof(AppSettingsManager)).Assembly;
                 var stream = assembly.GetManifestResourceStream($"{NAMESPACE}.{FILE_NAME}");
+
+                if (stream == null)
+                    stream = assembly.GetManifestResourceStream($"{NAMESPACE.Replace('_', ' ')}.{FILE_NAME}");
+
                 using(var reader = new StreamReader(stream)) {
                     var json = reader.ReadToEnd();
                     secrets = JObject.Parse(json);

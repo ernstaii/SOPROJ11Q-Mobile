@@ -28,6 +28,7 @@ using System.Linq;
 using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Service.Map;
 using Hunted_Mobile.Enum;
+using Hunted_Mobile.Service.Preference;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -657,6 +658,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void ExitGame() {
+            GameSessionPreference.ClearUserAndGame();
             Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MainPage());
             RemovePreviousNavigation();
             webSocketService.Disconnect();

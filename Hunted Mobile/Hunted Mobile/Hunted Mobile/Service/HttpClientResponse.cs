@@ -98,13 +98,13 @@ namespace Hunted_Mobile.Service {
         protected string GetStringValue(string key) {
             var result = GetValue(key);
 
-            return result != null ? result.ToString() : null;
+            return result != null ? result.ToString() : "";
         }
 
         protected int GetNumberValue(string key) {
-            var result = GetValue(key);
+            int.TryParse(GetValue(key)?.ToString(), out int output);
 
-            return result == null ? 0 : ((int) result);
+            return output;
         }
     }
 }

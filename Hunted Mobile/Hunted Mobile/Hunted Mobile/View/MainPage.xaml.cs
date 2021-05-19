@@ -13,6 +13,8 @@ namespace Hunted_Mobile.View {
         // This method is called when rendering this page, because the InviteKey should be reset
         protected override void OnAppearing() {
             mainPageViewModel.ResetInviteKey();
+            mainPageViewModel.LoadPreviousGame();
+
             base.OnAppearing();
         }
     }
