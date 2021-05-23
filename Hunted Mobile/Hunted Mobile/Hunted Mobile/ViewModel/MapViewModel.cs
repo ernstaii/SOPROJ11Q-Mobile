@@ -51,6 +51,7 @@ namespace Hunted_Mobile.ViewModel {
         private PlayersOverviewPage playersOverview;
         private Timer intervalUpdateTimer;
         private Timer holdingButtonTimer;
+        private Timer lastLocationUpdated;
         private Thief selectedThief;
         private bool openMainMapMenu = false;
         private bool mainMapMenuButtonVisible = true;
@@ -170,6 +171,7 @@ namespace Hunted_Mobile.ViewModel {
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
+            Task.Run(async () => await UpdatePlayerLocation());
             BeforeStartCountdown();
             StartCountdown(0);
             SetGameLogo();
@@ -243,6 +245,10 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand CloseMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
             OpenMainMapMenu = false;
         });
+
+        private async void HandleUpdatingLocation(object sender, EventArgs e) {
+            await UpdatePlayerLocation();
+        }
 
         private void SuccessfullyPickedUpLoot(object sender, EventArgs e) {
             holdingButtonTimer.Stop();
@@ -423,7 +429,7 @@ namespace Hunted_Mobile.ViewModel {
             StopIntervalTimer();
 
             // Send the current user's location to the database
-            await UnitOfWork.Instance.UserRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
+            await UpdatePlayerLocation();
         }
 
         private async Task StartSocket() {
@@ -486,6 +492,21 @@ namespace Hunted_Mobile.ViewModel {
             return mapModel.GameBoundary.Contains(newLocation);
         }
 
+        private void StartIntervalForUpdatingLocation() {
+            lastLocationUpdated = new Timer();
+            var timeMargin = 5;
+
+            lastLocationUpdated.Interval = (gameModel.Interval - timeMargin) * 1000;
+            lastLocationUpdated.Elapsed += HandleUpdatingLocation;
+        }
+
+        private void ClearIntervalForUpdatingLocation() {
+            if(lastLocationUpdated != null) {
+                lastLocationUpdated.Stop();
+                lastLocationUpdated = null;
+            }
+        }
+
         /// <summary>
         /// Action to execute when the device location has updated
         /// </summary>
@@ -503,10 +524,16 @@ namespace Hunted_Mobile.ViewModel {
 
             if(!Initialized) {
                 Initialized = true;
-                await UnitOfWork.Instance.UserRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
+                await UpdatePlayerLocation();
             }
 
             HandlePlayerBoundaries(wasWithinBoundary, isWithinBoundary);
+        }
+
+        private async Task UpdatePlayerLocation() {
+            ClearIntervalForUpdatingLocation();
+            await UnitOfWork.Instance.UserRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
+            StartIntervalForUpdatingLocation();
         }
 
         private async void HandlePlayerBoundaries(bool wasWithinBoundary, bool isWithinBoundary) {
