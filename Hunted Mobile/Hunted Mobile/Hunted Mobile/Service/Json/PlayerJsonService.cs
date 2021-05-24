@@ -34,9 +34,7 @@ namespace Hunted_Mobile.Service.Json {
             };
 
             if(data.role == PlayerRole.THIEF) {
-                var thief = new Thief(player);
-                thief.CaughtAt = data.caught_at;
-                return thief;
+                return new Thief(player, data.caught_at);
             }
             else if(data.role == PlayerRole.POLICE) {
                 return new Police(player);
@@ -50,9 +48,10 @@ namespace Hunted_Mobile.Service.Json {
             inviteKey.UserId = player.Id;
 
             if(inviteKey.Role == PlayerRole.THIEF) {
-                return new Thief(player) {
-                    CaughtAt = player is Thief ? ((Thief) player).CaughtAt : string.Empty
-                };
+                return new Thief(
+                    player, 
+                    player is Thief ? ((Thief) player).CaughtAt : null
+                );
             }
             else if(inviteKey.Role == PlayerRole.POLICE) {
                 return new Police(player);

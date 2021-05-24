@@ -1,12 +1,11 @@
-﻿using Hunted_Mobile.Model.Response.Json;
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Hunted_Mobile.Model.GameModels {
     public class Player : CustomModelErrorMessages<Player> {
+        private ObservableCollection<Gadget.Gadget> gadgets;
+
         public int Id { get; set; }
         public Location Location { get; set; }
         public InviteKey InviteKey { get; set; }
@@ -18,6 +17,8 @@ namespace Hunted_Mobile.Model.GameModels {
         public string Status { get; set; }
 
         public bool IsValid => UserName != null && Location != null;
+
+        public ICollection<Gadget.Gadget> Gadgets { get => gadgets; }
 
         public Player(int id, string userName, InviteKey inviteKey) {
             Id = id;
