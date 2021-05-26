@@ -1,4 +1,5 @@
-﻿using Hunted_Mobile.Model.Response;
+﻿using Hunted_Mobile.Model.GameModels.Gadget;
+using Hunted_Mobile.Model.Response;
 
 using System;
 using System.Collections.Generic;
@@ -49,10 +50,17 @@ namespace Hunted_Mobile.Service.Json {
 
     public class GadgetsUpdatedEventJsonService : JsonConversionService<GadgetsUpdatedEventData, Model.Response.Json.GadgetsUpdatedEventData> {
         public override GadgetsUpdatedEventData ToObject(Model.Response.Json.GadgetsUpdatedEventData data) {
+            var gadgets = new GadgetJsonService().ToObjects(data.gadgets);
+            var flattenedGadgets = new List<Gadget>();
+            foreach(var gadgetsOfType in gadgets) {
+                foreach(var gadgetOfType in gadgetsOfType) {
+                    flattenedGadgets.Add(gadgetOfType);
+                }
+            }
             return new GadgetsUpdatedEventData {
                 Message = data.message,
                 TimeLeft = data.timeLeft,
-                Gadgets = new GadgetJsonService().ToObjects(data.gadgets),
+                Gadgets = flattenedGadgets.ToArray(),
                 Player = new PlayerJsonService().ToObject(data.user)
             };
         }

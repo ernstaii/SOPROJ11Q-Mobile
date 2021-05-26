@@ -67,10 +67,17 @@ namespace Hunted_Mobile.Model.Response.Json {
     public struct GadgetData : JsonResponseData {
         public int id;
         public string name;
+        public DateTime created_at;
+        public DateTime updated_at;
+        public GadgetPivotData pivot;
+    }
+
+    public struct GadgetPivotData : JsonResponseData {
+        public int user_id;
+        public int gadget_id;
+        public int amount;
         public LocationData location;
         public bool in_use;
         public DateTime activated_at;
-        public DateTime created_at;
-        public DateTime updated_at;
     }
 }
