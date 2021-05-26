@@ -344,18 +344,21 @@ namespace Hunted_Mobile.ViewModel {
             StartIntervalTimer();
 
             Location playingUserLocation = mapModel.PlayingUser.Location;
-            mapModel.Players.Clear();
+            var newPlayer = new List<Player>();
 
             foreach(Player player in data.Players) {
+                var gadgets = mapModel.Players.Where(p => p.Id == player.Id).FirstOrDefault()?.Gadgets;
+                player.Gadgets = gadgets;
+
+                newPlayer.Add(player);
+
                 if(player.Id == mapModel.PlayingUser.Id) {
                     mapModel.PlayingUser = player;
-                }
-                else {
-                    mapModel.Players.Add(player);
                 }
             }
             mapModel.PlayingUser.Location = playingUserLocation;
 
+            mapModel.Players = newPlayer;
             mapModel.Loot = data.Loot;
 
             DisplayAllPins();
@@ -448,7 +451,10 @@ namespace Hunted_Mobile.ViewModel {
 
         private void GadgetsUpdated(GadgetsUpdatedEventData data) {
             Player updatingPlayer = mapModel.Players.Where(player => player.Id == data.Player.Id).FirstOrDefault();
-            updatingPlayer.Gadgets = data.Gadgets;
+
+            if(updatingPlayer != null) {
+                updatingPlayer.Gadgets = data.Gadgets;
+            }
         }
 
         private void EndGame(EventData data) {
@@ -641,7 +647,9 @@ namespace Hunted_Mobile.ViewModel {
             mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
 
             foreach(var user in mapModel.Players) {
-                mapViewService.AddTeamMatePin(user);
+                if(user.Id != mapModel.PlayingUser.Id) {
+                    mapViewService.AddTeamMatePin(user);
+                }
             }
 
             // If current user has role as Police
