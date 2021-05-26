@@ -31,6 +31,7 @@ namespace Hunted_Mobile.Service.Json {
                 Location = new LocationJsonService().ToObjectFromCsv(data.location),
                 Status = data.status,
                 UserName = data.username,
+                TriggeredAlarm = data.triggered_alarm,
             };
 
             if(data.role == PlayerRole.THIEF) {

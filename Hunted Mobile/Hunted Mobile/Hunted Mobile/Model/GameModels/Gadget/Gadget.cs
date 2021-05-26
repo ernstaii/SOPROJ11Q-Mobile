@@ -1,4 +1,5 @@
-﻿using Hunted_Mobile.Repository;
+﻿using Hunted_Mobile.Model.Response.Json;
+using Hunted_Mobile.Repository;
 
 using System;
 using System.Collections.Generic;
@@ -7,13 +8,18 @@ using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Model.GameModels.Gadget {
     public abstract class Gadget {
-        public int Id { get; set; }
+        public int Id { get; }
+        public string Name { get; }
+        public bool InUse { get; }
+        public Location Location { get; }
 
-        public async Task Use(Player user) {
-            await UnitOfWork.Instance.GadgetRepository.DecreaseGadgetAmount(user.Id, Id);
-            user.Gadgets.Remove(this);
+        protected Gadget(GadgetData data, Location location) {
+            Id = data.id;
+            Name = data.name;
+            InUse = data.in_use;
+            Location = location;
         }
 
-        public abstract bool CanBeUsed();
+        public abstract void Activate(Player user);
     }
 }

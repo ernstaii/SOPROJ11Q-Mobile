@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+
+using Hunted_Mobile.Repository;
 
 namespace Hunted_Mobile.Model.GameModels {
     public class Player : CustomModelErrorMessages<Player> {
@@ -28,6 +31,8 @@ namespace Hunted_Mobile.Model.GameModels {
             }
         }
 
+        public bool TriggeredAlarm { get; set; }
+
         public Player(int id, string userName, InviteKey inviteKey) {
             Id = id;
             UserName = userName;
@@ -43,6 +48,20 @@ namespace Hunted_Mobile.Model.GameModels {
             InviteKey = player.InviteKey;
             ErrorMessages = player.ErrorMessages;
             Status = player.Status;
+        }
+
+        public async Task<bool> Use(Gadget.Gadget gadget) {
+            foreach(Gadget.Gadget playerGadget in Gadgets) {
+                if(playerGadget.Id == gadget.Id) {
+                    bool success = await UnitOfWork.Instance.GadgetRepository.DecreaseGadgetAmount(Id, playerGadget.Name);
+                    if(success) {
+                        Gadgets.Remove(playerGadget);
+                        playerGadget.Activate(this);
+                    }
+                    return success;
+                }
+            }
+            return false;
         }
     }
 }

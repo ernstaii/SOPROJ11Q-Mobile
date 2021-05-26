@@ -10,6 +10,7 @@ namespace Hunted_Mobile.Model.Response.Json {
         public string status;
         public string role;
         public string caught_at;
+        public bool triggered_alarm;
         public string created_at;
         public string updated_at;
     }
@@ -59,6 +60,16 @@ namespace Hunted_Mobile.Model.Response.Json {
         public DateTime started_at;
         public object logo;
         public string colour_theme;
+        public DateTime created_at;
+        public DateTime updated_at;
+    }
+
+    public struct GadgetData : JsonResponseData {
+        public int id;
+        public string name;
+        public LocationData location;
+        public bool in_use;
+        public DateTime activated_at;
         public DateTime created_at;
         public DateTime updated_at;
     }

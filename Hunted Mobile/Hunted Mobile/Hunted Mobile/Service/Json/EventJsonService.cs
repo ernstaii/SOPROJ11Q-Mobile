@@ -20,7 +20,8 @@ namespace Hunted_Mobile.Service.Json {
                 Loot = new LootJsonService().ToObjects(data.loot),
                 Message = data.message,
                 Players = new PlayerJsonService().ToObjects(data.users),
-                TimeLeft = data.timeLeft
+                TimeLeft = data.timeLeft,
+                DroneActive = data.drone_is_active,
             };
         }
     }
@@ -42,6 +43,17 @@ namespace Hunted_Mobile.Service.Json {
                 PoliceScore = data.police_score,
                 ThiefScore = data.thief_score,
                 TimeLeft = data.timeLeft
+            };
+        }
+    }
+
+    public class GadgetAmountUpdatedEventJsonService : JsonConversionService<GadgetAmountUpdatedEventData, Model.Response.Json.GadgetAmountUpdatedEventData> {
+        public override GadgetAmountUpdatedEventData ToObject(Model.Response.Json.GadgetAmountUpdatedEventData data) {
+            return new GadgetAmountUpdatedEventData {
+                Message = data.message,
+                TimeLeft = data.timeLeft,
+                Gadget = new GadgetJsonService().ToObject(data.gadget),
+                Player = new PlayerJsonService().ToObject(data.user)
             };
         }
     }

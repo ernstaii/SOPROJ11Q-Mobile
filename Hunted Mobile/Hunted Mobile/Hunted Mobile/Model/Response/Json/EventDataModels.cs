@@ -12,6 +12,7 @@ namespace Hunted_Mobile.Model.Response.Json {
     public class IntervalEventData : EventData {
         public UserData[] users;
         public LootData[] loot;
+        public bool drone_is_active;
     }
 
     public class UserEventData : EventData {
@@ -21,5 +22,10 @@ namespace Hunted_Mobile.Model.Response.Json {
     public class ScoreUpdatedEventData : EventData {
         public int thief_score;
         public int police_score;
+    }
+
+    public class GadgetAmountUpdatedEventData : EventData {
+        public GadgetData gadget;
+        public UserData user;
     }
 }
