@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Hunted_Mobile.Model.GameModels {
     public class Player : CustomModelErrorMessages<Player> {
-        private ObservableCollection<Gadget.Gadget> gadgets;
+        private ICollection<Gadget.Gadget> gadgets;
 
         public int Id { get; set; }
         public Location Location { get; set; }
@@ -18,7 +18,15 @@ namespace Hunted_Mobile.Model.GameModels {
 
         public bool IsValid => UserName != null && Location != null;
 
-        public ICollection<Gadget.Gadget> Gadgets { get => gadgets; }
+        public ICollection<Gadget.Gadget> Gadgets { 
+            get => gadgets;
+            set {
+                if(value == null) {
+                    gadgets = new Collection<Gadget.Gadget>();
+                }
+                else gadgets = value;
+            }
+        }
 
         public Player(int id, string userName, InviteKey inviteKey) {
             Id = id;
