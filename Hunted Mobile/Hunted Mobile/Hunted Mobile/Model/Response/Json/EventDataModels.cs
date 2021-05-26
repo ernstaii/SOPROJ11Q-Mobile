@@ -24,8 +24,8 @@ namespace Hunted_Mobile.Model.Response.Json {
         public int police_score;
     }
 
-    public class GadgetAmountUpdatedEventData : EventData {
-        public GadgetData gadget;
+    public class GadgetsUpdatedEventData : EventData {
+        public GadgetData[] gadgets;
         public UserData user;
     }
 }

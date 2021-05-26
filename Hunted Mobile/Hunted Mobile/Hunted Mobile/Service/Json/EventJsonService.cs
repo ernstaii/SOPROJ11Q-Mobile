@@ -47,12 +47,12 @@ namespace Hunted_Mobile.Service.Json {
         }
     }
 
-    public class GadgetAmountUpdatedEventJsonService : JsonConversionService<GadgetAmountUpdatedEventData, Model.Response.Json.GadgetAmountUpdatedEventData> {
-        public override GadgetAmountUpdatedEventData ToObject(Model.Response.Json.GadgetAmountUpdatedEventData data) {
-            return new GadgetAmountUpdatedEventData {
+    public class GadgetsUpdatedEventJsonService : JsonConversionService<GadgetsUpdatedEventData, Model.Response.Json.GadgetsUpdatedEventData> {
+        public override GadgetsUpdatedEventData ToObject(Model.Response.Json.GadgetsUpdatedEventData data) {
+            return new GadgetsUpdatedEventData {
                 Message = data.message,
                 TimeLeft = data.timeLeft,
-                Gadget = new GadgetJsonService().ToObject(data.gadget),
+                Gadgets = new GadgetJsonService().ToObjects(data.gadgets),
                 Player = new PlayerJsonService().ToObject(data.user)
             };
         }

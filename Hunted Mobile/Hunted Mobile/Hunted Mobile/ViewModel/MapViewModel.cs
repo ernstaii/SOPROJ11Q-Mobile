@@ -439,10 +439,16 @@ namespace Hunted_Mobile.ViewModel {
                 webSocketService.ThiefReleased += ThiefStatusChanged;
                 webSocketService.IntervalEvent += IntervalOfGame;
                 webSocketService.ScoreUpdated += ScoreUpdated;
+                webSocketService.GadgetsUpdated += GadgetsUpdated;
             }
             catch(Exception) {
                 DependencyService.Get<Toast>().Show("Er was een probleem met het verbinden met de web socket");
             }
+        }
+
+        private void GadgetsUpdated(GadgetsUpdatedEventData data) {
+            Player updatingPlayer = mapModel.Players.Where(player => player.Id == data.Player.Id).FirstOrDefault();
+            updatingPlayer.Gadgets = data.Gadgets;
         }
 
         private void EndGame(EventData data) {
