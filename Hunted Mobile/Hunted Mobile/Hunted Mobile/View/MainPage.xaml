@@ -16,11 +16,7 @@
             <BoxView VerticalOptions="FillAndExpand" />
 
             <StackLayout Padding="40">
-                <!-- Enter here the InviteCode and submit with button -->
-                <Entry Placeholder="Voer uw code in" Text="{Binding InviteKeyModel.Value}" TextTransform="Uppercase"/>
-                <Label TextColor="Red" x:Name="InviteKey_ValueError"/>
-
-                <!-- Submit InviteCode to join a game -->
+                <!-- Button for re-joining previous game -->
                 <Button Text="Vorig spel opnieuw deelnemen"
                     IsVisible="{Binding DisplayJoinGameButton}"
                     BackgroundColor="RoyalBlue"
@@ -28,12 +24,16 @@
                     CornerRadius="30" 
                     IsEnabled="{Binding SubmitButtonIsEnable}"
                     Command="{Binding NavigateToMapPageCommand}"
-                    Margin="0, 20"/>
+                    Margin="0, 0, 0, 60"/>
+                
+                <!-- Enter here the InviteCode and submit with button -->
+                <Entry Placeholder="Voer uw code in" Text="{Binding InviteKeyModel.Value}" TextTransform="Uppercase"/>
+                <Label TextColor="Red" x:Name="InviteKey_ValueError"/>
+
                 <Button Text="Spel deelnemen"
                     CornerRadius="30" 
                     IsEnabled="{Binding SubmitButtonIsEnable}"
-                    Command="{Binding NavigateToEnterUserNamePageCommand}"
-                    Margin="0, 20"/>
+                    Command="{Binding NavigateToEnterUserNamePageCommand}"/>
             </StackLayout>
         </StackLayout>
 
