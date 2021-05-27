@@ -65,6 +65,9 @@ namespace Hunted_Mobile.ViewModel {
             webSocketService = new WebSocketService(gameModel.Id);
 
             IsLoading = true;
+
+            RemovePreviousNavigation();
+
             Task.Run(async () => await LoadUsers());
             Task.Run(async () => {
                 await StartSocket();
@@ -125,6 +128,13 @@ namespace Hunted_Mobile.ViewModel {
             }
             catch(Exception) {
                 DependencyService.Get<Toast>().Show("Er was een probleem met het navigeren naar het speelveld");
+            }
+        }
+
+        private void RemovePreviousNavigation() {
+            var navigation = Application.Current.MainPage.Navigation;
+            while(navigation.NavigationStack.Count > 1) {
+                navigation.RemovePage(navigation.NavigationStack.First());
             }
         }
     }
