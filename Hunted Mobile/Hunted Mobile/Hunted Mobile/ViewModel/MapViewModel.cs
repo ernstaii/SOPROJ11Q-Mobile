@@ -170,6 +170,7 @@ namespace Hunted_Mobile.ViewModel {
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
+            Task.Run(async () => await UpdatePlayerLocation());
             BeforeStartCountdown();
             StartCountdown(0);
             SetGameLogo();
@@ -243,6 +244,13 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand CloseMainMapMenuCommand => new Xamarin.Forms.Command((e) => {
             OpenMainMapMenu = false;
         });
+
+        private async void PreIntervalUpdate(object sender = null, ElapsedEventArgs args = null) {
+            StopIntervalTimer();
+
+            // Send the current user's location to the database
+            await UpdatePlayerLocation();
+        }
 
         private void SuccessfullyPickedUpLoot(object sender, EventArgs e) {
             holdingButtonTimer.Stop();
@@ -373,7 +381,6 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-
         private void RemovePreviousNavigation() {
             var navigation = Application.Current.MainPage.Navigation;
             while(navigation.NavigationStack.Count > 1) {
@@ -417,16 +424,8 @@ namespace Hunted_Mobile.ViewModel {
         private void StartIntervalTimer(float secondsBeforeGameInterval = 5) {
             StopIntervalTimer();
             intervalUpdateTimer = new Timer((gameModel.Interval - secondsBeforeGameInterval) * 1000);
-            intervalUpdateTimer.AutoReset = false;
             intervalUpdateTimer.Elapsed += PreIntervalUpdate;
             intervalUpdateTimer.Start();
-        }
-
-        private async void PreIntervalUpdate(object sender = null, ElapsedEventArgs args = null) {
-            StopIntervalTimer();
-
-            // Send the current user's location to the database
-            await UnitOfWork.Instance.UserRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
         }
 
         private async Task StartSocket() {
@@ -515,10 +514,14 @@ namespace Hunted_Mobile.ViewModel {
 
             if(!Initialized) {
                 Initialized = true;
-                await UnitOfWork.Instance.UserRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
+                await UpdatePlayerLocation();
             }
 
             HandlePlayerBoundaries(wasWithinBoundary, isWithinBoundary);
+        }
+
+        private async Task UpdatePlayerLocation() {
+            await UnitOfWork.Instance.UserRepository.Update(mapModel.PlayingUser.Id, mapModel.PlayingUser.Location);
         }
 
         private async void HandlePlayerBoundaries(bool wasWithinBoundary, bool isWithinBoundary) {

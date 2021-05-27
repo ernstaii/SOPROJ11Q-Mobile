@@ -22,7 +22,11 @@ namespace Hunted_Mobile.Service.Map {
             get => selectedDialog;
             set {
                 selectedDialog = value;
-                IsVisible = value != MapDialogOptions.NONE;
+                OnPropertyChanged();
+
+                if(value == MapDialogOptions.NONE) {
+                    IsVisible = false;
+                }
             }
         }
 
@@ -47,8 +51,6 @@ namespace Hunted_Mobile.Service.Map {
             private set {
                 isVisible = value;
                 OnPropertyChanged();
-
-                if(!value) HandleButtonHasHoldEvent = false;
             }
         }
 
@@ -88,15 +90,11 @@ namespace Hunted_Mobile.Service.Map {
             get => handleButtonHasHoldEvent && HandleButtonIsVisible;
             set {
                 handleButtonHasHoldEvent = value;
-                HasSingleClickEvent = !value;
                 OnPropertyChanged();
             }
         }
 
-        public bool HasSingleClickEvent {
-            get => !HandleButtonHasHoldEvent && HandleButtonIsVisible;
-            private set => OnPropertyChanged();
-        }
+        public bool HasSingleClickEvent  => !HandleButtonHasHoldEvent && HandleButtonIsVisible;
 
         public MapDialog() { }
 
@@ -110,8 +108,8 @@ namespace Hunted_Mobile.Service.Map {
         }
 
         private void SetActionButtons(bool hasHandleButton = true, bool hasCancelButton = true) {
-            HandleButtonIsVisible = hasHandleButton;
-            CancelButtonIsVisible = hasCancelButton;
+            handleButtonIsVisible = hasHandleButton;
+            cancelButtonIsVisible = hasCancelButton;
         }
 
         private void HideActionButtons() {
@@ -119,59 +117,84 @@ namespace Hunted_Mobile.Service.Map {
         }
 
         private void FinishSuccessfullyAction() {
-            HandleButtonHasHoldEvent = false;
-            CancelButtonIsVisible = false;
+            handleButtonIsVisible = true;
             HandleButtonText = "Klaar";
         }
 
         public void DisplayPickingUpLoot(string title, bool isCloseToSelectedLoot = false) {
+            BeforeDisplayScreen();
             string description = isCloseToSelectedLoot ? "Houd de knop 5 seconden ingedrukt om de buit op te pakken." : "Je bent te ver weg om deze buit op te pakken.";
 
-            HandleButtonIsVisible = isCloseToSelectedLoot;
             HandleButtonHasHoldEvent = true;
             HandleButtonText = "Oppakken";
 
             SetContent(title, description);
-            SetActionButtons();
+            SetActionButtons(isCloseToSelectedLoot);
+            AfterDisplayScreen();
         }
 
         public void DisplayPickedUpLootSuccessfully(string title) {
+            BeforeDisplayScreen();
             SetContent(title, "✔ Klaar! De buit is opgepakt!");
             FinishSuccessfullyAction();
+            AfterDisplayScreen();
         }
 
         public void DisplayArrestingThief(string title, bool isCloseToSelectedThief = false) {
+            BeforeDisplayScreen();
             string description = isCloseToSelectedThief ? "Houd de knop 5 seconden ingedrukt om de dief op te pakken." : "Je bent te ver weg om deze dief op te pakken.";
 
-            HandleButtonIsVisible = isCloseToSelectedThief;
             HandleButtonHasHoldEvent = true;
             HandleButtonText = "Arresteren";
 
             SetContent(title, description);
-            SetActionButtons();
+            SetActionButtons(isCloseToSelectedThief);
+            AfterDisplayScreen();
         }
 
         public void DisplayArrestedThiefSuccessfully(string title) {
+            BeforeDisplayScreen();
             SetContent(title, "✔ Klaar! Opgepakt! De dief is gearresteerd!");
             FinishSuccessfullyAction();
+            AfterDisplayScreen();
         }
 
         public void DisplayPauseScreen() {
+            BeforeDisplayScreen();
             SetContent("Gepauzeerd", "Momenteel is het spel gepauzeerd door de spelleider. Wanneer de pauze voorbij is, zal het spel weer hervat worden.");
             HideActionButtons();
+            AfterDisplayScreen();
         }
 
         public void DisplayEndScreen() {
+            BeforeDisplayScreen();
             SetContent("Het spel is afgelopen!", "Ga terug naar de spelleider!");
             HandleButtonText = "Terug naar hoofdscherm";
 
             SetActionButtons(true, false);
-            HasSingleClickEvent = true;
+            AfterDisplayScreen();
         }
 
         public void DisplayBoundaryScreen() {
+            BeforeDisplayScreen();
             SetContent("Keer terug!", "Je bevindt je buiten de spelgrens! Ga zo snel mogelijk terug.");
             SetActionButtons(false);
+            AfterDisplayScreen();
+        }
+
+        private void BeforeDisplayScreen() {
+            handleButtonHasHoldEvent = false;
+            handleButtonIsVisible = false;
+            cancelButtonIsVisible = false;
+        }
+
+        private void AfterDisplayScreen() {
+            OnPropertyChanged(nameof(HasSingleClickEvent));
+            OnPropertyChanged(nameof(HandleButtonHasHoldEvent));
+            OnPropertyChanged(nameof(HandleButtonIsVisible));
+            OnPropertyChanged(nameof(CancelButtonIsVisible));
+
+            IsVisible = SelectedDialog != MapDialogOptions.NONE;
         }
     }
 }
