@@ -2,6 +2,7 @@
 using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels.Gadget;
 using Hunted_Mobile.Model.Response.Json;
+using Hunted_Mobile.Service.Factory;
 
 using System.Collections.Generic;
 
@@ -13,20 +14,9 @@ namespace Hunted_Mobile.Service.Json {
         public override IEnumerable<Gadget> ToObject(GadgetData data) {
             Location location = new LocationJsonService().ToObject(data.pivot.location);
             var gadgets = new List<Gadget>();
+            var gadgetFactory = new GadgetFactory();
             for(int i = 0; i < data.pivot.amount; i++) {
-                switch(data.name.ToLower()) {
-                    case GadgetName.SMOKE_SCREEN:
-                        gadgets.Add(new SmokeScreen(data, location));
-                        break;
-                    case GadgetName.ALARM:
-                        gadgets.Add(new Alarm(data, location));
-                        break;
-                    case GadgetName.DRONE:
-                        gadgets.Add(new Drone(data, location));
-                        break;
-                    default:
-                        break;
-                }
+                gadgets.Add(gadgetFactory.GetGadget(data, location));
             }
             return gadgets;
         }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Hunted_Mobile.Model.GameModels.Gadget {
     public class Drone : Gadget {
-        public Drone(GadgetData data, Location location) : base(data, location) {
+        public Drone(GadgetData data) : base(data) {
         }
 
         public override void Activate(Player user) {

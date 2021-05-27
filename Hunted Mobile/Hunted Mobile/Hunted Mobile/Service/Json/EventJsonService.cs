@@ -50,11 +50,13 @@ namespace Hunted_Mobile.Service.Json {
 
     public class GadgetsUpdatedEventJsonService : JsonConversionService<GadgetsUpdatedEventData, Model.Response.Json.GadgetsUpdatedEventData> {
         public override GadgetsUpdatedEventData ToObject(Model.Response.Json.GadgetsUpdatedEventData data) {
-            var gadgets = new GadgetJsonService().ToObjects(data.gadgets);
+            // For every gadget type a separate array is created with the specified amount of that gadget type
+            // The arrays have to be combined into a single array to be passed to the GadgetsUpdatedEventData
+            var gadgetArrays = new GadgetJsonService().ToObjects(data.gadgets);
             var flattenedGadgets = new List<Gadget>();
-            foreach(var gadgetsOfType in gadgets) {
-                foreach(var gadgetOfType in gadgetsOfType) {
-                    flattenedGadgets.Add(gadgetOfType);
+            foreach(var gadgets in gadgetArrays) {
+                foreach(var gadget in gadgets) {
+                    flattenedGadgets.Add(gadget);
                 }
             }
             return new GadgetsUpdatedEventData {

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Hunted_Mobile.Model.GameModels.Gadget {
     public class SmokeScreen : Gadget {
-        public SmokeScreen(GadgetData data, Location location) : base(data, location) {
+        public SmokeScreen(GadgetData data) : base(data) {
         }
 
         public override void Activate(Player user) {

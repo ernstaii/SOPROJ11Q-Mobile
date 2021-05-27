@@ -6,7 +6,10 @@ using System.Text;
 
 namespace Hunted_Mobile.Model.GameModels.Gadget {
     public class Alarm : Gadget {
-        public Alarm(GadgetData data, Location location) : base(data, location) {
+        public Location Location { get; }
+
+        public Alarm(GadgetData data, Location location) : base(data) {
+            Location = location;
         }
 
         public override void Activate(Player user) {

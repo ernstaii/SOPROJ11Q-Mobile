@@ -10,13 +10,12 @@ namespace Hunted_Mobile.Model.GameModels.Gadget {
     public abstract class Gadget {
         public int Id { get; }
         public string Name { get; }
-        public bool InUse => Location != null && Location.IsSet();
-        public Location Location { get; }
+        public bool InUse { get; }
 
-        protected Gadget(GadgetData data, Location location) {
+        protected Gadget(GadgetData data) {
             Id = data.id;
             Name = data.name;
-            Location = location;
+            InUse = data.pivot.in_use;
         }
 
         public abstract void Activate(Player user);
