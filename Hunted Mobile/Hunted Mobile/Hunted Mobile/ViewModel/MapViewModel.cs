@@ -636,8 +636,12 @@ namespace Hunted_Mobile.ViewModel {
             mapViewService.AddPlayerPin();
             mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
 
-            foreach(var user in mapModel.Players) {
-                mapViewService.AddTeamMatePin(user);
+            foreach(var thief in mapModel.Thiefs) {
+                mapViewService.AddTeamMatePin(thief);
+            }
+
+            foreach(var police in mapModel.Police) {
+                mapViewService.AddTeamMatePin(police);
             }
 
             // If current user has role as Police
