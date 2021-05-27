@@ -23,10 +23,12 @@ namespace Hunted_Mobile.Service {
             }
         );
 
+        private static string subscribedChannel;
+
         /// <summary>
         /// Whether or not the socket connection to the API is currently connected
         /// </summary>
-        public static bool Connected { get; private set; }
+        public static bool Online { get; private set; }
 
         // Static initializer, executed once during the first usage of the class
         static WebSocketService() {
@@ -42,8 +44,14 @@ namespace Hunted_Mobile.Service {
         /// Updates the Connected property when the connection state changes
         /// </summary>
         private static void ConnectionStateChanged(object sender, ConnectionState state) {
-            Connected = state == ConnectionState.Connected
-                || state == ConnectionState.Disconnecting;
+            if(state == ConnectionState.Disconnected && Online) {
+                DependencyService.Get<Toast>().Show("De socket verbinding wordt hersteld");
+                pusher.ConnectAsync();
+            }
+            else if(state == ConnectionState.Connected && !Online) {
+                DependencyService.Get<Toast>().Show("De socket verbinding wordt verbroken");
+                pusher.DisconnectAsync();
+            }
         }
         #endregion
 
@@ -63,13 +71,15 @@ namespace Hunted_Mobile.Service {
         public event SocketEvent<PlayerEventData> PlayerJoined;
         public event SocketEvent<ScoreUpdatedEventData> ScoreUpdated;
 
-        public WebSocketService(int gameId) {
-            gameIdString = gameId.ToString();
+        public WebSocketService(string gameId) {
+            gameIdString = gameId;
             string channelName = "game." + gameIdString;
-            
-            var channel = pusher.GetChannel(channelName);
-            if(channel == null || !channel.IsSubscribed) {
-                pusher.SubscribeAsync(channelName);
+
+            if(!channelName.Equals(subscribedChannel)) {
+                subscribedChannel = channelName;
+                pusher.UnsubscribeAllAsync().ContinueWith(new Action<Task>(
+                    (task) => pusher.SubscribeAsync(channelName)
+                ));
             }
 
             Bind("game.start", (json) => InvokeEvent(StartGame, new EventJsonService().ToObject(json)));
@@ -107,10 +117,12 @@ namespace Hunted_Mobile.Service {
         }
 
         public async Task Connect() {
+            Online = true;
             await pusher.ConnectAsync();
         }
 
         public async Task Disconnect() {
+            Online = false;
             await pusher.DisconnectAsync();
         }
     }

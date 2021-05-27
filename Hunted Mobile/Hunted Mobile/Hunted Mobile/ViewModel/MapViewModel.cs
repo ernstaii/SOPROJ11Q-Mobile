@@ -164,9 +164,10 @@ namespace Hunted_Mobile.ViewModel {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
             this.gpsService = gpsService;
-            var messageViewModel = new MessageViewModel(gameModel.Id);
+            var gameIdStr = gameModel.Id.ToString();
+            var messageViewModel = new MessageViewModel(gameIdStr);
             messagesView = new View.Messages(messageViewModel);
-            webSocketService = new WebSocketService(gameModel.Id);
+            webSocketService = new WebSocketService(gameIdStr);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
@@ -426,7 +427,7 @@ namespace Hunted_Mobile.ViewModel {
 
         private async Task StartSocket() {
             try {
-                if(!WebSocketService.Connected) {
+                if(!WebSocketService.Online) {
                     await webSocketService.Connect();
                 }
 

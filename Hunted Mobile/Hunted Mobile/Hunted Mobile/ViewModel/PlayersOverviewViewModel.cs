@@ -38,7 +38,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private async Task SetupSocket() {
-            if(!WebSocketService.Connected) {
+            if(!WebSocketService.Online) {
                 await socketService.Connect();
             }
             socketService.ThiefCaught -= UpdateUserState;
