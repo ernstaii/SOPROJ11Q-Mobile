@@ -24,8 +24,7 @@ namespace Hunted_Mobile.Service.Gps {
         ///  Handles PositionChanged events from CrossGeolocator.Current by calling the local LocationChanged event property
         /// </summary>
         private void HandlerLocationChangedEvent(object sender, PositionEventArgs args = null) {
-            var location = args != null ? new Location(args.Position) : null;
-            LocationChanged(location);
+            LocationChanged(new Location(args?.Position));
         }
 
         public async Task StartGps() {
