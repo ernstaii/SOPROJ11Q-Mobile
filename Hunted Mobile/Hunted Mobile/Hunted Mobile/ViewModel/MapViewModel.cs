@@ -550,6 +550,7 @@ namespace Hunted_Mobile.ViewModel {
             Mapsui.Geometries.Point min = new Mapsui.Geometries.Point(centerPoint.X - limit, centerPoint.Y - limit);
             Mapsui.Geometries.Point max = new Mapsui.Geometries.Point(centerPoint.X + limit, centerPoint.Y + limit);
             mapView.Map.Limiter.PanLimits = new BoundingBox(min, max);
+            mapView.Map.Limiter.ZoomLimits = new MinMax(0, limit * 0.002);
         }
 
         /// <summary>
