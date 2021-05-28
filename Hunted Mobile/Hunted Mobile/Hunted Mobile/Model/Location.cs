@@ -4,6 +4,7 @@ using Mapsui.Geometries;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 using Xamarin.Forms;
@@ -75,7 +76,7 @@ namespace Hunted_Mobile.Model {
         }
 
         public string ToCsvString() {
-            return $"{Latitude},{Longitude}";
+            return Latitude.ToString(AppSettings.Locale) + "," + Longitude.ToString(AppSettings.Locale);
         }
 
         public bool Equals(Location location) {
