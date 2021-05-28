@@ -634,15 +634,17 @@ namespace Hunted_Mobile.ViewModel {
         private void DisplayAllPins() {
             mapView.Pins.Clear();
             mapViewService.AddPlayerPin();
-            mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
 
             foreach(var user in mapModel.Players) {
                 mapViewService.AddTeamMatePin(user);
             }
 
             // If current user has role as Police
-            if(mapModel.PlayingUser is Police && mapModel.Thiefs.Count > 0) {
-                mapViewService.AddClosestThiefPin(GetClosestThief());
+            if(mapModel.PlayingUser is Police) {
+                mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
+                if(mapModel.Thiefs.Count > 0) {
+                    mapViewService.AddClosestThiefPin(GetClosestThief());
+                }
             }
 
             if(mapModel.PlayingUser is Thief) {

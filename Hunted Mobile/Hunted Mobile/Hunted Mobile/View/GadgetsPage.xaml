@@ -15,10 +15,10 @@
             </Grid.ColumnDefinitions>
 
             <!-- Hunted title -->
-            <Label Text="HUNTED" 
+            <Label Text="Gadgets" 
                    Padding="5" 
                    HorizontalTextAlignment="Center" 
-                   TextColor="Black" 
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" 
                    FontAttributes="Bold"
                    Grid.ColumnSpan="2"
                    FontSize="36"/>
