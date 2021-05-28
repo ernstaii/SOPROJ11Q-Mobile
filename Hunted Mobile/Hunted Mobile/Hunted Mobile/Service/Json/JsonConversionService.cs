@@ -1,4 +1,5 @@
 ﻿using Hunted_Mobile.Model.Response.Json;
+using Hunted_Mobile.Repository;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,7 +21,7 @@ namespace Hunted_Mobile.Service.Json {
         }
 
         public virtual string ToJson(NativeType @object) {
-            DependencyService.Get<Toast>().Show("Kon " + @object.GetType().FullName + " niet omzetten naar JSON");
+            DependencyService.Get<Toast>().Show("(#4) Kon " + @object.GetType().FullName + " niet omzetten naar JSON (JsonConversionService)");
             return string.Empty;
         }
 
@@ -62,26 +63,36 @@ namespace Hunted_Mobile.Service.Json {
             try {
                 return JArray.Parse(json);
             }
-            catch(Exception) {
-                DependencyService.Get<Toast>().Show("Kon JSON niet omzetten naar array");
+            catch(Exception e) {
+                DependencyService.Get<Toast>().Show("(#5) Kon JSON niet omzetten naar JArray (JsonConversionService)");
+                UnitOfWork.Instance.ErrorRepository.Create(e);
                 return new JArray();
             }
         }
 
         protected JObject ToJObject(string json) {
-            if(json == null) {
-                DependencyService.Get<Toast>().Show("Er werd lege JSON data verwerkt");
+            try {
+                if(json != null) {
+                    return JsonConvert.DeserializeObject<JObject>(json, serializerSettings);
+                }
+                else {
+                    return new JObject();
+                }
+            }
+            catch(Exception e) {
+                DependencyService.Get<Toast>().Show("(#6) Er werd lege JSON data ontvangen (JsonConversionService)");
+                UnitOfWork.Instance.ErrorRepository.Create(e);
                 return new JObject();
             }
-            else return JsonConvert.DeserializeObject<JObject>(json, serializerSettings);
         }
 
         protected string ConvertToJson(JsonResponseData data) {
             try {
                 return JsonConvert.SerializeObject(data, serializerSettings);
             }
-            catch(Exception) {
-                DependencyService.Get<Toast>().Show("Kon data niet omzetten naar JSON");
+            catch(Exception e) {
+                DependencyService.Get<Toast>().Show("(#7) Kon parameter data niet omzetten naar JSON (JsonConversionService)");
+                UnitOfWork.Instance.ErrorRepository.Create(e);
                 return string.Empty;
             }
         }
@@ -90,8 +101,9 @@ namespace Hunted_Mobile.Service.Json {
             try {
                 return JsonConvert.DeserializeObject<DataType>(json, serializerSettings);
             }
-            catch(Exception) {
-                DependencyService.Get<Toast>().Show("Kon JSON niet omzetten naar object");
+            catch(Exception e) {
+                DependencyService.Get<Toast>().Show("(#8) Kon parameter JSON niet omzetten naar object (JsonConversionService)");
+                UnitOfWork.Instance.ErrorRepository.Create(e);
                 return default;
             }
         }
