@@ -13,8 +13,8 @@
                 HorizontalOptions="Fill"
                 BackgroundColor="Gray" />
             </StackLayout>
-            
-            <ImageButton Source="{Binding ChatIcon}"
+
+            <ImageButton Source="{Binding Icons.Chat}"
                          Command="{Binding NavigateToMessagePageCommand}"
                          CornerRadius="30" 
                          BackgroundColor="White"
