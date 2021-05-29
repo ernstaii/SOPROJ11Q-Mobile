@@ -12,7 +12,8 @@ namespace Hunted_Mobile.Model.GameModels {
 
         public string CaughtAt { get; set; }
 
-        public Thief(Player player) : base(player) {
+        public Thief(Player player, string caughtAt) : base(player) {
+            CaughtAt = caughtAt;
         }
     }
 }

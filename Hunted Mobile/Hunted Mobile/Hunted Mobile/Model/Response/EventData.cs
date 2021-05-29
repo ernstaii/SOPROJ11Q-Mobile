@@ -1,4 +1,5 @@
 ﻿using Hunted_Mobile.Model.GameModels;
+using Hunted_Mobile.Model.GameModels.Gadget;
 
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace Hunted_Mobile.Model.Response {
     public class IntervalEventData : EventData {
         public Player[] Players { get; set; }
         public Loot[] Loot { get; set; }
+        public bool DroneActive { get; set; }
     }
 
     public class PlayerEventData : EventData {
@@ -22,5 +24,10 @@ namespace Hunted_Mobile.Model.Response {
     public class ScoreUpdatedEventData : EventData {
         public int ThiefScore { get; set; }
         public int PoliceScore { get; set; }
+    }
+
+    public class GadgetsUpdatedEventData : EventData {
+        public Gadget[] Gadgets { get; set; }
+        public Player Player { get; set; }
     }
 }
