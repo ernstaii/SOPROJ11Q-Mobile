@@ -88,24 +88,20 @@
             </Frame>
 
             <!-- Button for opening the Main Map Menu -->
-            <Button Text="X"
-                    IsVisible="{Binding MainMapMenuButtonVisible}"
-                    Command="{Binding OpenMainMapMenuCommand}"
-                    FontSize="25"
-                    CornerRadius="30" 
-                    BackgroundColor="White"
-                    BorderWidth="1"
-                    BorderColor="LightGray"
-                    TextColor="{Binding GameModel.ColourTheme}"
-                    AbsoluteLayout.LayoutFlags="PositionProportional"  
-                    AbsoluteLayout.LayoutBounds=".5,0.98,60,60" />
+            <ImageButton Source="{Binding Icons.Menu}"
+                         IsVisible="{Binding MainMapMenuButtonVisible}"
+                         Command="{Binding OpenMainMapMenuCommand}"
+                         CornerRadius="30" 
+                         BackgroundColor="White"
+                         BorderWidth="1"
+                         BorderColor="{Binding GameModel.ColourTheme}"
+                         AbsoluteLayout.LayoutFlags="PositionProportional"  
+                         AbsoluteLayout.LayoutBounds=".5,0.98,60,60" />
 
             <!-- The Main Map menu -->
-            <Frame CornerRadius="10" OutlineColor="Black" BackgroundColor="White" IsVisible="{Binding OpenMainMapMenu}" AbsoluteLayout.LayoutBounds="0.5, 1, 1, 260" AbsoluteLayout.LayoutFlags="WidthProportional,PositionProportional" Padding="15">
+            <Frame CornerRadius="10" OutlineColor="Black" BackgroundColor="White" IsVisible="{Binding OpenMainMapMenu}" AbsoluteLayout.LayoutBounds="0.5, 1, 1, 185" AbsoluteLayout.LayoutFlags="WidthProportional,PositionProportional" Padding="15">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="15" />
-                        <RowDefinition Height="60" />
                         <RowDefinition Height="15" />
                         <RowDefinition Height="60" />
                         <RowDefinition Height="60" />
@@ -116,35 +112,34 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
-                    <!-- Notify user functionality -->
-                    <Label Text="AUT. TRILLEN" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" HorizontalTextAlignment="Center"/>
-                    <Label Text="TRILLEN" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" Grid.Column="1" HorizontalTextAlignment="Center"/>
-
                     <!-- Other functionality -->
-                    <Label Text="BUIT" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" Grid.Row="2" HorizontalTextAlignment="Center"/>
-                    <Label Text="SPELERS" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" Grid.Row="2" Grid.Column="1" HorizontalTextAlignment="Center"/>
-                    <Label Text="GADGETS" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" Grid.Row="2" Grid.Column="2" HorizontalTextAlignment="Center"/>
+                    <Label Text="SPELERS" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" Grid.Column="1" HorizontalTextAlignment="Center"/>
+                    <Label Text="GADGETS" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" Grid.Column="2" HorizontalTextAlignment="Center"/>
 
                     <!-- Navigation to players overview -->
-                    <Button Text="P"
-                            Command="{Binding NavigateToPlayersOverviewCommand}"
-                            HorizontalOptions="Center"
-                            FontSize="25"
-                            CornerRadius="30"
-                            WidthRequest="60"
-                            HeightRequest="60"
-                            BackgroundColor="White"
-                            FontAttributes="Bold"
-                            BorderWidth="1"
-                            BorderColor="{Binding GameModel.ColourTheme}"
-                            TextColor="{Binding GameModel.ColourTheme}"
-                            Grid.Row="3"
-                            Grid.Column="1"/>
+                    <ImageButton Source="{Binding Icons.Users}"
+                                Command="{Binding NavigateToPlayersOverviewCommand}"
+                                HorizontalOptions="Center"
+                                CornerRadius="30" 
+                                WidthRequest="60"
+                                HeightRequest="60"
+                                BackgroundColor="White"
+                                BorderWidth="1"
+                                BorderColor="{Binding GameModel.ColourTheme}"
+                                Grid.Row="1"
+                                Grid.Column="1"/>
+                    <ImageButton Source="{Binding Icons.Gadgets}"
+                                HorizontalOptions="Center"
+                                CornerRadius="30" 
+                                WidthRequest="60"
+                                HeightRequest="60"
+                                BackgroundColor="White"
+                                BorderWidth="1"
+                                BorderColor="{Binding GameModel.ColourTheme}"
+                                Grid.Row="1"
+                                Grid.Column="2"/>
 
-                    <!-- <Image Source="https://aka.ms/campus.jpg" Grid.Row="3"/>  -->
-                    <!-- <Image Source="" Grid.Row="3"/> -->
                     <Image Grid.Row="1"
-                           Grid.Column="2"
                            WidthRequest="60" 
                            HeightRequest="60"
                            HorizontalOptions="Center" 
@@ -156,20 +151,17 @@
 
                     <!-- colour_theme -->
                     <!-- Close menu functionality -->
-                    <Button Text="X"
-                            Command="{Binding CloseMainMapMenuCommand}"
-                            HorizontalOptions="Center"
-                            FontSize="25"
-                            CornerRadius="30"
-                            WidthRequest="60"
-                            HeightRequest="60"
-                            BackgroundColor="White"
-                            FontAttributes="Bold"
-                            BorderWidth="1"
-                            BorderColor="{Binding GameModel.ColourTheme}"
-                            TextColor="{Binding GameModel.ColourTheme}"
-                            Grid.Row="4"
-                            Grid.ColumnSpan="3"/>
+                    <ImageButton Source="{Binding Icons.Close}"
+                                Command="{Binding CloseMainMapMenuCommand}"
+                                HorizontalOptions="Center"
+                                CornerRadius="30" 
+                                WidthRequest="60"
+                                HeightRequest="60"
+                                BackgroundColor="White"
+                                BorderWidth="1"
+                                BorderColor="{Binding GameModel.ColourTheme}"
+                                Grid.Row="2"
+                                Grid.ColumnSpan="3"/>
                 </Grid>
             </Frame>
         </AbsoluteLayout>

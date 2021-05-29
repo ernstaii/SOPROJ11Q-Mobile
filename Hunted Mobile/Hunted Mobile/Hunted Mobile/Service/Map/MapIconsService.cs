@@ -9,6 +9,7 @@ namespace Hunted_Mobile.Service.Map {
         private readonly Resource chat,
             menu,
             users,
+            close,
             gadgets;
 
         public MapIconsService() {
@@ -16,6 +17,7 @@ namespace Hunted_Mobile.Service.Map {
             menu = UnitOfWork.Instance.ResourceRepository.GetGuiImage("menu.png");
             users = UnitOfWork.Instance.ResourceRepository.GetGuiImage("users.png");
             gadgets = UnitOfWork.Instance.ResourceRepository.GetGuiImage("backpack.png");
+            close = UnitOfWork.Instance.ResourceRepository.GetGuiImage("close.png");
 
             OnPropertyChanged(nameof(Chat));
             OnPropertyChanged(nameof(Menu));
@@ -55,6 +57,17 @@ namespace Hunted_Mobile.Service.Map {
                 Uri = gadgets.Uri,
                 CachingEnabled = false
             };
+        }
+
+        public UriImageSource Close {
+            get => new UriImageSource() {
+                Uri = close.Uri,
+                CachingEnabled = false
+            };
+        }
+
+        private UriImageSource GetIconImageSource() {
+            return null;
         }
     }
 }
