@@ -31,43 +31,21 @@ namespace Hunted_Mobile.Service.Map {
             // police, thief
         }
 
-        public UriImageSource Chat {
-            get => new UriImageSource() {
-                Uri = chat.Uri,
+        public UriImageSource Chat => GetUriImageSource(chat);
+
+        public UriImageSource Menu => GetUriImageSource(menu);
+
+        public UriImageSource Users => GetUriImageSource(users);
+
+        public UriImageSource Gadgets => GetUriImageSource(gadgets);
+
+        public UriImageSource Close => GetUriImageSource(close);
+
+        private UriImageSource GetUriImageSource(Resource resource) {
+            return new UriImageSource() {
+                Uri = resource.Uri,
                 CachingEnabled = false
             };
-        }
-
-        public UriImageSource Menu {
-            get => new UriImageSource() {
-                Uri = menu.Uri,
-                CachingEnabled = false
-            };
-        }
-
-        public UriImageSource Users {
-            get => new UriImageSource() {
-                Uri = users.Uri,
-                CachingEnabled = false
-            };
-        }
-
-        public UriImageSource Gadgets {
-            get => new UriImageSource() {
-                Uri = gadgets.Uri,
-                CachingEnabled = false
-            };
-        }
-
-        public UriImageSource Close {
-            get => new UriImageSource() {
-                Uri = close.Uri,
-                CachingEnabled = false
-            };
-        }
-
-        private UriImageSource GetIconImageSource() {
-            return null;
         }
     }
 }
