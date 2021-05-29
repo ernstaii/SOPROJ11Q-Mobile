@@ -76,15 +76,23 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private async Task StartSocket() {
+            webSocketService.PlayerJoined -= AddUser;
+            webSocketService.StartGame -= StartGame;
+
             if(!WebSocketService.Online) {
                 await webSocketService.Connect();
             }
 
             webSocketService.StartGame += StartGame;
+            webSocketService.PlayerJoined += AddUser;
         }
 
         private async Task LoadUsers() {
             Users = await UnitOfWork.Instance.UserRepository.GetAll(GameModel.Id);
+        }
+
+        private void AddUser(PlayerEventData data) {
+            Users.Add(data.Player);
         }
 
         private async Task CheckForStatus() {
