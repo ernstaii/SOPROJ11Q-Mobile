@@ -1,4 +1,5 @@
-﻿using Hunted_Mobile.Model.Response;
+﻿using Hunted_Mobile.Model.GameModels.Gadget;
+using Hunted_Mobile.Model.Response;
 
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,8 @@ namespace Hunted_Mobile.Service.Json {
                 Loot = new LootJsonService().ToObjects(data.loot),
                 Message = data.message,
                 Players = new PlayerJsonService().ToObjects(data.users),
-                TimeLeft = data.timeLeft
+                TimeLeft = data.timeLeft,
+                DroneActive = data.drone_is_active,
             };
         }
     }
@@ -42,6 +44,26 @@ namespace Hunted_Mobile.Service.Json {
                 PoliceScore = data.police_score,
                 ThiefScore = data.thief_score,
                 TimeLeft = data.timeLeft
+            };
+        }
+    }
+
+    public class GadgetsUpdatedEventJsonService : JsonConversionService<GadgetsUpdatedEventData, Model.Response.Json.GadgetsUpdatedEventData> {
+        public override GadgetsUpdatedEventData ToObject(Model.Response.Json.GadgetsUpdatedEventData data) {
+            // For every gadget type a separate array is created with the specified amount of that gadget type
+            // The arrays have to be combined into a single array to be passed to the GadgetsUpdatedEventData
+            var gadgetArrays = new GadgetJsonService().ToObjects(data.gadgets);
+            var flattenedGadgets = new List<Gadget>();
+            foreach(var gadgets in gadgetArrays) {
+                foreach(var gadget in gadgets) {
+                    flattenedGadgets.Add(gadget);
+                }
+            }
+            return new GadgetsUpdatedEventData {
+                Message = data.message,
+                TimeLeft = data.timeLeft,
+                Gadgets = flattenedGadgets.ToArray(),
+                Player = new PlayerJsonService().ToObject(data.user)
             };
         }
     }

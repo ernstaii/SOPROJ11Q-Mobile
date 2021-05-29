@@ -13,7 +13,8 @@ namespace Hunted_Mobile.Service.Json {
     public abstract class JsonConversionService<NativeType, DataType> where DataType : JsonResponseData {
         protected readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings {
             NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+            DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
+            Culture = AppSettings.Locale
         };
 
         public JsonConversionService() {
