@@ -36,8 +36,10 @@ namespace Hunted_Mobile.Service.Gps {
         private void HandlerLocationChangedEvent(object sender, PositionEventArgs args) {
             var now = DateTime.Now;
             if(now.Subtract(lastHandle).TotalSeconds > deferralTime.TotalSeconds * 0.75) {
-                lastHandle = now;
-                LocationChanged?.Invoke(new Location(args.Position));
+                if(args != null && args.Position != null) {
+                    lastHandle = now;
+                    LocationChanged?.Invoke(new Location(args.Position));
+                }
             }
         }
 
