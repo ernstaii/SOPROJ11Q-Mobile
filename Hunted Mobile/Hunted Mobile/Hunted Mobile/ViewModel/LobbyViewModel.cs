@@ -76,9 +76,6 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private async Task StartSocket() {
-            webSocketService.PlayerJoined -= AddUser;
-            webSocketService.StartGame -= StartGame;
-
             if(!WebSocketService.Online) {
                 await webSocketService.Connect();
             }
@@ -127,8 +124,9 @@ namespace Hunted_Mobile.ViewModel {
                 var mapPage = new MapPage(new MapViewModel(GameModel, mapModel, new Service.Gps.GpsService()));
 
                 Device.BeginInvokeOnMainThread(() => {
-                    Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
                     webSocketService.StartGame -= StartGame;
+                    webSocketService.PlayerJoined -= AddUser;
+                    Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
                 });
             }
             catch(Exception) {
