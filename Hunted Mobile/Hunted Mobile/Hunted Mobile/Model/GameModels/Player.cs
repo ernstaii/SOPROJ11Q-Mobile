@@ -1,12 +1,14 @@
-﻿using Hunted_Mobile.Model.Response.Json;
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
+using System.Threading.Tasks;
+
+using Hunted_Mobile.Repository;
 
 namespace Hunted_Mobile.Model.GameModels {
     public class Player : CustomModelErrorMessages<Player> {
+        private ICollection<Gadget.Gadget> gadgets;
+
         public int Id { get; set; }
         public Location Location { get; set; }
         public InviteKey InviteKey { get; set; }
@@ -18,6 +20,18 @@ namespace Hunted_Mobile.Model.GameModels {
         public string Status { get; set; }
 
         public bool IsValid => UserName != null && Location != null;
+
+        public ICollection<Gadget.Gadget> Gadgets { 
+            get => gadgets;
+            set {
+                if(value == null) {
+                    gadgets = new Collection<Gadget.Gadget>();
+                }
+                else gadgets = value;
+            }
+        }
+
+        public bool TriggeredAlarm { get; set; }
 
         public Player(int id, string userName, InviteKey inviteKey) {
             Id = id;
@@ -34,6 +48,20 @@ namespace Hunted_Mobile.Model.GameModels {
             InviteKey = player.InviteKey;
             ErrorMessages = player.ErrorMessages;
             Status = player.Status;
+        }
+
+        public async Task<bool> Use(Gadget.Gadget gadget) {
+            foreach(Gadget.Gadget playerGadget in Gadgets) {
+                if(playerGadget.Id == gadget.Id) {
+                    bool success = await UnitOfWork.Instance.GadgetRepository.DecreaseGadgetAmount(Id, playerGadget.Name);
+                    if(success) {
+                        Gadgets.Remove(playerGadget);
+                        playerGadget.Activate(this);
+                    }
+                    return success;
+                }
+            }
+            return false;
         }
     }
 }

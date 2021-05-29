@@ -24,10 +24,13 @@ namespace Hunted_Mobile.Service {
             return await GetHttpClient().PutAsync(GetUrl(path), GetEncodedParameters(parameters));
         }
 
-        public static async Task<HttpResponseMessage> Patch(string path) {
+        public static async Task<HttpResponseMessage> Patch(string path, object parameters = null) {
             var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), GetUrl(path));
-            // If parameters are ever needed you can add them like this:
-            // requestMessage.Content = GetEncodedParameters(parameters);
+
+            if(parameters != null) {
+                requestMessage.Content = GetEncodedParameters(parameters);
+            }
+            
             return await GetHttpClient().SendAsync(requestMessage);
         }
 
