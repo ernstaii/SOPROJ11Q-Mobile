@@ -62,7 +62,7 @@ namespace Hunted_Mobile.ViewModel {
             gameSessionPreference = new GameSessionPreference();
             SaveCurrentGame();
 
-            webSocketService = new WebSocketService(gameModel.Id);
+            webSocketService = new WebSocketService(gameModel.Id.ToString());
 
             IsLoading = true;
             Task.Run(async () => await LoadUsers());
@@ -76,7 +76,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private async Task StartSocket() {
-            if(!WebSocketService.Connected) {
+            if(!WebSocketService.Online) {
                 await webSocketService.Connect();
             }
 

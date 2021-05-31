@@ -21,8 +21,8 @@ namespace Hunted_Mobile.Service.Json {
             }
             else try {
                 string[] split = commaSeparatedValues.Split(',');
-                double latitude = double.Parse(split[0]);
-                double longitude = double.Parse(split[1]);
+                double latitude = double.Parse(split[0], AppSettings.Locale);
+                double longitude = double.Parse(split[1], AppSettings.Locale);
 
                 return new Location(latitude, longitude);
             }
