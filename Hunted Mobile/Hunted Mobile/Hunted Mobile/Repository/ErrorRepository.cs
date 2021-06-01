@@ -13,11 +13,9 @@ namespace Hunted_Mobile.Repository {
             var w32ex = e as Win32Exception;
             int errorCode = 137;
 
-            if(w32ex == null) {
-                if(e.InnerException != null) {
+            if(w32ex == null && e.InnerException != null) {
                     w32ex = e.InnerException as Win32Exception;
                     errorCode = w32ex.ErrorCode;
-                }
             }
 
             var response = new HttpClientResponse();
