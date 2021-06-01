@@ -46,19 +46,20 @@ namespace Hunted_Mobile.Service.Map {
             }
         }
 
+        /// <summary>
+        /// This methode will only display the user if the person is in the same team as the player
+        /// </summary>
+        /// <param name="player"></param>
         public void AddTeamMatePin(Player player) {
-            if(this.player.GetType() == player.GetType()) {
-                if((player is Thief && !((Thief) player).IsCaught)
-                    || player is Police) {
-                    MapView.Pins.Add(new Pin(MapView) {
-                        Label = player.UserName,
-                        Color = player is Thief ? thiefPinColor : policePinColor,
-                        Position = new MapsuiPosition(player.Location.Latitude, player.Location.Longitude),
-                        Scale = 0.666f,
-                        Tag = player is Thief ? THIEF_TAG : null,
-                        Transparency = 0.25f,
-                    });
-                }
+            if(this.player.GetType() == player.GetType() && this.player.Id != player.Id) {
+                MapView.Pins.Add(new Pin(MapView) {
+                    Label = player.UserName,
+                    Color = player is Thief ? thiefPinColor : policePinColor,
+                    Position = new MapsuiPosition(player.Location.Latitude, player.Location.Longitude),
+                    Scale = 0.666f,
+                    Tag = player is Thief ? THIEF_TAG : null,
+                    Transparency = 0.25f,
+                });
             }
         }
 

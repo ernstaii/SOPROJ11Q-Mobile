@@ -32,7 +32,7 @@ namespace Hunted_Mobile.Model {
         }
 
         public IReadOnlyCollection<Police> Police => Players.Where(user => user is Police).Select(user => (Police) user).ToList();
-        public IReadOnlyCollection<Thief> Thiefs => Players.Where(user => user is Thief).Select(user => (Thief) user).ToList();
+        public IReadOnlyCollection<Thief> Thiefs => Players.Where(user => user is Thief).Select(user => (Thief) user).Where(thief => !thief.IsCaught).ToList();
 
         public Player PlayingUser { get; set; }
         public Boundary GameBoundary { get; set; }

@@ -13,7 +13,10 @@ namespace Hunted_Mobile.Service.Gps {
         private const byte DEFERRAL_DISTANCE_IN_METERS = 4;
 
         private readonly TimeSpan deferralTime = TimeSpan.FromSeconds(14);
-        private DateTime lastHandle = DateTime.MinValue;
+        private DateTime lastLocationHandle = DateTime.MinValue;
+
+        public Location CenterOfCurrentGame { get; set; }
+        public double DiameterOfCurrentGame { get; set; }
 
         public delegate void LocationChangedEvent(Location location);
         /// <summary>
@@ -21,9 +24,12 @@ namespace Hunted_Mobile.Service.Gps {
         /// </summary>
         public event LocationChangedEvent LocationChanged;
 
-        public GpsService() {
+        public GpsService(Location centerOfGame, double diameterOfGame) {
             CrossGeolocator.Current.PositionChanged += HandlerLocationChangedEvent;
             CrossGeolocator.Current.PositionError += PositionError;
+
+            CenterOfCurrentGame = centerOfGame;
+            DiameterOfCurrentGame = diameterOfGame;
         }
 
         private void PositionError(object sender, PositionErrorEventArgs e) {
@@ -33,12 +39,13 @@ namespace Hunted_Mobile.Service.Gps {
         /// <summary>
         ///  Handles PositionChanged events from CrossGeolocator.Current by calling the local LocationChanged event property
         /// </summary>
-        private void HandlerLocationChangedEvent(object sender, PositionEventArgs args) {
+        private void HandlerLocationChangedEvent(object sender, PositionEventArgs args = null) {
             var now = DateTime.Now;
-            if(now.Subtract(lastHandle).TotalSeconds > deferralTime.TotalSeconds * 0.75) {
-                if(args != null && args.Position != null) {
-                    lastHandle = now;
-                    LocationChanged?.Invoke(new Location(args.Position));
+            if(now.Subtract(lastLocationHandle).TotalSeconds > deferralTime.TotalSeconds * 0.75) {
+                var location = new Location(args?.Position);
+                if(location.DistanceToOther(CenterOfCurrentGame) < DiameterOfCurrentGame) {
+                    lastLocationHandle = now;
+                    LocationChanged?.Invoke(location);
                 }
             }
         }
