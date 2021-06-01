@@ -38,7 +38,12 @@ namespace Hunted_Mobile.Service {
         }
 
         private static void ErrorOccurred(object sender, PusherException error) {
-            DependencyService.Get<Toast>().Show("(#11) Er was een probleem met de pusher (WebSocketService)");
+            if(error is EventEmitterActionException<PusherEvent>) {
+                DependencyService.Get<Toast>().Show("(#11) Error in event " + ((EventEmitterActionException<PusherEvent>) error).EventName + " (WebSocketService)");
+            }
+            else {
+                DependencyService.Get<Toast>().Show("(#11) Er was een probleem met de pusher (WebSocketService)");
+            }
             UnitOfWork.Instance.ErrorRepository.Create(error);
         }
 

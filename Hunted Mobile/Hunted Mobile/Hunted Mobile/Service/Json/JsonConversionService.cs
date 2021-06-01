@@ -73,15 +73,10 @@ namespace Hunted_Mobile.Service.Json {
 
         protected JObject ToJObject(string json) {
             try {
-                if(json != null) {
-                    return JsonConvert.DeserializeObject<JObject>(json, serializerSettings);
-                }
-                else {
-                    return new JObject();
-                }
+                return JsonConvert.DeserializeObject<JObject>(json, serializerSettings);
             }
             catch(Exception e) {
-                DependencyService.Get<Toast>().Show("(#6) Er werd lege JSON data ontvangen (JsonConversionService)");
+                DependencyService.Get<Toast>().Show("(#6) kon JSON niet omzetten naar JObject (JsonConversionService)");
                 UnitOfWork.Instance.ErrorRepository.Create(e);
                 return new JObject();
             }
