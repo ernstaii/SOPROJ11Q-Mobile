@@ -15,8 +15,10 @@ namespace Hunted_Mobile.Model {
             set {
                 players.Clear();
 
-                foreach(var item in value) {
-                    players.Add(item);
+                foreach(Player item in value) {
+                    if(item.Id != PlayingUser.Id) {
+                        players.Add(item);
+                    }
                 }
             }
         }
