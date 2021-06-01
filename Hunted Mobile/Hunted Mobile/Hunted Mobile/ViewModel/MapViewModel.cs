@@ -43,7 +43,7 @@ namespace Hunted_Mobile.ViewModel {
             THIEF_TAG = PlayerRole.THIEF;
 
         private readonly Model.Map mapModel;
-        private readonly GpsService gpsService;
+        private GpsService gpsService;
         private readonly WebSocketService webSocketService;
         private Loot selectedLoot = new Loot();
         private Game gameModel;
@@ -160,10 +160,9 @@ namespace Hunted_Mobile.ViewModel {
             };
         }
 
-        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService) {
+        public MapViewModel(Game gameModel, Model.Map mapModel) {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
-            this.gpsService = gpsService;
             var gameIdStr = gameModel.Id.ToString();
             var messageViewModel = new MessageViewModel(gameIdStr);
             messagesView = new View.Messages(messageViewModel);
@@ -396,6 +395,7 @@ namespace Hunted_Mobile.ViewModel {
                 await AddGameBoundary();
                 LimitViewportToGame();
 
+                gpsService = new GpsService(mapModel.GameBoundary.GetCenter(), mapModel.GameBoundary.GetDiameter());
                 if(!gpsService.GpsHasStarted()) {
                     await gpsService.StartGps();
                 }
