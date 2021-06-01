@@ -51,7 +51,7 @@ namespace Hunted_Mobile.Service.Map {
         /// </summary>
         /// <param name="player"></param>
         public void AddTeamMatePin(Player player) {
-            if(this.player.GetType() == player.GetType()) {
+            if(this.player.GetType() == player.GetType() && this.player.Id != player.Id) {
                 MapView.Pins.Add(new Pin(MapView) {
                     Label = player.UserName,
                     Color = player is Thief ? thiefPinColor : policePinColor,
