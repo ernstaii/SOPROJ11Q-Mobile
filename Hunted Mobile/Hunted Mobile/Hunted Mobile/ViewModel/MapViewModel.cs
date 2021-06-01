@@ -54,7 +54,6 @@ namespace Hunted_Mobile.ViewModel {
         private Thief selectedThief;
         private bool openMainMapMenu = false;
         private bool mainMapMenuButtonVisible = true;
-        private readonly Resource chatIcon;
         private readonly Countdown countdown;
         private MapViewService mapViewService;
         private readonly DateTime dateTimeNow;
@@ -70,6 +69,7 @@ namespace Hunted_Mobile.ViewModel {
 
         public string CounterDisplay => countdown.RemainTime.ToString(@"hh\:mm\:ss");
         public MapDialog MapDialog { get; private set; } = new MapDialog();
+        public MapIconsService Icons { get; } = new MapIconsService();
 
         public MapDialogOptions MapDialogOption {
             get => MapDialog.SelectedDialog;
@@ -153,13 +153,6 @@ namespace Hunted_Mobile.ViewModel {
 
         public string PlayingUserScoreDisplay => "Score: " + PlayingUserScore;
 
-        public UriImageSource ChatIcon {
-            get => new UriImageSource() {
-                Uri = chatIcon.Uri,
-                CachingEnabled = false
-            };
-        }
-
         public MapViewModel(Game gameModel, Model.Map mapModel) {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
@@ -174,9 +167,6 @@ namespace Hunted_Mobile.ViewModel {
             BeforeStartCountdown();
             StartCountdown(0);
             SetGameLogo();
-
-            chatIcon = UnitOfWork.Instance.ResourceRepository.GetGuiImage("chat.png");
-            OnPropertyChanged(nameof(ChatIcon));
 
             if(gameModel.Status == GameStatus.PAUSED) {
                 PauseGame(null);
@@ -564,6 +554,7 @@ namespace Hunted_Mobile.ViewModel {
             Mapsui.Geometries.Point min = new Mapsui.Geometries.Point(centerPoint.X - limit, centerPoint.Y - limit);
             Mapsui.Geometries.Point max = new Mapsui.Geometries.Point(centerPoint.X + limit, centerPoint.Y + limit);
             mapView.Map.Limiter.PanLimits = new BoundingBox(min, max);
+            mapView.Map.Limiter.ZoomLimits = new MinMax(0, limit * 0.002);
         }
 
         /// <summary>
