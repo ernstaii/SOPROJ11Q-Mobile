@@ -1,4 +1,5 @@
-﻿using Hunted_Mobile.Service;
+﻿using Hunted_Mobile.Repository;
+using Hunted_Mobile.Service;
 
 using Newtonsoft.Json.Linq;
 
@@ -34,8 +35,9 @@ namespace Hunted_Mobile {
                     secrets = JObject.Parse(json);
                 }
             }
-            catch(Exception) {
-                DependencyService.Get<Toast>().Show("Er was een probleem met het laden van de secrets file");
+            catch(Exception e) {
+                DependencyService.Get<Toast>().Show("(#2) Er was een probleem met het uitlezen van de secrets file (AppSettingsManager)");
+                UnitOfWork.Instance.ErrorRepository.Create(e);
             }
         }
 
@@ -60,8 +62,9 @@ namespace Hunted_Mobile {
                 retrievedValues.Add(key, jValue?.ToString());
                 return GetValue(nestedKey);
             }
-            catch(Exception) {
-                    DependencyService.Get<Toast>().Show("Er was een probleem met het laden van de secrets file");
+            catch(Exception e) {
+                    DependencyService.Get<Toast>().Show("(#3) Er was een probleem met het ophalen van de key-value combinatie uit de secrets file (GetValue)");
+                    UnitOfWork.Instance.ErrorRepository.Create(e);
                     return string.Empty;
             }
         }

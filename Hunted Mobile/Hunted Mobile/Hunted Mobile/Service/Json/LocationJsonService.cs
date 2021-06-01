@@ -1,5 +1,6 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.Response.Json;
+using Hunted_Mobile.Repository;
 
 using System;
 
@@ -25,8 +26,9 @@ namespace Hunted_Mobile.Service.Json {
 
                 return new Location(latitude, longitude);
             }
-            catch(Exception) {
-                DependencyService.Get<Toast>().Show("Er was een probleem met het splitsen van de locatie variabelen");
+            catch(Exception e) {
+                DependencyService.Get<Toast>().Show("(#10) Er was een probleem met het splitsen van de locatie variabelen uit de parameter (LocationJsonService)");
+                UnitOfWork.Instance.ErrorRepository.Create(e);
 
                 return new Location();
             }

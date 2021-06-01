@@ -123,8 +123,9 @@ namespace Hunted_Mobile.ViewModel {
                     webSocketService.StartGame -= StartGame;
                 });
             }
-            catch(Exception) {
-                DependencyService.Get<Toast>().Show("Er was een probleem met het navigeren naar het speelveld");
+            catch(Exception e) {
+                DependencyService.Get<Toast>().Show("(#9) Er was een probleem met het navigeren naar het speelveld (LobbyViewModel)");
+                UnitOfWork.Instance.ErrorRepository.Create(e);
             }
         }
     }
