@@ -43,7 +43,7 @@ namespace Hunted_Mobile.ViewModel {
             THIEF_TAG = PlayerRole.THIEF;
 
         private readonly Model.Map mapModel;
-        private readonly GpsService gpsService;
+        private GpsService gpsService;
         private readonly WebSocketService webSocketService;
         private Loot selectedLoot = new Loot();
         private Game gameModel;
@@ -54,7 +54,6 @@ namespace Hunted_Mobile.ViewModel {
         private Thief selectedThief;
         private bool openMainMapMenu = false;
         private bool mainMapMenuButtonVisible = true;
-        private readonly Resource chatIcon;
         private readonly Countdown countdown;
         private MapViewService mapViewService;
         private readonly DateTime dateTimeNow;
@@ -70,6 +69,7 @@ namespace Hunted_Mobile.ViewModel {
 
         public string CounterDisplay => countdown.RemainTime.ToString(@"hh\:mm\:ss");
         public MapDialog MapDialog { get; private set; } = new MapDialog();
+        public MapIconsService Icons { get; } = new MapIconsService();
 
         public MapDialogOptions MapDialogOption {
             get => MapDialog.SelectedDialog;
@@ -153,17 +153,9 @@ namespace Hunted_Mobile.ViewModel {
 
         public string PlayingUserScoreDisplay => "Score: " + PlayingUserScore;
 
-        public UriImageSource ChatIcon {
-            get => new UriImageSource() {
-                Uri = chatIcon.Uri,
-                CachingEnabled = false
-            };
-        }
-
-        public MapViewModel(Game gameModel, Model.Map mapModel, GpsService gpsService) {
+        public MapViewModel(Game gameModel, Model.Map mapModel) {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
-            this.gpsService = gpsService;
             var gameIdStr = gameModel.Id.ToString();
             var messageViewModel = new MessageViewModel(gameIdStr);
             messagesView = new View.Messages(messageViewModel);
@@ -175,9 +167,6 @@ namespace Hunted_Mobile.ViewModel {
             BeforeStartCountdown();
             StartCountdown(0);
             SetGameLogo();
-
-            chatIcon = UnitOfWork.Instance.ResourceRepository.GetGuiImage("chat.png");
-            OnPropertyChanged(nameof(ChatIcon));
 
             if(gameModel.Status == GameStatus.PAUSED) {
                 PauseGame(null);
@@ -396,6 +385,7 @@ namespace Hunted_Mobile.ViewModel {
                 await AddGameBoundary();
                 LimitViewportToGame();
 
+                gpsService = new GpsService(mapModel.GameBoundary.GetCenter(), mapModel.GameBoundary.GetDiameter());
                 if(!gpsService.GpsHasStarted()) {
                     await gpsService.StartGps();
                 }
@@ -564,6 +554,7 @@ namespace Hunted_Mobile.ViewModel {
             Mapsui.Geometries.Point min = new Mapsui.Geometries.Point(centerPoint.X - limit, centerPoint.Y - limit);
             Mapsui.Geometries.Point max = new Mapsui.Geometries.Point(centerPoint.X + limit, centerPoint.Y + limit);
             mapView.Map.Limiter.PanLimits = new BoundingBox(min, max);
+            mapView.Map.Limiter.ZoomLimits = new MinMax(0, limit * 0.002);
         }
 
         /// <summary>
@@ -649,10 +640,12 @@ namespace Hunted_Mobile.ViewModel {
             mapView.Pins.Clear();
             mapViewService.AddPlayerPin();
 
-            foreach(var user in mapModel.Players) {
-                if(user.Id != mapModel.PlayingUser.Id) {
-                    mapViewService.AddTeamMatePin(user);
-                }
+            foreach(var thief in mapModel.Thiefs) {
+                mapViewService.AddTeamMatePin(thief);
+            }
+
+            foreach(var police in mapModel.Police) {
+                mapViewService.AddTeamMatePin(police);
             }
 
             // If current user has role as Police
