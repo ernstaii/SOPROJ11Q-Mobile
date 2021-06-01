@@ -121,7 +121,7 @@ namespace Hunted_Mobile.ViewModel {
                     PlayingUser = currentUser
                 };
 
-                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel, new Service.Gps.GpsService()));
+                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel));
 
                 Device.BeginInvokeOnMainThread(() => {
                     webSocketService.StartGame -= StartGame;

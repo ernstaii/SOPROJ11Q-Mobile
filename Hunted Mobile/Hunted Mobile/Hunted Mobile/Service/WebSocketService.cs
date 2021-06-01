@@ -78,6 +78,7 @@ namespace Hunted_Mobile.Service {
 
             if(!channelName.Equals(subscribedChannel)) {
                 subscribedChannel = channelName;
+                pusher.UnbindAll();
                 pusher.UnsubscribeAllAsync().ContinueWith(new Action<Task>(
                     (task) => pusher.SubscribeAsync(channelName)
                 ));
