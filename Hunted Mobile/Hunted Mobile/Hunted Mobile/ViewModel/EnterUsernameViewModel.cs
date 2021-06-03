@@ -2,6 +2,7 @@
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
+using Hunted_Mobile.Service.Builder;
 using Hunted_Mobile.Service.Preference;
 using Hunted_Mobile.View;
 
@@ -38,9 +39,7 @@ namespace Hunted_Mobile.ViewModel {
         public EnterUsername View { set => page = value; }
 
         public EnterUsernameViewModel(InviteKey key) {
-            userModel = new Player() {
-                InviteKey = key,
-            };
+            userModel = new PlayerBuilder().SetInviteKey(key).ToPlayer();
         }
 
         /// <summary>

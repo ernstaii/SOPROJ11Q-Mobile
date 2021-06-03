@@ -53,18 +53,21 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void AddUser(PlayerEventData data) {
-            Users.Add(data.Player);
+            Users.Add(data.Player.ToPlayer());
         }
 
         private void UpdateUsers(IntervalEventData data) {
-            Users = new ObservableCollection<Player>(data.Players);
+            Users.Clear();
+            foreach(var builder in data.Players) {
+                Users.Add(builder.ToPlayer());
+            }
         }
 
         private void UpdateUserState(PlayerEventData data) {
             foreach(Player player in Users) {
                 if(player.Id == data.Player.Id && player is Thief) {
                     Users.Remove(player);
-                    Users.Add(data.Player);
+                    Users.Add(data.Player.ToPlayer());
                     break;
                 }
             }

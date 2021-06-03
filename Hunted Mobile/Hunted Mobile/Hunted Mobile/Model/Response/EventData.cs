@@ -1,9 +1,6 @@
 ﻿using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Model.GameModels.Gadget;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Hunted_Mobile.Service.Builder;
 
 namespace Hunted_Mobile.Model.Response {
     public class EventData : ResponseData {
@@ -12,13 +9,13 @@ namespace Hunted_Mobile.Model.Response {
     }
 
     public class IntervalEventData : EventData {
-        public Player[] Players { get; set; }
+        public PlayerBuilder[] Players { get; set; }
         public Loot[] Loot { get; set; }
         public bool DroneActive { get; set; }
     }
 
     public class PlayerEventData : EventData {
-        public Player Player { get; set; }
+        public PlayerBuilder Player { get; set; }
     }
 
     public class ScoreUpdatedEventData : EventData {
@@ -28,6 +25,6 @@ namespace Hunted_Mobile.Model.Response {
 
     public class GadgetsUpdatedEventData : EventData {
         public Gadget[] Gadgets { get; set; }
-        public Player Player { get; set; }
+        public PlayerBuilder Player { get; set; }
     }
 }

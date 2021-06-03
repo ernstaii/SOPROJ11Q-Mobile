@@ -29,6 +29,7 @@ using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Service.Map;
 using Hunted_Mobile.Enum;
 using Hunted_Mobile.Service.Preference;
+using Hunted_Mobile.Service.Builder;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -344,14 +345,17 @@ namespace Hunted_Mobile.ViewModel {
             Location playingUserLocation = mapModel.PlayingUser.Location;
             var newPlayer = new List<Player>();
 
-            foreach(Player player in data.Players) {
-                var gadgets = mapModel.Players.Where(p => p.Id == player.Id).FirstOrDefault()?.Gadgets;
-                player.Gadgets = gadgets;
+            foreach(PlayerBuilder builder in data.Players) {
+                var player = builder.ToPlayer();
+                if(player != null) {
+                    var gadgets = mapModel.Players.Where(p => p.Id == player.Id).FirstOrDefault()?.Gadgets;
+                    player.Gadgets = gadgets;
 
-                newPlayer.Add(player);
+                    newPlayer.Add(player);
 
-                if(player.Id == mapModel.PlayingUser.Id) {
-                    mapModel.PlayingUser = player;
+                    if(player.Id == mapModel.PlayingUser.Id) {
+                        mapModel.PlayingUser = player;
+                    }
                 }
             }
             mapModel.PlayingUser.Location = playingUserLocation;
