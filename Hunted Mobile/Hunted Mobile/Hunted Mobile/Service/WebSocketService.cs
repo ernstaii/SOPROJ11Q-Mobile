@@ -91,22 +91,24 @@ namespace Hunted_Mobile.Service {
                 ));
             }
 
-            Bind("game.start", (json) => InvokeEvent(StartGame, new EventJsonService().ToObject(json)));
-            Bind("game.pause", (json) => InvokeEvent(PauseGame, new EventJsonService().ToObject(json)));
-            Bind("game.resume", (json) => InvokeEvent(ResumeGame, new EventJsonService().ToObject(json)));
-            Bind("game.notification", (json) => InvokeEvent(NotificationEvent, new EventJsonService().ToObject(json)));
-            Bind("game.end", (json) => InvokeEvent(EndGame, new EventJsonService().ToObject(json)));
-            Bind("game.interval", (json) => InvokeEvent(IntervalEvent, new IntervalEventJsonService().ToObject(json)));
-            Bind("thief.caught", (json) => InvokeEvent(ThiefCaught, new PlayerEventJsonService().ToObject(json)));
-            Bind("thief.released", (json) => InvokeEvent(ThiefReleased, new PlayerEventJsonService().ToObject(json)));
-            Bind("player.joined", (json) => InvokeEvent(PlayerJoined, new PlayerEventJsonService().ToObject(json)));
-            Bind("score.updated", (json) => InvokeEvent(ScoreUpdated, new ScoreUpdatedEventJsonService().ToObject(json)));
-            Bind("gadgets.update", (json) => InvokeEvent(GadgetsUpdated, new GadgetsUpdatedEventJsonService().ToObject(json)));
+            Bind("game.start", (json) => InvokeEvent(StartGame, new EventJsonService(), json));
+            Bind("game.pause", (json) => InvokeEvent(PauseGame, new EventJsonService(), json));
+            Bind("game.resume", (json) => InvokeEvent(ResumeGame, new EventJsonService(), json));
+            Bind("game.notification", (json) => InvokeEvent(NotificationEvent, new EventJsonService(), json));
+            Bind("game.end", (json) => InvokeEvent(EndGame, new EventJsonService(), json));
+            Bind("game.interval", (json) => InvokeEvent(IntervalEvent, new IntervalEventJsonService(), json));
+            Bind("thief.caught", (json) => InvokeEvent(ThiefCaught, new PlayerEventJsonService(), json));
+            Bind("thief.released", (json) => InvokeEvent(ThiefReleased, new PlayerEventJsonService(), json));
+            Bind("player.joined", (json) => InvokeEvent(PlayerJoined, new PlayerEventJsonService(), json));
+            Bind("score.updated", (json) => InvokeEvent(ScoreUpdated, new ScoreUpdatedEventJsonService(), json));
+            Bind("gadgets.update", (json) => InvokeEvent(GadgetsUpdated, new GadgetsUpdatedEventJsonService(), json));
         }
 
-        private void InvokeEvent<T>(SocketEvent<T> @event, T data) where T : EventData {
+        private void InvokeEvent<EventType, DataType>(SocketEvent<EventType> @event, JsonConversionService<EventType, DataType> converter, string json) 
+            where EventType : EventData 
+            where DataType : Model.Response.Json.JsonResponseData {
             if(@event != null) {
-                @event(data);
+                @event(converter.ToObject(json));
             }
         }
 
