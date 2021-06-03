@@ -442,15 +442,16 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void ThiefFakePoliceToggle(PlayerEventData data) {
-            Player updatingPlayer = mapModel.Players.Where(player => player.Id == data.Player.Id).FirstOrDefault();
+            Thief updatingPlayer = mapModel.Thiefs.Where(player => player.Id == data.Player.Id).FirstOrDefault();
 
             if(updatingPlayer != null) {
                 mapModel.Players.Remove(updatingPlayer);
-                mapModel.Players.Add(updatingPlayer);
-            }
+                if(!(data.Player is Thief)) {
+                    updatingPlayer = new Thief(data.Player, updatingPlayer.CaughtAt);
+                }
+                else updatingPlayer = data.Player is FakePolice ? data.Player as FakePolice : data.Player as Thief;
 
-            if(data.Player.Id == mapModel.PlayingUser.Id) {
-                mapModel.PlayingUser = data.Player;
+                mapModel.Players.Add(updatingPlayer);
             }
         }
 

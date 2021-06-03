@@ -36,12 +36,11 @@ namespace Hunted_Mobile.Service.Json {
                 TriggeredAlarm = data.triggered_alarm,
             };
 
-            if(data.role == PlayerRole.THIEF) {
-                var thief = new Thief(player, data.caught_at);
-                if(data.is_fake_agent) {
-                    return new FakePolice(thief);
-                }
-                else return thief;
+            if(data.is_fake_agent) {
+                return new FakePolice(new Thief(player, data.caught_at));
+            }
+            else if(data.role == PlayerRole.THIEF) {
+                return new Thief(player, data.caught_at);
             }
             else if(data.role == PlayerRole.POLICE) {
                 return new Police(player);
