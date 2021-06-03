@@ -650,14 +650,12 @@ namespace Hunted_Mobile.ViewModel {
             mapView.Pins.Clear();
             mapViewService.AddPlayerPin();
 
-            var alarms = mapModel.PlayingUser.Gadgets.Where((gadget) => gadget is Alarm && gadget.InUse).Select((gadget) => (Alarm) gadget);
-
             foreach(var thief in mapModel.Thiefs) {
-                mapViewService.AddTeamMatePin(thief, alarms);
+                mapViewService.AddTeamMatePin(thief);
             }
 
             foreach(var police in mapModel.Police) {
-                mapViewService.AddTeamMatePin(police, alarms);
+                mapViewService.AddTeamMatePin(police);
             }
 
             // If current user has role as Police

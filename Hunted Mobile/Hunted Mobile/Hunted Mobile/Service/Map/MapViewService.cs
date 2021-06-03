@@ -53,28 +53,17 @@ namespace Hunted_Mobile.Service.Map {
         /// This methode will only display the user if the person is in the same team as the player
         /// </summary>
         /// <param name="player"></param>
-        public void AddTeamMatePin(Player player, IEnumerable<Alarm> alarms) {
-            if(this.player.Id != player.Id) {
-                bool add = this.player.GetType() == player.GetType();
-                if(!add) {
-                    foreach(Alarm alarm in alarms) {
-                        if(alarm.Location.DistanceToOtherInMeters(player.Location) < alarm.TriggerRangeInMeters) {
-                            add = true;
-                            break;
-                        }
-                    }
-                }
-
-                if(add) {
-                    MapView.Pins.Add(new Pin(MapView) {
-                        Label = player.UserName,
-                        Color = player is Thief ? thiefPinColor : policePinColor,
-                        Position = new MapsuiPosition(player.Location.Latitude, player.Location.Longitude),
-                        Scale = 0.666f,
-                        Tag = player is Thief ? THIEF_TAG : null,
-                        Transparency = 0.25f,
-                    });
-                }
+        public void AddTeamMatePin(Player player) {
+            if((this.player.Id != player.Id && this.player.GetType() == player.GetType())
+                || player.TriggeredAlarm) { 
+                MapView.Pins.Add(new Pin(MapView) {
+                    Label = player.UserName,
+                    Color = player is Thief ? thiefPinColor : policePinColor,
+                    Position = new MapsuiPosition(player.Location.Latitude, player.Location.Longitude),
+                    Scale = 0.666f,
+                    Tag = player is Thief ? THIEF_TAG : null,
+                    Transparency = 0.25f,
+                });
             }
         }
 
