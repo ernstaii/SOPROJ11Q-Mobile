@@ -559,9 +559,11 @@ namespace Hunted_Mobile.ViewModel {
         private async Task<bool> CheckAlarmTriggering() {
             if(mapModel.PlayingUser is Thief) {
                 foreach(Player player in mapModel.Players) {
-                    foreach(Alarm alarm in player.Gadgets?.Where((gadget) => gadget is Alarm).Select((gadget) => (Alarm) gadget)) {
-                        if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(alarm.Location) < alarm.TriggerRangeInMeters) {
-                            return await UnitOfWork.Instance.GadgetRepository.TriggerAlarm(mapModel.PlayingUser.Id);
+                    if(player.Gadgets != null) {
+                        foreach(Alarm alarm in player.Gadgets?.Where((gadget) => gadget is Alarm).Select((gadget) => (Alarm) gadget)) {
+                            if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(alarm.Location) < alarm.TriggerRangeInMeters) {
+                                return await UnitOfWork.Instance.GadgetRepository.TriggerAlarm(mapModel.PlayingUser.Id);
+                            }
                         }
                     }
                 }
