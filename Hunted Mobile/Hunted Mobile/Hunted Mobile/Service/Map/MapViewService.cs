@@ -74,6 +74,16 @@ namespace Hunted_Mobile.Service.Map {
             });
         }
 
+        public void AddPolicePin(string username, Location location) {
+            MapView.Pins.Add(new Pin(MapView) {
+                Label = username,
+                Color = policePinColor,
+                Position = new MapsuiPosition(location.Latitude, location.Longitude),
+                Scale = 0.666f,
+                Transparency = 0.25f,
+            });
+        }
+
         public void AddLootPin(Loot loot) {
             MapView.Pins.Add(new Pin(MapView) {
                 Label = loot.Name,

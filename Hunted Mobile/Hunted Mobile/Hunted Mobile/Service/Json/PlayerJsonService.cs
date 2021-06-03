@@ -18,6 +18,8 @@ namespace Hunted_Mobile.Service.Json {
                 status = player.Status,
                 caught_at = player is Thief ? ((Thief) player).CaughtAt : null,
                 role = player.InviteKey.Role,
+                triggered_alarm = player.TriggeredAlarm,
+                is_fake_agent = player is FakePolice
             });
         }
 
@@ -35,7 +37,11 @@ namespace Hunted_Mobile.Service.Json {
             };
 
             if(data.role == PlayerRole.THIEF) {
-                return new Thief(player, data.caught_at);
+                var thief = new Thief(player, data.caught_at);
+                if(data.is_fake_agent) {
+                    return new FakePolice(thief);
+                }
+                else return thief;
             }
             else if(data.role == PlayerRole.POLICE) {
                 return new Police(player);

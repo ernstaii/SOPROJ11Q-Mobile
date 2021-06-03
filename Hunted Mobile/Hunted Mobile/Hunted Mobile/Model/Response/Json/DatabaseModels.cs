@@ -11,6 +11,7 @@ namespace Hunted_Mobile.Model.Response.Json {
         public string role;
         public string caught_at;
         public bool triggered_alarm;
+        public bool is_fake_agent;
         public string created_at;
         public string updated_at;
     }

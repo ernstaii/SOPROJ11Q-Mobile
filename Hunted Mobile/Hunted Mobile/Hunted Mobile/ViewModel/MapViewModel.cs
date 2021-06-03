@@ -659,6 +659,12 @@ namespace Hunted_Mobile.ViewModel {
                 foreach(var loot in mapModel.Loot) {
                     mapViewService.AddLootPin(loot);
                 }
+
+                if(mapModel.PlayingUser is FakePolice) {
+                    foreach(var police in mapModel.Police) {
+                        mapViewService.AddPolicePin(police.UserName, police.Location);
+                    }
+                }
             }
         }
 
