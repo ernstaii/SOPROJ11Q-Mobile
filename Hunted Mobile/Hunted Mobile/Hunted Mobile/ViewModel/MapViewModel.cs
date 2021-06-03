@@ -438,8 +438,9 @@ namespace Hunted_Mobile.ViewModel {
                 webSocketService.ScoreUpdated += ScoreUpdated;
                 webSocketService.GadgetsUpdated += GadgetsUpdated;
             }
-            catch(Exception) {
-                DependencyService.Get<Toast>().Show("Er was een probleem met het verbinden met de web socket");
+            catch(Exception e) {
+                DependencyService.Get<Toast>().Show("(#1) Er was een probleem met het initialiseren van de web socket (MapViewModel)");
+                UnitOfWork.Instance.ErrorRepository.Create(e);
             }
         }
 
