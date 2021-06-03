@@ -433,10 +433,24 @@ namespace Hunted_Mobile.ViewModel {
                 webSocketService.IntervalEvent += IntervalOfGame;
                 webSocketService.ScoreUpdated += ScoreUpdated;
                 webSocketService.GadgetsUpdated += GadgetsUpdated;
+                webSocketService.ThiefFakePoliceToggle += ThiefFakePoliceToggle;
             }
             catch(Exception e) {
                 DependencyService.Get<Toast>().Show("(#1) Er was een probleem met het initialiseren van de web socket (MapViewModel)");
                 UnitOfWork.Instance.ErrorRepository.Create(e);
+            }
+        }
+
+        private void ThiefFakePoliceToggle(PlayerEventData data) {
+            Player updatingPlayer = mapModel.Players.Where(player => player.Id == data.Player.Id).FirstOrDefault();
+
+            if(updatingPlayer != null) {
+                mapModel.Players.Remove(updatingPlayer);
+                mapModel.Players.Add(updatingPlayer);
+            }
+
+            if(data.Player.Id == mapModel.PlayingUser.Id) {
+                mapModel.PlayingUser = data.Player;
             }
         }
 
