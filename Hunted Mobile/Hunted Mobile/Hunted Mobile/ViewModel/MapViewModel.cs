@@ -60,6 +60,8 @@ namespace Hunted_Mobile.ViewModel {
         private MapViewService mapViewService;
         private readonly DateTime dateTimeNow;
         private string logoImage;
+
+        #region Properties
 #pragma warning disable IDE1006 // Naming Styles
         private MapView mapView {
             get => mapViewService?.MapView;
@@ -154,6 +156,9 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public string PlayingUserScoreDisplay => "Score: " + PlayingUserScore;
+
+        public bool DroneActive { get; private set; }
+        #endregion
 
         public MapViewModel(Game gameModel, Model.Map mapModel) {
             this.mapModel = mapModel;
@@ -346,12 +351,16 @@ namespace Hunted_Mobile.ViewModel {
         private void IntervalOfGame(IntervalEventData data) {
             StartIntervalTimer();
 
+            DroneActive = data.DroneActive;
+
             Location playingUserLocation = mapModel.PlayingUser.Location;
             var newPlayer = new List<Player>();
 
             foreach(Player player in data.Players) {
                 var gadgets = mapModel.Players.Where(p => p.Id == player.Id).FirstOrDefault()?.Gadgets;
-                player.Gadgets = gadgets;
+                if(gadgets != null) {
+                    player.Gadgets = gadgets;
+                }
 
                 newPlayer.Add(player);
 
@@ -661,8 +670,14 @@ namespace Hunted_Mobile.ViewModel {
             // If current user has role as Police
             if(mapModel.PlayingUser is Police) {
                 mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
-                if(mapModel.Thiefs.Count > 0) {
-                    mapViewService.AddClosestThiefPin(GetClosestThief());
+                foreach(Thief thief in mapModel.Thiefs) {
+                    if(thief.TriggeredAlarm || DroneActive) {
+                        mapViewService.AddThiefPin(thief.UserName, thief.Location);
+                    }
+                }
+                if(!DroneActive && mapModel.Thiefs.Count > 0) {
+                    var closestThief = GetClosestThief();
+                    mapViewService.AddThiefPin(closestThief.UserName, closestThief.Location);
                 }
             }
 
