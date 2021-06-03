@@ -29,6 +29,7 @@ using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Service.Map;
 using Hunted_Mobile.Enum;
 using Hunted_Mobile.Service.Preference;
+using Hunted_Mobile.Model.GameModels.Gadget;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -162,7 +163,7 @@ namespace Hunted_Mobile.ViewModel {
             messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameIdStr);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
-            gadgetsOverview = new View.GadgetsPage(new GadgetOverviewViewModel(webSocketService, mapModel.PlayingUser.Id));
+            gadgetsOverview = new View.GadgetsPage(new GadgetOverviewViewModel(webSocketService, mapModel));
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
             Task.Run(async () => await UpdatePlayerLocation());
@@ -448,7 +449,7 @@ namespace Hunted_Mobile.ViewModel {
             Player updatingPlayer = mapModel.Players.Where(player => player.Id == data.Player.Id).FirstOrDefault();
 
             if(updatingPlayer != null) {
-                updatingPlayer.Gadgets = data.Gadgets;
+                updatingPlayer.Gadgets = new List<Gadget>(data.Gadgets);
             }
         }
 
@@ -649,12 +650,14 @@ namespace Hunted_Mobile.ViewModel {
             mapView.Pins.Clear();
             mapViewService.AddPlayerPin();
 
+            var alarms = mapModel.PlayingUser.Gadgets.Where((gadget) => gadget is Alarm && gadget.InUse).Select((gadget) => (Alarm) gadget);
+
             foreach(var thief in mapModel.Thiefs) {
-                mapViewService.AddTeamMatePin(thief);
+                mapViewService.AddTeamMatePin(thief, alarms);
             }
 
             foreach(var police in mapModel.Police) {
-                mapViewService.AddTeamMatePin(police);
+                mapViewService.AddTeamMatePin(police, alarms);
             }
 
             // If current user has role as Police

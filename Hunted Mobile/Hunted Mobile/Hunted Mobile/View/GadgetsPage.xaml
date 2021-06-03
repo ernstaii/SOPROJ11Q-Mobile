@@ -28,7 +28,9 @@
                     <DataTemplate>
                         <ViewCell>
                             <StackLayout Padding="10">
-                                <Label Text="{Binding Name}" HorizontalTextAlignment="Center"/>
+                                <Button Text="{Binding Gadget.Name}"
+                                        IsEnabled="{Binding Available}"
+                                        Command="{Binding UseGadgetCommand}"/>
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>

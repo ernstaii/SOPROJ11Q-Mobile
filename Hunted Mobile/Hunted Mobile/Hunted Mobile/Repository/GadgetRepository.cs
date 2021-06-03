@@ -8,9 +8,9 @@ namespace Hunted_Mobile.Repository {
 
         }
 
-        public async Task<bool> DecreaseGadgetAmount(int playerId, string gadgetName) {
+        public async Task<bool> UseGadget(int playerId, string gadgetName) {
             var response = new HttpClientResponse();
-            await response.Convert(HttpClientRequestService.Patch(HttpClientRequestService.GetUrl($"users/{playerId}/gadgets/{gadgetName}")));
+            await response.Convert(HttpClientRequestService.Patch($"users/{playerId}/gadgets/{gadgetName}"));
 
             return response.IsSuccessful;
         }
