@@ -23,15 +23,7 @@
                    Grid.ColumnSpan="2"
                    FontSize="36"/>
 
-            <!-- Layout Team 1 -->
-            <Label Text="Gadgets"
-                   Grid.Row="1"
-                   Padding="5" 
-                   HorizontalTextAlignment="Start" 
-                   TextColor="Black" 
-                   FontAttributes="Bold" 
-                   FontSize="20"/>
-            <ListView Grid.Row="2" ItemsSource="{Binding mapModel.PlayingUser.Gadgets}">
+            <ListView Grid.Row="1" ItemsSource="{Binding mapModel.PlayingUser.Gadgets}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
