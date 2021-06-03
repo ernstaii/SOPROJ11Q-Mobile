@@ -524,6 +524,8 @@ namespace Hunted_Mobile.ViewModel {
             }
 
             HandlePlayerBoundaries(wasWithinBoundary, isWithinBoundary);
+
+            await CheckAlarmTriggering();
         }
 
         private async Task UpdatePlayerLocation() {
@@ -552,6 +554,19 @@ namespace Hunted_Mobile.ViewModel {
             else if(!isWithinBoundary && wasWithinBoundary) {
                 await PostNotificationAboutPlayer(mapModel.PlayingUser.UserName + " heeft de spelgrenzen verlaten!");
             }
+        }
+
+        private async Task<bool> CheckAlarmTriggering() {
+            if(mapModel.PlayingUser is Thief) {
+                foreach(Player player in mapModel.Players) {
+                    foreach(Alarm alarm in player.Gadgets?.Where((gadget) => gadget is Alarm).Select((gadget) => (Alarm) gadget)) {
+                        if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(alarm.Location) < alarm.TriggerRangeInMeters) {
+                            return await UnitOfWork.Instance.GadgetRepository.TriggerAlarm(mapModel.PlayingUser.Id);
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         private void CenterMapOnLocation(Location center, double zoomResolution) {

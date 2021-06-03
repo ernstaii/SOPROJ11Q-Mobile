@@ -14,5 +14,12 @@ namespace Hunted_Mobile.Repository {
 
             return response.IsSuccessful;
         }
+
+        public async Task<bool> TriggerAlarm(int playerId) {
+            var response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Create($"users/{playerId}/trigger-alarm", new { }));
+
+            return response.IsSuccessful;
+        }
     }
 }
