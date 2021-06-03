@@ -6,7 +6,7 @@ using Xamarin.Forms.Xaml;
 namespace Hunted_Mobile.View {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class GadgetsPage : ContentPage {
-        public GadgetsPage(MapViewModel viewModel) {
+        public GadgetsPage(GadgetOverviewViewModel viewModel) {
             InitializeComponent();
             BindingContext = viewModel;
         }

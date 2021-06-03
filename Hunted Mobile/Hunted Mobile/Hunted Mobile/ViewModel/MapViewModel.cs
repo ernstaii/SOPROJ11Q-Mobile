@@ -49,7 +49,7 @@ namespace Hunted_Mobile.ViewModel {
         private Game gameModel;
         private readonly View.Messages messagesView;
         private PlayersOverviewPage playersOverview;
-        private GadgetsPage gadgetsOverview;
+        private readonly GadgetsPage gadgetsOverview;
         private Timer intervalUpdateTimer;
         private Timer holdingButtonTimer;
         private Thief selectedThief;
@@ -162,7 +162,7 @@ namespace Hunted_Mobile.ViewModel {
             messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameIdStr);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
-            gadgetsOverview = new View.GadgetsPage(this);
+            gadgetsOverview = new View.GadgetsPage(new GadgetOverviewViewModel(webSocketService, mapModel.PlayingUser.Id));
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
             Task.Run(async () => await UpdatePlayerLocation());
