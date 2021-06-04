@@ -31,6 +31,10 @@ namespace Hunted_Mobile.ViewModel {
                 PlayingUser = playingUser;
                 GadgetCollection = gadgetCollection;
             }
+
+            public void Update() {
+                OnPropertyChanged(nameof(Available));
+            }
         }
 
         private readonly WebSocketService socketService;
@@ -75,6 +79,12 @@ namespace Hunted_Mobile.ViewModel {
                 foreach(var gadget in gadgets) {
                     Gadgets.Add(new GadgetWithCommand(gadget, mapModel.PlayingUser, Gadgets));
                 }
+            }
+        }
+
+        public void Update() {
+            foreach(var singleGadgetViewModel in Gadgets) {
+                singleGadgetViewModel.Update();
             }
         }
     }

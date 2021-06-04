@@ -51,6 +51,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly View.Messages messagesView;
         private PlayersOverviewPage playersOverview;
         private readonly GadgetsPage gadgetsOverview;
+        private readonly GadgetOverviewViewModel gadgetOverviewViewModel;
         private Timer intervalUpdateTimer;
         private Timer holdingButtonTimer;
         private Thief selectedThief;
@@ -168,7 +169,8 @@ namespace Hunted_Mobile.ViewModel {
             messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameIdStr);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
-            gadgetsOverview = new View.GadgetsPage(new GadgetOverviewViewModel(webSocketService, mapModel));
+            gadgetOverviewViewModel = new GadgetOverviewViewModel(webSocketService, mapModel);
+            gadgetsOverview = new View.GadgetsPage(gadgetOverviewViewModel);
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
             Task.Run(async () => await UpdatePlayerLocation());
@@ -661,8 +663,9 @@ namespace Hunted_Mobile.ViewModel {
             Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(playersOverview);
         }
 
-        private void NavigateToGadgetsOverview() {
-            Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(gadgetsOverview);
+        private async void NavigateToGadgetsOverview() {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(gadgetsOverview);
+            gadgetOverviewViewModel.Update();
         }
 
         private void NavigateToMessagePage() {
@@ -736,11 +739,11 @@ namespace Hunted_Mobile.ViewModel {
             mapView.Content.IsEnabled = MapDialogOption == MapDialogOptions.NONE;
         }
 
-        private void ExitGame() {
+        private async void ExitGame() {
             GameSessionPreference.ClearUserAndGame();
-            Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MainPage());
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MainPage());
             RemovePreviousNavigation();
-            webSocketService.Disconnect();
+            await webSocketService.Disconnect();
         }
 
         private async Task<bool> PostNotificationAboutPlayer(string message) {
