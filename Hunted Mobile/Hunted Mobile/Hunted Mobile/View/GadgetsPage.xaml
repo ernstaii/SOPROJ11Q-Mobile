@@ -13,22 +13,48 @@
                    FontAttributes="Bold"
                    FontSize="36"/>
 
-        <ListView ItemsSource="{Binding Gadgets}">
-            <ListView.ItemTemplate>
+        <CollectionView ItemsSource="{Binding Gadgets}" Margin="15">
+            <CollectionView.ItemTemplate>
+                <!-- Custom layout of item -->
                 <DataTemplate>
-                    <ViewCell>
-                        <StackLayout Orientation="Vertical">
-                            <Button Text="{Binding Gadget.Name}"
+                    <StackLayout Margin="0,5">
+                        <Frame CornerRadius="5" OutlineColor="Black" BackgroundColor="White" Padding="10,5">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="25" />
+                                    <RowDefinition Height="auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60" />
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="60" />
+                                </Grid.ColumnDefinitions>
+
+                                <Image Source="{Binding Gadget.Icon}"
+                                HorizontalOptions="Center"
+                                WidthRequest="60"
+                                HeightRequest="60"
+                                BackgroundColor="White"
+                                Grid.RowSpan="2"/>
+                                <Label Text="{Binding Gadget.Name}" FontSize="20" FontAttributes="Bold" TextColor="Black" Grid.Column="1"/>
+                                <Label Text="{Binding Gadget.Description}" FontSize="15" TextColor="Black" Grid.Column="1" Grid.Row="1" />
+                                <Button HorizontalOptions="Center"
                                         IsEnabled="{Binding Available}"
                                         Command="{Binding UseGadgetCommand}"
-                                        HeightRequest="100"/>
-                            <Label Text="{Binding Gadget.Description}"/>
-                            <BoxView BackgroundColor="Gray"
-                                         HeightRequest="1"/>
-                        </StackLayout>
-                    </ViewCell>
+                                        CornerRadius="30"
+                                        Margin="0,20"
+                                        Text="Zet in"
+                                        WidthRequest="60"
+                                        HeightRequest="60"
+                                        BackgroundColor="LightGray"
+                                        BorderColor="Black"
+                                        Grid.Column="2"
+                                        Grid.RowSpan="2"/>
+                            </Grid>
+                        </Frame>
+                    </StackLayout>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </StackLayout>
 </ContentPage>
