@@ -5,6 +5,7 @@ namespace Hunted_Mobile.Model.GameModels.Gadget {
         public int Id { get; }
         public string Name { get; }
         public bool InUse { get; }
+        public string Description { get; set; }
 
         protected Gadget(GadgetData data) {
             Id = data.id;
