@@ -8,7 +8,7 @@ namespace Hunted_Mobile.Model.GameModels {
             InviteKey inviteKey,
             Location location,
             string status,
-            ICollection<Gadget.Gadget> gadgets,
+            List<Gadget.Gadget> gadgets,
             bool triggeredAlarm
         ) : base(id, username, inviteKey, location, status, gadgets, triggeredAlarm) { 
         }

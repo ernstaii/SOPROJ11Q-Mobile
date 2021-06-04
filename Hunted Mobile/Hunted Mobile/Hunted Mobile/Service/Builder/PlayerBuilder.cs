@@ -13,7 +13,7 @@ namespace Hunted_Mobile.Service.Builder {
         public InviteKey InviteKey { get; private set; }
         public string UserName { get; private set; }
         public string Status { get; private set; }
-        public ICollection<Gadget> Gadgets { get; private set; }
+        public List<Gadget> Gadgets { get; private set; }
         public bool TriggeredAlarm { get; private set; }
         public string CaughtAt { get; private set; }
         public bool FakePolice { get; private set; }
@@ -47,7 +47,7 @@ namespace Hunted_Mobile.Service.Builder {
             return this;
         }
 
-        public PlayerBuilder SetGadgets(ICollection<Gadget> gadgets) {
+        public PlayerBuilder SetGadgets(List<Gadget> gadgets) {
             Gadgets = gadgets;
             return this;
         }
