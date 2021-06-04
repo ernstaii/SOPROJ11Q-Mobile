@@ -18,14 +18,22 @@ namespace Hunted_Mobile.Service.Map {
             thiefPinColor = Xamarin.Forms.Color.Black;
         private readonly Resource policeBadgeIcon;
         private readonly Resource moneyBagIcon;
-        private readonly Player player;
+        private Player player;
         private Pin playerPin;
 
+        public Player Player { 
+            get => player;
+            set {
+                player = value;
+                SetPlayerPin();
+                UpdatePlayerPinLocation(player.Location);
+            }
+        }
         public MapView MapView { get; set; }
 
         public MapViewService(MapView mapView, Player player) {
             MapView = mapView;
-            this.player = player;
+            Player = player;
             SetPlayerPin();
 
             // Enableling this buttons is something for a different PR
@@ -46,12 +54,17 @@ namespace Hunted_Mobile.Service.Map {
             }
         }
 
+        private bool AreSameTeam(Player playerA, Player playerB) {
+            return (playerA is Police && playerB is Police)
+                || (playerA is Thief && playerB is Thief);
+        }
+
         /// <summary>
         /// This methode will only display the user if the person is in the same team as the player
         /// </summary>
         /// <param name="player"></param>
         public void AddTeamMatePin(Player player) {
-            if(this.player.GetType() == player.GetType() && this.player.Id != player.Id) {
+            if(Player.Id != player.Id && AreSameTeam(Player, player)) {
                 MapView.Pins.Add(new Pin(MapView) {
                     Label = player.UserName,
                     Color = player is Thief ? thiefPinColor : policePinColor,
@@ -109,8 +122,8 @@ namespace Hunted_Mobile.Service.Map {
 
         private void SetPlayerPin() {
             playerPin = new Pin(MapView) {
-                Label = player.UserName,
-                Color = player is Thief ? (player is FakePolice ? Xamarin.Forms.Color.Green : thiefPinColor) : policePinColor,
+                Label = Player.UserName,
+                Color = Player is Thief ? (Player is FakePolice ? Xamarin.Forms.Color.Green : thiefPinColor) : policePinColor,
             };
         }
 
