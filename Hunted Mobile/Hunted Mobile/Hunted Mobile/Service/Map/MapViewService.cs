@@ -8,6 +8,9 @@ using System;
 using Hunted_Mobile.Model.Resource;
 using Hunted_Mobile.Repository;
 using Hunted_Mobile.Enum;
+using Hunted_Mobile.Model.GameModels.Gadget;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Hunted_Mobile.Service.Map {
     public class MapViewService {
@@ -51,25 +54,31 @@ namespace Hunted_Mobile.Service.Map {
         /// </summary>
         /// <param name="player"></param>
         public void AddTeamMatePin(Player player) {
-            if(this.player.GetType() == player.GetType() && this.player.Id != player.Id) {
-                MapView.Pins.Add(new Pin(MapView) {
-                    Label = player.UserName,
-                    Color = player is Thief ? thiefPinColor : policePinColor,
-                    Position = new MapsuiPosition(player.Location.Latitude, player.Location.Longitude),
-                    Scale = 0.666f,
-                    Tag = player is Thief ? THIEF_TAG : null,
-                    Transparency = 0.25f,
-                });
+            if(this.player.Id != player.Id && this.player.GetType() == player.GetType()) {
+                if(player is Thief) {
+                    AddThiefPin(player.UserName, player.Location);
+                }
+                else AddPolicePin(player.UserName, player.Location);
             }
         }
 
-        public void AddClosestThiefPin(Player thief) {
+        public void AddThiefPin(string username, Location location) {
             MapView.Pins.Add(new Pin(MapView) {
-                Label = thief.UserName,
-                Color = Xamarin.Forms.Color.Black,
-                Position = new Mapsui.UI.Forms.Position(thief.Location.Latitude, thief.Location.Longitude),
+                Label = username,
+                Color = thiefPinColor,
+                Position = new MapsuiPosition(location.Latitude, location.Longitude),
                 Scale = 0.666f,
                 Tag = THIEF_TAG,
+                Transparency = 0.25f,
+            });
+        }
+
+        public void AddPolicePin(string username, Location location) {
+            MapView.Pins.Add(new Pin(MapView) {
+                Label = username,
+                Color = policePinColor,
+                Position = new MapsuiPosition(location.Latitude, location.Longitude),
+                Scale = 0.666f,
                 Transparency = 0.25f,
             });
         }

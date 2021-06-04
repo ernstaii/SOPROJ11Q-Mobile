@@ -29,6 +29,7 @@ using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Service.Map;
 using Hunted_Mobile.Enum;
 using Hunted_Mobile.Service.Preference;
+using Hunted_Mobile.Model.GameModels.Gadget;
 
 namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
@@ -59,6 +60,8 @@ namespace Hunted_Mobile.ViewModel {
         private MapViewService mapViewService;
         private readonly DateTime dateTimeNow;
         private string logoImage;
+
+        #region Properties
 #pragma warning disable IDE1006 // Naming Styles
         private MapView mapView {
             get => mapViewService?.MapView;
@@ -154,6 +157,9 @@ namespace Hunted_Mobile.ViewModel {
 
         public string PlayingUserScoreDisplay => "Score: " + PlayingUserScore;
 
+        public bool DroneActive { get; private set; }
+        #endregion
+
         public MapViewModel(Game gameModel, Model.Map mapModel) {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
@@ -162,7 +168,7 @@ namespace Hunted_Mobile.ViewModel {
             messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameIdStr);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
-            gadgetsOverview = new View.GadgetsPage(new GadgetOverviewViewModel(webSocketService, mapModel.PlayingUser.Id));
+            gadgetsOverview = new View.GadgetsPage(new GadgetOverviewViewModel(webSocketService, mapModel));
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
             Task.Run(async () => await UpdatePlayerLocation());
@@ -345,12 +351,16 @@ namespace Hunted_Mobile.ViewModel {
         private void IntervalOfGame(IntervalEventData data) {
             StartIntervalTimer();
 
+            DroneActive = data.DroneActive;
+
             Location playingUserLocation = mapModel.PlayingUser.Location;
             var newPlayer = new List<Player>();
 
             foreach(Player player in data.Players) {
                 var gadgets = mapModel.Players.Where(p => p.Id == player.Id).FirstOrDefault()?.Gadgets;
-                player.Gadgets = gadgets;
+                if(gadgets != null) {
+                    player.Gadgets = gadgets;
+                }
 
                 newPlayer.Add(player);
 
@@ -448,7 +458,7 @@ namespace Hunted_Mobile.ViewModel {
             Player updatingPlayer = mapModel.Players.Where(player => player.Id == data.Player.Id).FirstOrDefault();
 
             if(updatingPlayer != null) {
-                updatingPlayer.Gadgets = data.Gadgets;
+                updatingPlayer.Gadgets = new List<Gadget>(data.Gadgets);
             }
         }
 
@@ -514,6 +524,8 @@ namespace Hunted_Mobile.ViewModel {
             }
 
             HandlePlayerBoundaries(wasWithinBoundary, isWithinBoundary);
+
+            await CheckAlarmTriggering();
         }
 
         private async Task UpdatePlayerLocation() {
@@ -542,6 +554,21 @@ namespace Hunted_Mobile.ViewModel {
             else if(!isWithinBoundary && wasWithinBoundary) {
                 await PostNotificationAboutPlayer(mapModel.PlayingUser.UserName + " heeft de spelgrenzen verlaten!");
             }
+        }
+
+        private async Task<bool> CheckAlarmTriggering() {
+            if(mapModel.PlayingUser is Thief) {
+                foreach(Player player in mapModel.Players) {
+                    if(player.Gadgets != null) {
+                        foreach(Alarm alarm in player.Gadgets.Where((gadget) => gadget is Alarm).Select((gadget) => (Alarm) gadget)) {
+                            if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(alarm.Location) < alarm.TriggerRangeInMeters) {
+                                return await UnitOfWork.Instance.GadgetRepository.TriggerAlarm(mapModel.PlayingUser.Id);
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         private void CenterMapOnLocation(Location center, double zoomResolution) {
@@ -660,8 +687,14 @@ namespace Hunted_Mobile.ViewModel {
             // If current user has role as Police
             if(mapModel.PlayingUser is Police) {
                 mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
-                if(mapModel.Thiefs.Count > 0) {
-                    mapViewService.AddClosestThiefPin(GetClosestThief());
+                foreach(Thief thief in mapModel.Thiefs) {
+                    if(thief.TriggeredAlarm || DroneActive) {
+                        mapViewService.AddThiefPin(thief.UserName, thief.Location);
+                    }
+                }
+                if(!DroneActive && mapModel.Thiefs.Count > 0) {
+                    var closestThief = GetClosestThief();
+                    mapViewService.AddThiefPin(closestThief.UserName, closestThief.Location);
                 }
             }
 
