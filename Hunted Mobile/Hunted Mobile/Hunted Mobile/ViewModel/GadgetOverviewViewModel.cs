@@ -20,6 +20,7 @@ namespace Hunted_Mobile.ViewModel {
             public ObservableCollection<GadgetWithCommand> GadgetCollection { get; set; }
             public ICommand UseGadgetCommand => new Xamarin.Forms.Command(async (e) => {
                 used = true; // Disable the button while awaiting success
+                OnPropertyChanged(nameof(Available));
                 used = await PlayingUser.Use(Gadget);
                 OnPropertyChanged(nameof(Available));
             });
