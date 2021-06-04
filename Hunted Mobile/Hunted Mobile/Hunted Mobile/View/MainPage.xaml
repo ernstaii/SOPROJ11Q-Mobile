@@ -9,7 +9,7 @@
                    Padding="24" 
                    Margin="0, 50" 
                    HorizontalTextAlignment="Center" 
-                   TextColor="Black" 
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" 
                    FontAttributes="Bold" 
                    FontSize="36"/>
 
@@ -27,7 +27,7 @@
                     Margin="0, 0, 0, 60"/>
                 
                 <!-- Enter here the InviteCode and submit with button -->
-                <Entry Placeholder="Voer uw code in" Text="{Binding InviteKeyModel.Value}" TextTransform="Uppercase"/>
+                <Entry Placeholder="Voer uw code in" Text="{Binding InviteKeyModel.Value}" TextTransform="Uppercase" HorizontalTextAlignment="Center"/>
                 <Label TextColor="Red" x:Name="InviteKey_ValueError"/>
 
                 <Button Text="Spel deelnemen"

@@ -7,7 +7,7 @@ using Hunted_Mobile.Repository;
 
 namespace Hunted_Mobile.Model.GameModels {
     public class Player : CustomModelErrorMessages<Player> {
-        private ICollection<Gadget.Gadget> gadgets;
+        private List<Gadget.Gadget> gadgets;
 
         public int Id { get; set; }
         public Location Location { get; set; }
@@ -21,11 +21,11 @@ namespace Hunted_Mobile.Model.GameModels {
 
         public bool IsValid => UserName != null && Location != null;
 
-        public ICollection<Gadget.Gadget> Gadgets { 
+        public List<Gadget.Gadget> Gadgets { 
             get => gadgets;
             set {
                 if(value == null) {
-                    gadgets = new Collection<Gadget.Gadget>();
+                    gadgets = new List<Gadget.Gadget>();
                 }
                 else gadgets = value;
             }
@@ -53,10 +53,9 @@ namespace Hunted_Mobile.Model.GameModels {
         public async Task<bool> Use(Gadget.Gadget gadget) {
             foreach(Gadget.Gadget playerGadget in Gadgets) {
                 if(playerGadget.Id == gadget.Id) {
-                    bool success = await UnitOfWork.Instance.GadgetRepository.DecreaseGadgetAmount(Id, playerGadget.Name);
+                    bool success = await UnitOfWork.Instance.GadgetRepository.UseGadget(Id, playerGadget.Name);
                     if(success) {
                         Gadgets.Remove(playerGadget);
-                        playerGadget.Activate(this);
                     }
                     return success;
                 }
