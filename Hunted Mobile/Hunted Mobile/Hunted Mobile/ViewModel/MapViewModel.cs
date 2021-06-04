@@ -49,6 +49,7 @@ namespace Hunted_Mobile.ViewModel {
         private Game gameModel;
         private readonly View.Messages messagesView;
         private PlayersOverviewPage playersOverview;
+        private readonly GadgetsPage gadgetsOverview;
         private Timer intervalUpdateTimer;
         private Timer holdingButtonTimer;
         private Thief selectedThief;
@@ -161,6 +162,7 @@ namespace Hunted_Mobile.ViewModel {
             messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameIdStr);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
+            gadgetsOverview = new View.GadgetsPage(new GadgetOverviewViewModel(webSocketService, mapModel.PlayingUser.Id));
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
             Task.Run(async () => await UpdatePlayerLocation());
@@ -188,6 +190,8 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public ICommand NavigateToPlayersOverviewCommand => new Xamarin.Forms.Command((e) => NavigateToPlayersOverview());
+
+        public ICommand NavigateToGadgetsOverviewCommand => new Xamarin.Forms.Command((e) => NavigateToGadgetsOverview());
 
         public ICommand NavigateToMessagePageCommand => new Command((e) => NavigateToMessagePage());
 
@@ -630,6 +634,10 @@ namespace Hunted_Mobile.ViewModel {
             Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(playersOverview);
         }
 
+        private void NavigateToGadgetsOverview() {
+            Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(gadgetsOverview);
+        }
+
         private void NavigateToMessagePage() {
             Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(messagesView);
         }
@@ -640,7 +648,6 @@ namespace Hunted_Mobile.ViewModel {
         private void DisplayAllPins() {
             mapView.Pins.Clear();
             mapViewService.AddPlayerPin();
-            mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
 
             foreach(var thief in mapModel.Thiefs) {
                 mapViewService.AddTeamMatePin(thief);
@@ -651,8 +658,11 @@ namespace Hunted_Mobile.ViewModel {
             }
 
             // If current user has role as Police
-            if(mapModel.PlayingUser is Police && mapModel.Thiefs.Count > 0) {
-                mapViewService.AddClosestThiefPin(GetClosestThief());
+            if(mapModel.PlayingUser is Police) {
+                mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
+                if(mapModel.Thiefs.Count > 0) {
+                    mapViewService.AddClosestThiefPin(GetClosestThief());
+                }
             }
 
             if(mapModel.PlayingUser is Thief) {

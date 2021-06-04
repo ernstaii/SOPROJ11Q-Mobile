@@ -129,6 +129,7 @@
                                 Grid.Row="1"
                                 Grid.Column="1"/>
                     <ImageButton Source="{Binding Icons.Gadgets}"
+                                Command="{Binding NavigateToGadgetsOverviewCommand}"
                                 HorizontalOptions="Center"
                                 CornerRadius="30" 
                                 WidthRequest="60"

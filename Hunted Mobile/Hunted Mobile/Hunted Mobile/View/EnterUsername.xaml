@@ -9,7 +9,7 @@
                Padding="24" 
                Margin="0, 50" 
                HorizontalTextAlignment="Center" 
-               TextColor="Black" 
+                TextColor="{AppThemeBinding Light=Black, Dark=White}" 
                FontAttributes="Bold" 
                FontSize="36"/>
 
