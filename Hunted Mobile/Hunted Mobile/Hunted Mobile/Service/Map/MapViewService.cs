@@ -110,7 +110,7 @@ namespace Hunted_Mobile.Service.Map {
         private void SetPlayerPin() {
             playerPin = new Pin(MapView) {
                 Label = player.UserName,
-                Color = player is Thief ? thiefPinColor : policePinColor,
+                Color = player is Thief ? (player is FakePolice ? Xamarin.Forms.Color.Green : thiefPinColor) : policePinColor,
             };
         }
 
