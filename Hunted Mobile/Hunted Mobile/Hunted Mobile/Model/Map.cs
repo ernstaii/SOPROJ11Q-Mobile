@@ -9,6 +9,7 @@ namespace Hunted_Mobile.Model {
     public class Map {
         private readonly ObservableCollection<Player> players = new ObservableCollection<Player>();
         private readonly ObservableCollection<Loot> loot = new ObservableCollection<Loot>();
+        private Player playingUser;
 
         public ICollection<Player> Players {
             get => players;
@@ -17,6 +18,9 @@ namespace Hunted_Mobile.Model {
 
                 foreach(var item in value) {
                     players.Add(item);
+                }
+                if(!players.Contains(playingUser)) {
+                    players.Add(playingUser);
                 }
             }
         }
@@ -34,7 +38,14 @@ namespace Hunted_Mobile.Model {
         public IReadOnlyCollection<Police> Police => Players.Where(user => user is Police).Select(user => (Police) user).ToList();
         public IReadOnlyCollection<Thief> Thiefs => Players.Where(user => user is Thief).Select(user => (Thief) user).Where(thief => !thief.IsCaught).ToList();
 
-        public Player PlayingUser { get; set; }
+        public Player PlayingUser {
+            get => playingUser; 
+            set {
+                players.Remove(PlayingUser);
+                playingUser = value;
+                players.Add(value);
+            }
+        }
         public Boundary GameBoundary { get; set; }
 
         public Map() {

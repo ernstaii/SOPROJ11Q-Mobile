@@ -1,13 +1,5 @@
-﻿using Hunted_Mobile.Service;
-
-using Mapsui.Geometries;
-
+﻿
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-
-using Xamarin.Forms;
 
 namespace Hunted_Mobile.Model {
     /// <summary>

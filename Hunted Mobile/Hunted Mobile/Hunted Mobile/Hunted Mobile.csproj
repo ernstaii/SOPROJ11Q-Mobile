@@ -37,6 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="View\GadgetsPage.xaml.cs">
+      <DependentUpon>GadgetsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="View\MapPage.xaml.cs">
       <DependentUpon>MapPage.xaml</DependentUpon>
     </Compile>
@@ -44,6 +47,9 @@
 
   <ItemGroup>
     <EmbeddedResource Update="View\EnterUsername.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="View\GadgetsPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="View\Lobby.xaml">

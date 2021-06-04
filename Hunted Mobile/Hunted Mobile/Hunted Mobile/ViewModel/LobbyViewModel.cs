@@ -7,7 +7,6 @@ using Hunted_Mobile.Service;
 using Hunted_Mobile.Service.Preference;
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class LobbyViewModel : BaseViewModel {
-        private List<Player> users = new List<Player>();
+        private ObservableCollection<Player> users = new ObservableCollection<Player>();
         private Game gameModel = new Game();
         private readonly Player currentUser;
         private readonly WebSocketService webSocketService;
@@ -39,7 +38,7 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public List<Player> Users {
+        public ObservableCollection<Player> Users {
             get => users;
             set {
                 users = value;
@@ -65,6 +64,9 @@ namespace Hunted_Mobile.ViewModel {
             webSocketService = new WebSocketService(gameModel.Id.ToString());
 
             IsLoading = true;
+
+            RemovePreviousNavigation();
+
             Task.Run(async () => await LoadUsers());
             Task.Run(async () => {
                 await StartSocket();
@@ -81,10 +83,15 @@ namespace Hunted_Mobile.ViewModel {
             }
 
             webSocketService.StartGame += StartGame;
+            webSocketService.PlayerJoined += AddUser;
         }
 
         private async Task LoadUsers() {
-            Users = await UnitOfWork.Instance.UserRepository.GetAll(GameModel.Id);
+            Users = new ObservableCollection<Player>(await UnitOfWork.Instance.UserRepository.GetAll(GameModel.Id));
+        }
+
+        private void AddUser(PlayerEventData data) {
+            Users.Add(data.Player);
         }
 
         private async Task CheckForStatus() {
@@ -119,13 +126,21 @@ namespace Hunted_Mobile.ViewModel {
                 var mapPage = new MapPage(new MapViewModel(GameModel, mapModel));
 
                 Device.BeginInvokeOnMainThread(() => {
-                    Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
                     webSocketService.StartGame -= StartGame;
+                    webSocketService.PlayerJoined -= AddUser;
+                    Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
                 });
             }
             catch(Exception e) {
                 DependencyService.Get<Toast>().Show("(#9) Er was een probleem met het navigeren naar het speelveld (LobbyViewModel)");
                 UnitOfWork.Instance.ErrorRepository.Create(e);
+            }
+        }
+
+        private void RemovePreviousNavigation() {
+            var navigation = Application.Current.MainPage.Navigation;
+            while(navigation.NavigationStack.Count > 1) {
+                navigation.RemovePage(navigation.NavigationStack.First());
             }
         }
     }

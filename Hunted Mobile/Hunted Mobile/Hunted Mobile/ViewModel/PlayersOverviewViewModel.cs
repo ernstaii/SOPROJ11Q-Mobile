@@ -18,7 +18,6 @@ namespace Hunted_Mobile.ViewModel {
                 users = value;
                 OnPropertyChanged("Thieves");
                 OnPropertyChanged("Police");
-                OnPropertyChanged("Users");
             }
         }
 
