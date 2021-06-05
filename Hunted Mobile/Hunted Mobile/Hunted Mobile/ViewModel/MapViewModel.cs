@@ -22,13 +22,13 @@ using Hunted_Mobile.Service.Gps;
 using System.Windows.Input;
 using Xamarin.Forms;
 using System.Timers;
-using Hunted_Mobile.Model.Resource;
 using Hunted_Mobile.View;
 using System.Linq;
 using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Service.Map;
 using Hunted_Mobile.Enum;
 using Hunted_Mobile.Service.Preference;
+using Hunted_Mobile.Service.Builder;
 using Hunted_Mobile.Model.GameModels.Gadget;
 
 namespace Hunted_Mobile.ViewModel {
@@ -358,16 +358,19 @@ namespace Hunted_Mobile.ViewModel {
             Location playingUserLocation = mapModel.PlayingUser.Location;
             var newPlayer = new List<Player>();
 
-            foreach(Player player in data.Players) {
-                var gadgets = mapModel.Players.Where(p => p.Id == player.Id).FirstOrDefault()?.Gadgets;
-                if(gadgets != null) {
-                    player.Gadgets = gadgets;
-                }
+            foreach(PlayerBuilder builder in data.PlayerBuilders) {
+                var player = builder.ToPlayer();
+                if(player != null) {
+                    var gadgets = mapModel.Players.Where(p => p.Id == player.Id).FirstOrDefault()?.Gadgets;
+                    if(gadgets != null) {
+                        player.Gadgets = gadgets;
+                    }
 
-                newPlayer.Add(player);
+                    newPlayer.Add(player);
 
-                if(player.Id == mapModel.PlayingUser.Id) {
-                    mapModel.PlayingUser = player;
+                    if(player.Id == mapModel.PlayingUser.Id) {
+                        mapModel.PlayingUser = player;
+                    }
                 }
             }
             mapModel.PlayingUser.Location = playingUserLocation;
@@ -458,10 +461,10 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void ThiefFakePoliceToggle(PlayerEventData data) {
-            Thief updatingPlayer = mapModel.Thiefs.Where(player => player.Id == data.Player.Id).FirstOrDefault();
+            Thief updatingPlayer = mapModel.Thiefs.Where(player => player.Id == data.PlayerBuilder.Id).FirstOrDefault();
             
             if(updatingPlayer == null) {
-                if(data.Player.Id == mapModel.PlayingUser.Id && mapModel.PlayingUser is Thief) {
+                if(data.PlayerBuilder.Id == mapModel.PlayingUser.Id && mapModel.PlayingUser is Thief) {
                     updatingPlayer = mapModel.PlayingUser as Thief;
                 }
             }
@@ -469,13 +472,8 @@ namespace Hunted_Mobile.ViewModel {
             if(updatingPlayer != null) {
                 mapModel.Players.Remove(updatingPlayer);
 
-                if(data.Player is FakePolice) {
-                    updatingPlayer = data.Player as FakePolice;
-                }
-                else if(data.Player is Thief) {
-                    updatingPlayer = data.Player as Thief;
-                }
-                else updatingPlayer = new Thief(data.Player, updatingPlayer.CaughtAt);
+                // At this point we know for sure the player is a thief so we can call ToThief
+                updatingPlayer = data.PlayerBuilder.ToThief();
 
                 mapModel.Players.Add(updatingPlayer);
 
@@ -490,7 +488,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void GadgetsUpdated(GadgetsUpdatedEventData data) {
-            Player updatingPlayer = mapModel.Players.Where(player => player.Id == data.Player.Id).FirstOrDefault();
+            Player updatingPlayer = mapModel.Players.Where(player => player.Id == data.PlayerBuilder.Id).FirstOrDefault();
 
             if(updatingPlayer != null) {
                 updatingPlayer.Gadgets = new List<Gadget>(data.Gadgets);

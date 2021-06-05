@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Hunted_Mobile.Repository;
 
 namespace Hunted_Mobile.Model.GameModels {
-    public class Player : CustomModelErrorMessages<Player> {
+    public abstract class Player : CustomModelErrorMessages<Player> {
         private List<Gadget.Gadget> gadgets;
 
         public int Id { get; set; }
@@ -33,21 +33,22 @@ namespace Hunted_Mobile.Model.GameModels {
 
         public bool TriggeredAlarm { get; set; }
 
-        public Player(int id, string userName, InviteKey inviteKey) {
+        protected Player(
+            int id,
+            string username, 
+            InviteKey inviteKey,
+            Location location,
+            string status,
+            List<Gadget.Gadget> gadgets,
+            bool triggeredAlarm
+        ) {
             Id = id;
-            UserName = userName;
+            Location = location;
+            UserName = username;
             InviteKey = inviteKey;
-        }
-
-        public Player() { }
-
-        protected Player(Player player) {
-            Id = player.Id;
-            Location = player.Location;
-            UserName = player.UserName;
-            InviteKey = player.InviteKey;
-            ErrorMessages = player.ErrorMessages;
-            Status = player.Status;
+            Status = status;
+            TriggeredAlarm = triggeredAlarm;
+            Gadgets = gadgets;
         }
 
         public async Task<bool> Use(Gadget.Gadget gadget) {

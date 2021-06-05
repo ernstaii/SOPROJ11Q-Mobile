@@ -1,12 +1,16 @@
-﻿using Hunted_Mobile.Model.Response.Json;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Hunted_Mobile.Model.GameModels {
     public class Police : Player {
-        public Police(Player player) : base(player) { 
+        public Police(
+            int id,
+            string username,
+            InviteKey inviteKey,
+            Location location,
+            string status,
+            List<Gadget.Gadget> gadgets,
+            bool triggeredAlarm
+        ) : base(id, username, inviteKey, location, status, gadgets, triggeredAlarm) { 
         }
     }
 }

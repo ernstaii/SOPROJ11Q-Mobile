@@ -62,7 +62,10 @@ namespace Hunted_Mobile.Service.Json {
 
         protected JArray ToJArray(string json) {
             try {
-                return JArray.Parse(json);
+                if(string.IsNullOrWhiteSpace(json)) {
+                    return new JArray();
+                }
+                else return JArray.Parse(json);
             }
             catch(Exception e) {
                 DependencyService.Get<Toast>().Show("(#5) Kon JSON niet omzetten naar JArray (JsonConversionService)");
@@ -73,7 +76,10 @@ namespace Hunted_Mobile.Service.Json {
 
         protected JObject ToJObject(string json) {
             try {
-                return JsonConvert.DeserializeObject<JObject>(json, serializerSettings);
+                if(string.IsNullOrWhiteSpace(json)) {
+                    return new JObject();
+                }
+                else return JsonConvert.DeserializeObject<JObject>(json, serializerSettings);
             }
             catch(Exception e) {
                 DependencyService.Get<Toast>().Show("(#6) kon JSON niet omzetten naar JObject (JsonConversionService)");
@@ -95,7 +101,10 @@ namespace Hunted_Mobile.Service.Json {
 
         protected DataType ConvertFromJson(string json) {
             try {
-                return JsonConvert.DeserializeObject<DataType>(json, serializerSettings);
+                if(string.IsNullOrWhiteSpace(json)) {
+                    return default;
+                }
+                else return JsonConvert.DeserializeObject<DataType>(json, serializerSettings);
             }
             catch(Exception e) {
                 DependencyService.Get<Toast>().Show("(#8) Kon parameter JSON niet omzetten naar object (JsonConversionService)");

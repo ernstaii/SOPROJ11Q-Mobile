@@ -2,67 +2,49 @@
 using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Model.Response.Json;
+using Hunted_Mobile.Service.Builder;
 
 using System;
 
 namespace Hunted_Mobile.Service.Json {
-    public class PlayerJsonService : JsonConversionService<Player, UserData> {
+    public class PlayerJsonService : JsonConversionService<PlayerBuilder, UserData> {
         public PlayerJsonService() {
         }
 
-        public override string ToJson(Player player) {
+        public override string ToJson(PlayerBuilder builder) {
             return ConvertToJson(new UserData {
-                id = player.Id,
-                username = player.UserName,
-                location = player.Location.ToCsvString(),
-                status = player.Status,
-                caught_at = player is Thief ? ((Thief) player).CaughtAt : null,
-                role = player.InviteKey.Role,
-                triggered_alarm = player.TriggeredAlarm,
-                is_fake_agent = player is FakePolice
+                id = builder.Id,
+                username = builder.UserName,
+                location = builder.Location.ToCsvString(),
+                status = builder.Status,
+                caught_at = builder.CaughtAt,
+                role = builder.InviteKey.Role,
+                triggered_alarm = builder.TriggeredAlarm,
+                is_fake_agent = builder.FakePolice
             });
         }
 
-        public override Player ToObject(UserData data) {
-            Player player = new Player() {
-                Id = data.id,
-                InviteKey = new InviteKey() {
+        public override PlayerBuilder ToObject(UserData data) {
+            return new PlayerBuilder()
+                .SetId(data.id)
+                .SetInviteKey(new InviteKey() {
                     Role = data.role,
                     UserId = data.id
-                },
-                Location = new LocationJsonService().ToObjectFromCsv(data.location),
-                Status = data.status,
-                UserName = data.username,
-                TriggeredAlarm = data.triggered_alarm,
-            };
-
-            if(data.is_fake_agent) {
-                return new FakePolice(new Thief(player, data.caught_at));
-            }
-            else if(data.role == PlayerRole.THIEF) {
-                return new Thief(player, data.caught_at);
-            }
-            else if(data.role == PlayerRole.POLICE) {
-                return new Police(player);
-            }
-            else return player;
+                })
+                .SetLocation(new LocationJsonService().ToObjectFromCsv(data.location))
+                .SetStatus(data.status)
+                .SetUsername(data.username)
+                .SetTriggeredAlarm(data.triggered_alarm)
+                .SetCaughtAt(data.caught_at)
+                .SetFakePolice(data.is_fake_agent);
         }
 
-        public Player ToObject(string json, InviteKey inviteKey) {
-            Player player = ToObject(json);
-            player.InviteKey = inviteKey;
-            inviteKey.UserId = player.Id;
+        public PlayerBuilder ToObject(string json, InviteKey inviteKey) {
+            PlayerBuilder builder = ToObject(json);
+            builder.SetInviteKey(inviteKey);
+            inviteKey.UserId = builder.Id;
 
-            if(inviteKey.Role == PlayerRole.THIEF) {
-                return new Thief(
-                    player, 
-                    player is Thief ? ((Thief) player).CaughtAt : null
-                );
-            }
-            else if(inviteKey.Role == PlayerRole.POLICE) {
-                return new Police(player);
-            }
-            else throw new ArgumentException("InviteKey did not have a value for Role");
+            return builder;
         }
     }
 }

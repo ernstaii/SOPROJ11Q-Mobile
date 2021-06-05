@@ -91,7 +91,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void AddUser(PlayerEventData data) {
-            Users.Add(data.Player);
+            Users.Add(data.PlayerBuilder.ToPlayer());
         }
 
         private async Task CheckForStatus() {

@@ -4,7 +4,16 @@ using System.Text;
 
 namespace Hunted_Mobile.Model.GameModels {
     public class FakePolice : Thief {
-        public FakePolice(Thief player) : base(player, player.CaughtAt) {
+        public FakePolice(Thief thief) : base(
+            thief.Id,
+            thief.UserName,
+            thief.InviteKey,
+            thief.Location,
+            thief.Status,
+            thief.Gadgets,
+            thief.TriggeredAlarm,
+            thief.CaughtAt
+        ) {
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Hunted_Mobile.Service.Json {
             return new IntervalEventData {
                 Loot = new LootJsonService().ToObjects(data.loot),
                 Message = data.message,
-                Players = new PlayerJsonService().ToObjects(data.users),
+                PlayerBuilders = new PlayerJsonService().ToObjects(data.users),
                 TimeLeft = data.timeLeft,
                 DroneActive = data.drone_is_active,
             };
@@ -28,7 +28,7 @@ namespace Hunted_Mobile.Service.Json {
     public class PlayerEventJsonService : JsonConversionService<PlayerEventData, Model.Response.Json.UserEventData> {
         public override PlayerEventData ToObject(Model.Response.Json.UserEventData data) {
             return new PlayerEventData {
-                Player = new PlayerJsonService().ToObject(data.user),
+                PlayerBuilder = new PlayerJsonService().ToObject(data.user),
                 Message = data.message,
                 TimeLeft = data.timeLeft
             };
@@ -61,7 +61,7 @@ namespace Hunted_Mobile.Service.Json {
                 Message = data.message,
                 TimeLeft = data.timeLeft,
                 Gadgets = flattenedGadgets.ToArray(),
-                Player = new PlayerJsonService().ToObject(data.user)
+                PlayerBuilder = new PlayerJsonService().ToObject(data.user)
             };
         }
     }
@@ -70,7 +70,7 @@ namespace Hunted_Mobile.Service.Json {
         public override PlayerEventData ToObject(Model.Response.Json.UserEventData data) {
             return new PlayerEventData {
                 Message = data.message,
-                Player = new PlayerJsonService().ToObject(data.user),
+                PlayerBuilder = new PlayerJsonService().ToObject(data.user),
                 TimeLeft = data.timeLeft,
             };
         }
