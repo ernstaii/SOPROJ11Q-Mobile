@@ -78,6 +78,7 @@ namespace Hunted_Mobile.Service {
         public event SocketEvent<PlayerEventData> PlayerJoined;
         public event SocketEvent<ScoreUpdatedEventData> ScoreUpdated;
         public event SocketEvent<GadgetsUpdatedEventData> GadgetsUpdated;
+        public event SocketEvent<PlayerEventData> ThiefFakePoliceToggle;
 
         public WebSocketService(string gameId) {
             gameIdString = gameId;
@@ -102,6 +103,7 @@ namespace Hunted_Mobile.Service {
             Bind("player.joined", (json) => InvokeEvent(PlayerJoined, new PlayerEventJsonService().ToObject(json)));
             Bind("score.updated", (json) => InvokeEvent(ScoreUpdated, new ScoreUpdatedEventJsonService().ToObject(json)));
             Bind("gadgets.update", (json) => InvokeEvent(GadgetsUpdated, new GadgetsUpdatedEventJsonService().ToObject(json)));
+            Bind("thief.fakeAgent", (json) => InvokeEvent(ThiefFakePoliceToggle, new ThiefFakePoliceToggleEventJsonService().ToObject(json)));
         }
 
         private void InvokeEvent<T>(SocketEvent<T> @event, T data) where T : EventData {

@@ -449,10 +449,43 @@ namespace Hunted_Mobile.ViewModel {
                 webSocketService.IntervalEvent += IntervalOfGame;
                 webSocketService.ScoreUpdated += ScoreUpdated;
                 webSocketService.GadgetsUpdated += GadgetsUpdated;
+                webSocketService.ThiefFakePoliceToggle += ThiefFakePoliceToggle;
             }
             catch(Exception e) {
                 DependencyService.Get<Toast>().Show("(#1) Er was een probleem met het initialiseren van de web socket (MapViewModel)");
                 UnitOfWork.Instance.ErrorRepository.Create(e);
+            }
+        }
+
+        private void ThiefFakePoliceToggle(PlayerEventData data) {
+            Thief updatingPlayer = mapModel.Thiefs.Where(player => player.Id == data.Player.Id).FirstOrDefault();
+            
+            if(updatingPlayer == null) {
+                if(data.Player.Id == mapModel.PlayingUser.Id && mapModel.PlayingUser is Thief) {
+                    updatingPlayer = mapModel.PlayingUser as Thief;
+                }
+            }
+
+            if(updatingPlayer != null) {
+                mapModel.Players.Remove(updatingPlayer);
+
+                if(data.Player is FakePolice) {
+                    updatingPlayer = data.Player as FakePolice;
+                }
+                else if(data.Player is Thief) {
+                    updatingPlayer = data.Player as Thief;
+                }
+                else updatingPlayer = new Thief(data.Player, updatingPlayer.CaughtAt);
+
+                mapModel.Players.Add(updatingPlayer);
+
+                if(updatingPlayer.Id == mapModel.PlayingUser.Id) {
+                    Location myLocation = mapModel.PlayingUser.Location;
+                    mapModel.PlayingUser = updatingPlayer;
+                    mapViewService.Player = updatingPlayer;
+                    mapViewService.UpdatePlayerPinLocation(myLocation);
+                    DisplayAllPins();
+                }
             }
         }
 
@@ -704,6 +737,12 @@ namespace Hunted_Mobile.ViewModel {
             if(mapModel.PlayingUser is Thief) {
                 foreach(var loot in mapModel.Loot) {
                     mapViewService.AddLootPin(loot);
+                }
+
+                if(mapModel.PlayingUser is FakePolice) {
+                    foreach(var police in mapModel.Police) {
+                        mapViewService.AddPolicePin(police.UserName, police.Location);
+                    }
                 }
             }
         }
