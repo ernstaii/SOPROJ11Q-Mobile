@@ -16,24 +16,30 @@ namespace Hunted_Mobile.ViewModel {
             get => users;
             private set {
                 users = value;
-                OnPropertyChanged("Thieves");
-                OnPropertyChanged("Police");
+                OnPropertyChanged(nameof(Thieves));
+                OnPropertyChanged(nameof(Police));
             }
         }
 
-        public ObservableCollection<Player> Thieves {
-            get => new ObservableCollection<Player>(Users.Where(user => user is Thief).ToList());
+        public IReadOnlyCollection<Player> Thieves {
+            get => Users.Where(user => user is Thief).ToList();
         }
 
-        public ObservableCollection<Player> Police {
-            get => new ObservableCollection<Player>(Users.Where(user => user is Police).ToList());
+        public IReadOnlyCollection<Player> Police {
+            get => Users.Where(user => user is Police).ToList();
         }
 
         public PlayersOverviewViewModel(IReadOnlyList<Player> users, WebSocketService socketService) {
             Users = new ObservableCollection<Player>(users);
+            Users.CollectionChanged += Users_CollectionChanged;
             this.socketService = socketService;
 
             Task.Run(async () => await SetupSocket());
+        }
+
+        private void Users_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+            OnPropertyChanged(nameof(Thieves));
+            OnPropertyChanged(nameof(Police));
         }
 
         private async Task SetupSocket() {
