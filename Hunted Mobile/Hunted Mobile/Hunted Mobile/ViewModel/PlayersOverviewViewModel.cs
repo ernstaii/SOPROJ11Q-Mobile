@@ -52,21 +52,22 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void AddUser(PlayerEventData data) {
-            Users.Add(data.Player.ToPlayer());
+            Users.Add(data.PlayerBuilder.ToPlayer());
         }
 
         private void UpdateUsers(IntervalEventData data) {
             Users.Clear();
-            foreach(var builder in data.Players) {
+            foreach(var builder in data.PlayerBuilders) {
                 Users.Add(builder.ToPlayer());
             }
         }
 
         private void UpdateUserState(PlayerEventData data) {
+            var eventPlayer = data.PlayerBuilder.ToPlayer();
             foreach(Player player in Users) {
-                if(player.Id == data.Player.Id && player is Thief) {
+                if(player.Id == eventPlayer.Id && eventPlayer is Thief) {
                     Users.Remove(player);
-                    Users.Add(data.Player.ToPlayer());
+                    Users.Add(eventPlayer);
                     break;
                 }
             }

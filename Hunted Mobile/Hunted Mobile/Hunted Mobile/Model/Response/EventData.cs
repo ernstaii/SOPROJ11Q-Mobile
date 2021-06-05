@@ -9,13 +9,13 @@ namespace Hunted_Mobile.Model.Response {
     }
 
     public class IntervalEventData : EventData {
-        public PlayerBuilder[] Players { get; set; }
+        public PlayerBuilder[] PlayerBuilders { get; set; }
         public Loot[] Loot { get; set; }
         public bool DroneActive { get; set; }
     }
 
     public class PlayerEventData : EventData {
-        public PlayerBuilder Player { get; set; }
+        public PlayerBuilder PlayerBuilder { get; set; }
     }
 
     public class ScoreUpdatedEventData : EventData {
@@ -25,6 +25,6 @@ namespace Hunted_Mobile.Model.Response {
 
     public class GadgetsUpdatedEventData : EventData {
         public Gadget[] Gadgets { get; set; }
-        public PlayerBuilder Player { get; set; }
+        public PlayerBuilder PlayerBuilder { get; set; }
     }
 }

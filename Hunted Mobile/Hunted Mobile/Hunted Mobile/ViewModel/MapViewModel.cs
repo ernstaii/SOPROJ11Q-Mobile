@@ -358,7 +358,7 @@ namespace Hunted_Mobile.ViewModel {
             Location playingUserLocation = mapModel.PlayingUser.Location;
             var newPlayer = new List<Player>();
 
-            foreach(PlayerBuilder builder in data.Players) {
+            foreach(PlayerBuilder builder in data.PlayerBuilders) {
                 var player = builder.ToPlayer();
                 if(player != null) {
                     var gadgets = mapModel.Players.Where(p => p.Id == player.Id).FirstOrDefault()?.Gadgets;
@@ -461,10 +461,10 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void ThiefFakePoliceToggle(PlayerEventData data) {
-            Thief updatingPlayer = mapModel.Thiefs.Where(player => player.Id == data.Player.Id).FirstOrDefault();
+            Thief updatingPlayer = mapModel.Thiefs.Where(player => player.Id == data.PlayerBuilder.Id).FirstOrDefault();
             
             if(updatingPlayer == null) {
-                if(data.Player.Id == mapModel.PlayingUser.Id && mapModel.PlayingUser is Thief) {
+                if(data.PlayerBuilder.Id == mapModel.PlayingUser.Id && mapModel.PlayingUser is Thief) {
                     updatingPlayer = mapModel.PlayingUser as Thief;
                 }
             }
@@ -472,7 +472,7 @@ namespace Hunted_Mobile.ViewModel {
             if(updatingPlayer != null) {
                 mapModel.Players.Remove(updatingPlayer);
 
-                var eventPlayer = data.Player.ToPlayer();
+                var eventPlayer = data.PlayerBuilder.ToPlayer();
                 updatingPlayer = eventPlayer is FakePolice
                     ? eventPlayer as FakePolice
                     : eventPlayer as Thief;
@@ -490,7 +490,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void GadgetsUpdated(GadgetsUpdatedEventData data) {
-            Player updatingPlayer = mapModel.Players.Where(player => player.Id == data.Player.Id).FirstOrDefault();
+            Player updatingPlayer = mapModel.Players.Where(player => player.Id == data.PlayerBuilder.Id).FirstOrDefault();
 
             if(updatingPlayer != null) {
                 updatingPlayer.Gadgets = new List<Gadget>(data.Gadgets);

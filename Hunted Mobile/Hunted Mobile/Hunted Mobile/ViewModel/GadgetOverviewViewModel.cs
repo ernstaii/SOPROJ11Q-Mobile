@@ -63,12 +63,12 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void IntervalEvent(Model.Response.IntervalEventData data) {
-            var gadgets = data.Players.Where(p => p.Id == mapModel.PlayingUser.Id).FirstOrDefault()?.Gadgets;
+            var gadgets = data.PlayerBuilders.Where(p => p.Id == mapModel.PlayingUser.Id).FirstOrDefault()?.Gadgets;
             UpdateGadgets(gadgets);
         }
 
         private void GadgetsUpdate(Model.Response.GadgetsUpdatedEventData data) {
-            if(data?.Player?.Id == mapModel.PlayingUser.Id) {
+            if(data?.PlayerBuilder?.Id == mapModel.PlayingUser.Id) {
                 UpdateGadgets(data.Gadgets);
             }
         }
