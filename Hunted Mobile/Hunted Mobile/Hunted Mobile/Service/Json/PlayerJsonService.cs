@@ -19,7 +19,8 @@ namespace Hunted_Mobile.Service.Json {
                 status = builder.Status,
                 caught_at = builder.CaughtAt,
                 role = builder.InviteKey.Role,
-                triggered_alarm = builder.TriggeredAlarm
+                triggered_alarm = builder.TriggeredAlarm,
+                is_fake_agent = builder.FakePolice
             });
         }
 
@@ -34,7 +35,8 @@ namespace Hunted_Mobile.Service.Json {
                 .SetStatus(data.status)
                 .SetUsername(data.username)
                 .SetTriggeredAlarm(data.triggered_alarm)
-                .SetCaughtAt(data.caught_at);
+                .SetCaughtAt(data.caught_at)
+                .SetFakePolice(data.is_fake_agent);
         }
 
         public PlayerBuilder ToObject(string json, InviteKey inviteKey) {

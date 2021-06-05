@@ -10,7 +10,10 @@ namespace Hunted_Mobile.Service.Map {
             menu,
             users,
             close,
-            gadgets;
+            gadgets,
+            alarm,
+            smoke,
+            drone;
 
         public MapIconsService() {
             chat = UnitOfWork.Instance.ResourceRepository.GetGuiImage("chat.png");
@@ -18,14 +21,20 @@ namespace Hunted_Mobile.Service.Map {
             users = UnitOfWork.Instance.ResourceRepository.GetGuiImage("users.png");
             gadgets = UnitOfWork.Instance.ResourceRepository.GetGuiImage("backpack.png");
             close = UnitOfWork.Instance.ResourceRepository.GetGuiImage("close.png");
+            alarm = UnitOfWork.Instance.ResourceRepository.GetGuiImage("alarm.png");
+            smoke = UnitOfWork.Instance.ResourceRepository.GetGuiImage("smoke.png");
+            drone = UnitOfWork.Instance.ResourceRepository.GetGuiImage("drone.png");
 
             OnPropertyChanged(nameof(Chat));
             OnPropertyChanged(nameof(Menu));
             OnPropertyChanged(nameof(Users));
             OnPropertyChanged(nameof(Gadgets));
+            OnPropertyChanged(nameof(Alarm));
+            OnPropertyChanged(nameof(Smoke));
+            OnPropertyChanged(nameof(Drone));
 
             // Gadgets icons:
-            // alarm, smoke, drone, police, thief
+            // police, thief
 
             // Roles icons:
             // police, thief
@@ -38,6 +47,12 @@ namespace Hunted_Mobile.Service.Map {
         public UriImageSource Users => GetUriImageSource(users);
 
         public UriImageSource Gadgets => GetUriImageSource(gadgets);
+
+        public UriImageSource Alarm => GetUriImageSource(alarm);
+
+        public UriImageSource Smoke => GetUriImageSource(smoke);
+
+        public UriImageSource Drone => GetUriImageSource(drone);
 
         public UriImageSource Close => GetUriImageSource(close);
 

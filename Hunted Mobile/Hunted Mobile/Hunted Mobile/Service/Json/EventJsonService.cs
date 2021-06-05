@@ -1,9 +1,7 @@
 ﻿using Hunted_Mobile.Model.GameModels.Gadget;
 using Hunted_Mobile.Model.Response;
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Hunted_Mobile.Service.Json {
     public class EventJsonService : JsonConversionService<EventData, Model.Response.Json.EventData> {
@@ -64,6 +62,16 @@ namespace Hunted_Mobile.Service.Json {
                 TimeLeft = data.timeLeft,
                 Gadgets = flattenedGadgets.ToArray(),
                 Player = new PlayerJsonService().ToObject(data.user)
+            };
+        }
+    }
+
+    public class ThiefFakePoliceToggleEventJsonService : JsonConversionService<PlayerEventData, Model.Response.Json.UserEventData> {
+        public override PlayerEventData ToObject(Model.Response.Json.UserEventData data) {
+            return new PlayerEventData {
+                Message = data.message,
+                Player = new PlayerJsonService().ToObject(data.user),
+                TimeLeft = data.timeLeft,
             };
         }
     }

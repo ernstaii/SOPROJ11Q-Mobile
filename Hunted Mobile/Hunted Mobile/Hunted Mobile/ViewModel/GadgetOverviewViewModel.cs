@@ -20,6 +20,7 @@ namespace Hunted_Mobile.ViewModel {
             public ObservableCollection<GadgetWithCommand> GadgetCollection { get; set; }
             public ICommand UseGadgetCommand => new Xamarin.Forms.Command(async (e) => {
                 used = true; // Disable the button while awaiting success
+                OnPropertyChanged(nameof(Available));
                 used = await PlayingUser.Use(Gadget);
                 OnPropertyChanged(nameof(Available));
             });
@@ -29,6 +30,10 @@ namespace Hunted_Mobile.ViewModel {
                 Gadget = gadget;
                 PlayingUser = playingUser;
                 GadgetCollection = gadgetCollection;
+            }
+
+            public void Update() {
+                OnPropertyChanged(nameof(Available));
             }
         }
 
@@ -74,6 +79,12 @@ namespace Hunted_Mobile.ViewModel {
                 foreach(var gadget in gadgets) {
                     Gadgets.Add(new GadgetWithCommand(gadget, mapModel.PlayingUser, Gadgets));
                 }
+            }
+        }
+
+        public void Update() {
+            foreach(var singleGadgetViewModel in Gadgets) {
+                singleGadgetViewModel.Update();
             }
         }
     }
