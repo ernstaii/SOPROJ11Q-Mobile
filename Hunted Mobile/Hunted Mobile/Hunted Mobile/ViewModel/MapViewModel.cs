@@ -472,10 +472,8 @@ namespace Hunted_Mobile.ViewModel {
             if(updatingPlayer != null) {
                 mapModel.Players.Remove(updatingPlayer);
 
-                var eventPlayer = data.PlayerBuilder.ToPlayer();
-                updatingPlayer = eventPlayer is FakePolice
-                    ? eventPlayer as FakePolice
-                    : eventPlayer as Thief;
+                // At this point we know for sure the player is a thief so we can call ToThief
+                updatingPlayer = data.PlayerBuilder.ToThief();
 
                 mapModel.Players.Add(updatingPlayer);
 

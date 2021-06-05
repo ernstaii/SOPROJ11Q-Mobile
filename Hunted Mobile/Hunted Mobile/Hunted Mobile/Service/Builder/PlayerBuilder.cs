@@ -68,18 +68,29 @@ namespace Hunted_Mobile.Service.Builder {
         }
 
         public Player ToPlayer() {
-            switch(InviteKey?.Role.ToLower()) {
+            switch(InviteKey?.Role?.ToLower()) {
                 case PlayerRole.THIEF:
-                    var thief = new Thief(Id, UserName, InviteKey, Location, Status, Gadgets, TriggeredAlarm, CaughtAt);
-                    if(FakePolice) {
-                        return new FakePolice(thief);
-                    }
-                    else return thief;
+                    return ToThief();
                 case PlayerRole.POLICE:
-                    return new Police(Id, UserName, InviteKey, Location, Status, Gadgets, TriggeredAlarm);
+                    return ToPolice();
                 default:
-                    return null; // throw new ArgumentException("InviteKey did not have a value for Role")
+                    if(FakePolice) {
+                        return ToThief();
+                    }
+                    else return null; // throw new ArgumentException("InviteKey did not have a value for Role")
             }
+        }
+
+        public Thief ToThief() {
+            var thief = new Thief(Id, UserName, InviteKey, Location, Status, Gadgets, TriggeredAlarm, CaughtAt);
+            if(FakePolice) {
+                return new FakePolice(thief);
+            }
+            else return thief;
+        }
+
+        public Police ToPolice() {
+            return new Police(Id, UserName, InviteKey, Location, Status, Gadgets, TriggeredAlarm);
         }
     }
 }
