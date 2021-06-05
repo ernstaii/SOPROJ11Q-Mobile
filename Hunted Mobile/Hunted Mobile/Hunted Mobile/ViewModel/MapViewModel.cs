@@ -472,13 +472,10 @@ namespace Hunted_Mobile.ViewModel {
             if(updatingPlayer != null) {
                 mapModel.Players.Remove(updatingPlayer);
 
-                if(data.Player is FakePolice) {
-                    updatingPlayer = data.Player as FakePolice;
-                }
-                else if(data.Player is Thief) {
-                    updatingPlayer = data.Player as Thief;
-                }
-                else updatingPlayer = new Thief(data.Player, updatingPlayer.CaughtAt);
+                var eventPlayer = data.Player.ToPlayer();
+                updatingPlayer = eventPlayer is FakePolice
+                    ? eventPlayer as FakePolice
+                    : eventPlayer as Thief;
 
                 mapModel.Players.Add(updatingPlayer);
 
