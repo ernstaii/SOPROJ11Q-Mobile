@@ -19,8 +19,8 @@
             <!-- Hunted title -->
             <Label Text="HUNTED" 
                    Padding="5" 
-                   HorizontalTextAlignment="Center" 
-                   TextColor="Black" 
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" 
                    FontAttributes="Bold"
                    Grid.ColumnSpan="2"
                    FontSize="36"/>
@@ -30,7 +30,7 @@
                    Grid.Row="1"
                    Padding="5" 
                    HorizontalTextAlignment="Center" 
-                   TextColor="Black" 
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" 
                    FontAttributes="Bold" 
                    FontSize="20"/>
             <ListView Grid.Row="2" ItemsSource="{Binding Police}">
@@ -49,7 +49,7 @@
             <Label Text="Boeven" 
                    Padding="5" 
                    HorizontalTextAlignment="Center"
-                   TextColor="Black"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}"
                    FontAttributes="Bold" 
                    FontSize="20"
                    Grid.Column="1"
@@ -73,7 +73,7 @@
             IsRunning="{Binding IsLoading}"
             HorizontalOptions="CenterAndExpand"
             VerticalOptions="CenterAndExpand"
-            Color="Black"/>
+            Color="{AppThemeBinding Light=Black, Dark=White}"/>
         </StackLayout>
     </AbsoluteLayout>
 </ContentPage>

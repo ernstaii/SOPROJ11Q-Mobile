@@ -1,10 +1,8 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Service;
+using Hunted_Mobile.Service.Json;
 
 using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Hunted_Mobile.Repository {
@@ -13,18 +11,7 @@ namespace Hunted_Mobile.Repository {
             HttpClientResponse response = new HttpClientResponse();
             await response.Convert(HttpClientRequestService.Get($"games/{gameId}"));
 
-            return new Game() {
-                Id = response.GetNumberValue("id"),
-                Duration = response.GetNumberValue("duration"),
-                Interval = response.GetNumberValue("interval"),
-                EndTime = DateTime.Now.AddSeconds(response.GetNumberValue("time_left")),
-                Status = response.GetStringValue("status"),
-                ThievesScore = response.GetNumberValue("thieves_score"),
-                PoliceScore = response.GetNumberValue("police_score"),
-                PoliceStationLocation = new Location(
-                    response.GetStringValue("police_station_location")
-                )
-            };
+            return new GameJsonService().ToObject(response.ResponseContent);
         }
 
         public async Task<bool> UpdateThievesScore(int gameId, int score) {
@@ -32,6 +19,12 @@ namespace Hunted_Mobile.Repository {
             await response.Convert(HttpClientRequestService.Patch($"games/{gameId}/thieves-score/{score}"));
 
             return response.IsSuccessful;
+        }
+
+        public string GetLogoUrl(int gameId) {
+            var url = HttpClientRequestService.GetUrl($"games/{gameId}/logo");
+
+            return url;
         }
 
         public async Task<bool> UpdatePoliceScore(int gameId, int score) {

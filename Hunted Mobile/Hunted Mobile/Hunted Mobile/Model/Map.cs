@@ -1,67 +1,81 @@
 ﻿using Hunted_Mobile.Model.GameModels;
 
-using Mapsui.Geometries;
-using Mapsui.UI.Forms;
-using Mapsui.UI.Objects;
-
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Hunted_Mobile.Model {
     public class Map {
-        private List<Player> users = new List<Player>();
+        private readonly ObservableCollection<Player> players = new ObservableCollection<Player>();
+        private readonly ObservableCollection<Loot> loot = new ObservableCollection<Loot>();
+        private Player playingUser;
 
-        private List<Loot> loot = new List<Loot>();
+        public ICollection<Player> Players {
+            get => players;
+            set {
+                players.Clear();
 
-        public Player PlayingUser { get; set; }
-        public Boundary GameBoundary { get; set; }
-
-        public Map() { }
-
-        public void AddUser(Player user) {
-            users.Add(user);
-        }
-        public void RemoveUser(Player user) {
-            users.Remove(user);
-        }
-        public IEnumerable<Player> GetUsers() {
-            return users.AsReadOnly();
-        }
-        public Player GetUserById(int id) {
-            foreach(Player user in users) {
-                if(user.Id == id) {
-                    return user;
+                foreach(var item in value) {
+                    players.Add(item);
+                }
+                if(!players.Contains(playingUser)) {
+                    players.Add(playingUser);
                 }
             }
-            return null;
         }
-        public void SetUsers(IEnumerable<Player> users) {
-            this.users = new List<Player>(users);
+        public ICollection<Loot> Loot {
+            get => loot;
+            set {
+                loot.Clear();
+
+                foreach(var item in value) {
+                    loot.Add(item);
+                }
+            }
         }
 
-        public void AddLoot(Loot loot) {
-            this.loot.Add(loot);
+        public IReadOnlyCollection<Police> Police => Players.Where(user => user is Police).Select(user => (Police) user).ToList();
+        public IReadOnlyCollection<Thief> Thiefs => Players.Where(user => user is Thief).Select(user => (Thief) user).Where(thief => !thief.IsCaught).ToList();
+
+        public Player PlayingUser {
+            get => playingUser; 
+            set {
+                players.Remove(PlayingUser);
+                playingUser = value;
+                players.Add(value);
+            }
+        }
+        public Boundary GameBoundary { get; set; }
+
+        public Map() {
+            players.CollectionChanged += CollectionChanged;
+            loot.CollectionChanged += CollectionChanged;
         }
 
-        public void RemoveLoot(Loot loot) {
-            this.loot.Remove(loot);
-        }
-
-        public IEnumerable<Loot> GetLoot() {
-            return loot.AsReadOnly();
-        }
-
-        public void SetLoot(IEnumerable<Loot> loot) {
-            this.loot = new List<Loot>(loot);
+        private void CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+            if(e.NewItems != null) {
+                foreach(var item in e.NewItems) {
+                    if(item is Player) {
+                        if(!((Player) item).IsValid) {
+                            throw new OperationCanceledException("Could not add invalid player " + item);
+                        }
+                    }
+                    else if(item is Loot) {
+                        if(!((Loot) item).IsValid) {
+                            throw new OperationCanceledException("Could not add invalid loot " + loot);
+                        }
+                    }
+                }
+            }
         }
 
         public Loot FindLoot(Location location) {
-            return loot.FirstOrDefault(loot => loot.Location.Equals(location));
+            return Loot.FirstOrDefault(loot => loot.Location.Equals(location));
         }
 
         internal Thief FindThief(Location location) {
-            return users.Select(user => new Thief(user)).FirstOrDefault(user => user.Location.Equals(location));
+            return Thiefs.FirstOrDefault(thief => thief.Location.Equals(location));
         }
     }
 }

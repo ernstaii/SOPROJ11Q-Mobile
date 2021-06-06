@@ -1,13 +1,14 @@
-﻿using Hunted_Mobile.Model;
+﻿using Hunted_Mobile.Enum;
+using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Service;
-
-using Newtonsoft.Json.Linq;
+using Hunted_Mobile.Service.Json;
 
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
+
+using Xamarin.Forms;
 
 namespace Hunted_Mobile.Repository {
     public class UserRepository {
@@ -18,22 +19,10 @@ namespace Hunted_Mobile.Repository {
                 invite_key = player.InviteKey.Value,
             }));
 
-            var responseLoc = response.GetStringValue("location");
+            Player newPlayer = new PlayerJsonService().ToObject(response.ResponseContent, player.InviteKey).ToPlayer();
+            newPlayer.ErrorMessages = response.ErrorMessages;
 
-            Type t = typeof(Thief);
-
-            Player newUser = new Player() {
-                Id = response.GetNumberValue("id"),
-                InviteKey = player.InviteKey,
-                UserName = player.UserName,
-                ErrorMessages = response.ErrorMessages,
-                Location = string.IsNullOrWhiteSpace(responseLoc) ? null : new Location(responseLoc)
-            };
-            newUser.InviteKey.UserId = newUser.Id;
-
-            if(newUser.InviteKey.Role == "thief") return new Thief(newUser);
-            else if(newUser.InviteKey.Role == "police") return new Police(newUser);
-            else return newUser;
+            return newPlayer;
         }
 
         // Get all users that are linked to a game
@@ -45,31 +34,8 @@ namespace Hunted_Mobile.Repository {
             await usersResponse.Convert(HttpClientRequestService.GetAll($"games/{gameId}/users-with-role"));
 
             var result = new List<Player>();
-
-            // Looping through the result
-            foreach(JObject item in usersResponse.Items) {
-                try {
-                    string role = item.GetValue("role")?.ToString();
-                    int userId = (int) item.GetValue("id");
-
-                    Player user = new Player() {
-                        Id = userId,
-                        UserName = item.GetValue("username")?.ToString(),
-                        Location = new Location(item.GetValue("location")?.ToString()),
-                        CaughtAt = item.GetValue("caught_at")?.ToString(),
-                        Status = item.GetValue("status")?.ToString(),
-                        InviteKey = new InviteKey() {
-                            Role = role
-                        },
-                    };
-
-                    if(role == "thief") result.Add(new Thief(user));
-                    else if(role == "police") result.Add(new Police(user));
-                    else result.Add(user);
-                }
-                catch(Exception ex) {
-                    Console.WriteLine(ex.ToString());
-                }
+            foreach(var builder in new PlayerJsonService().ToObjects(usersResponse.ResponseContent)) {
+                result.Add(builder.ToPlayer());
             }
 
             return result;
@@ -90,6 +56,18 @@ namespace Hunted_Mobile.Repository {
             }));
 
             return response.ResponseContent != null;
+        }
+
+        public async Task<Player> GetUser(int userId, int gameId) {
+            HttpClientResponse response = new HttpClientResponse();
+            await response.Convert(HttpClientRequestService.Get($"users/{userId}"));
+
+            if(response.Status == System.Net.HttpStatusCode.NotFound) return null;
+
+            var user = new PlayerJsonService().ToObject(response.ResponseContent);
+            user.InviteKey.GameId = gameId;
+
+            return user.ToPlayer();
         }
     }
 }

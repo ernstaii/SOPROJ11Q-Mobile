@@ -15,18 +15,17 @@ namespace Hunted_Mobile.ViewModel {
         public ObservableCollection<GameMessage> ChatMessages { get; set; } = new ObservableCollection<GameMessage>();
         public CollectionView CollectionView { get; set; }
 
-        public MessageViewModel(int gameId, CollectionView collection) {
-            CollectionView = collection;
-
-            WebSocketService socket = new WebSocketService(gameId);
+        public MessageViewModel(string gameId) {
+            WebSocketService socket = new WebSocketService(gameId.ToString());
             AddMessage("Het spel is begonnen!");
-            socket.PauseGame += (data) => AddMessage((String) data.GetValue("message"));
-            socket.ResumeGame += (data) => AddMessage((String) data.GetValue("message"));
-            socket.EndGame += (data) => AddMessage((String) data.GetValue("message"));
-            socket.ThiefCaught += (data) => AddMessage((String) data.GetValue("message"));
-            socket.ThiefReleased += (data) => AddMessage((String) data.GetValue("message"));
+            socket.PauseGame += (data) => AddMessage(data.Message);
+            socket.ResumeGame += (data) => AddMessage(data.Message);
+            socket.NotificationEvent += (data) => AddMessage(data.Message);
+            socket.EndGame += (data) => AddMessage(data.Message);
+            socket.ThiefCaught += (data) => AddMessage(data.Message);
+            socket.ThiefReleased += (data) => AddMessage(data.Message);
 
-            if(!WebSocketService.Connected) {
+            if(!WebSocketService.Online) {
                 Task.Run(async () => await socket.Connect());
             }
         }
@@ -38,8 +37,10 @@ namespace Hunted_Mobile.ViewModel {
                 UserName = "Spelleider"
             });
 
-            // Scroll to top of CollectionView, because otherwise new items are not shown
-            CollectionView.ScrollTo(0, position: ScrollToPosition.Start);
+            if(CollectionView != null) {
+                // Scroll to top of CollectionView, because otherwise new items are not shown
+                CollectionView.ScrollTo(0, position: ScrollToPosition.Start);
+            }
         }
     }
 }

@@ -1,8 +1,4 @@
-﻿using Hunted_Mobile.Model;
-using Hunted_Mobile.Model.GameModels;
-using Hunted_Mobile.ViewModel;
-
-using System.Threading.Tasks;
+﻿using Hunted_Mobile.ViewModel;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -10,9 +6,9 @@ using Xamarin.Forms.Xaml;
 namespace Hunted_Mobile.View {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Lobby : ContentPage {
-        public Lobby(Player userModel) {
+        public Lobby(LobbyViewModel viewModel) {
             InitializeComponent();
-            BindingContext = new LobbyViewModel(this, userModel);
+            BindingContext = viewModel;
         }
     }
 }

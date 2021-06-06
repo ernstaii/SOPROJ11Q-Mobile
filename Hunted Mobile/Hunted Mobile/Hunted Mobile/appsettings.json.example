@@ -1,0 +1,12 @@
+{
+  "pusher": {
+    // Live 6ddf60970f8423c0cb36
+    // Test 27357622ad22f596bba2
+    "key": ""
+  },
+  "web_service": {
+    // Heroku http://soproj11q.herokuapp.com
+    // IP http://xxx.xxx.xx.x:xxxx
+    "address": ""
+  }
+}

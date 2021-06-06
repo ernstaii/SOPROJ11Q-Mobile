@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Hunted_Mobile.ViewModel"
+             x:Class="Hunted_Mobile.View.GadgetsPage">
+    <!-- Main layout -->
+    <StackLayout Margin="5">
+        <!-- Hunted title -->
+        <Label Text="Gadgets" 
+                   Padding="5" 
+                   HorizontalTextAlignment="Center" 
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" 
+                   FontAttributes="Bold"
+                   FontSize="36"/>
+
+        <CollectionView ItemsSource="{Binding Gadgets}" Margin="15">
+            <CollectionView.ItemTemplate>
+                <!-- Custom layout of item -->
+                <DataTemplate>
+                    <StackLayout Margin="0,5">
+                        <Frame CornerRadius="5" OutlineColor="Black" BackgroundColor="White" Padding="10,5">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="25" />
+                                    <RowDefinition Height="auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60" />
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="60" />
+                                </Grid.ColumnDefinitions>
+
+                                <Image Source="{Binding Gadget.Icon}"
+                                HorizontalOptions="Center"
+                                WidthRequest="60"
+                                HeightRequest="60"
+                                BackgroundColor="White"
+                                Grid.RowSpan="2"/>
+                                <Label Text="{Binding Gadget.Name}" FontSize="20" FontAttributes="Bold" TextColor="Black" Grid.Column="1"/>
+                                <Label Text="{Binding Gadget.Description}" FontSize="15" TextColor="Black" Grid.Column="1" Grid.Row="1" />
+                                <Button HorizontalOptions="Center"
+                                        IsEnabled="{Binding Available}"
+                                        Command="{Binding UseGadgetCommand}"
+                                        CornerRadius="30"
+                                        Margin="0,20"
+                                        Text="Zet in"
+                                        WidthRequest="60"
+                                        HeightRequest="60"
+                                        BackgroundColor="LightGray"
+                                        BorderColor="Black"
+                                        Grid.Column="2"
+                                        Grid.RowSpan="2"/>
+                            </Grid>
+                        </Frame>
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</ContentPage>

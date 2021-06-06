@@ -1,8 +1,5 @@
-﻿using Mapsui.Geometries;
-
+﻿
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Hunted_Mobile.Model {
     /// <summary>
@@ -13,26 +10,14 @@ namespace Hunted_Mobile.Model {
         /// <summary>
         /// Horizontal map coordinate
         /// </summary>
-        public double Latitude { get; set; }
+        public double Latitude { get; set; } = double.NaN;
 
         /// <summary>
         /// Vertical map coordinate
         /// </summary>
-        public double Longitude { get; set; }
+        public double Longitude { get; set; } = double.NaN;
 
         public Location() {
-
-        }
-
-        public Location(string commaSeparatedLatitudeLongitude) {
-            string[] split = commaSeparatedLatitudeLongitude.Split(',');
-            try {
-                Latitude = double.Parse(split[0]);
-                Longitude = double.Parse(split[1]);
-            }
-            catch(Exception ex) {
-                Console.WriteLine(ex.Message + " occurred when parsing comma separated location: " + commaSeparatedLatitudeLongitude);
-            }
         }
 
         public Location(double latitude, double longitude) {
@@ -69,6 +54,7 @@ namespace Hunted_Mobile.Model {
         }
 
         // https://stackoverflow.com/a/11172685
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Mathatmatical notations")]
         public double DistanceToOtherInMeters(Location other) {
             var R = 6378.137; // Radius of earth in KM
             var dLat = other.Latitude * Math.PI / 180 - Latitude * Math.PI / 180;
@@ -82,11 +68,15 @@ namespace Hunted_Mobile.Model {
         }
 
         public string ToCsvString() {
-            return $"{Latitude},{Longitude}";
+            return Latitude.ToString(AppSettings.Locale) + "," + Longitude.ToString(AppSettings.Locale);
         }
 
         public bool Equals(Location location) {
             return location.Latitude.Equals(Latitude) && location.Longitude.Equals(Longitude);
+        }
+
+        public bool IsSet() {
+            return !Latitude.Equals(double.NaN) && !Longitude.Equals(double.NaN);
         }
     }
 }

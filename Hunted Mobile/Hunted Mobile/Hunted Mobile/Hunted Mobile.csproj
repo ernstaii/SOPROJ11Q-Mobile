@@ -11,9 +11,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="appsettings.json" />
+    <None Remove="appsettings.json.example" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="appsettings.json" />
+    <EmbeddedResource Include="appsettings.json.example" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Mapsui.Forms" Version="2.0.3" />
-    <PackageReference Include="Prism.Forms" Version="8.0.0.1909" />
-    <PackageReference Include="PusherClient" Version="2.0.1" />
+    <PackageReference Include="PusherClient" Version="2.1.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="Xam.Plugin.Geolocator" Version="4.5.0.6" />
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
@@ -28,6 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="View\GadgetsPage.xaml.cs">
+      <DependentUpon>GadgetsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="View\MapPage.xaml.cs">
       <DependentUpon>MapPage.xaml</DependentUpon>
     </Compile>
@@ -35,6 +47,9 @@
 
   <ItemGroup>
     <EmbeddedResource Update="View\EnterUsername.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="View\GadgetsPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="View\Lobby.xaml">

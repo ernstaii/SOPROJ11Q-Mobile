@@ -1,10 +1,13 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Hunted_Mobile.Model.Response;
+using Hunted_Mobile.Repository;
+using Hunted_Mobile.Service.Json;
 
 using PusherClient;
 
 using System;
 using System.Threading.Tasks;
+
+using Xamarin.Forms;
 
 namespace Hunted_Mobile.Service {
     /// <summary>
@@ -14,17 +17,19 @@ namespace Hunted_Mobile.Service {
     public class WebSocketService {
         #region Static
         private static readonly Pusher pusher = new Pusher(
-            "6ddf60970f8423c0cb36",
+            AppSettings.PusherKey,
             new PusherOptions() {
                 Cluster = "eu",
                 Encrypted = true,
             }
         );
 
+        private static string subscribedChannel;
+
         /// <summary>
         /// Whether or not the socket connection to the API is currently connected
         /// </summary>
-        public static bool Connected { get; private set; }
+        public static bool Online { get; private set; }
 
         // Static initializer, executed once during the first usage of the class
         static WebSocketService() {
@@ -33,76 +38,105 @@ namespace Hunted_Mobile.Service {
         }
 
         private static void ErrorOccurred(object sender, PusherException error) {
-            throw error;
+            if(error is EventEmitterActionException<PusherEvent>) {
+                DependencyService.Get<Toast>().Show("(#11) Error in event " + ((EventEmitterActionException<PusherEvent>) error).EventName + " (WebSocketService)");
+            }
+            else {
+                DependencyService.Get<Toast>().Show("(#11) Er was een probleem met de pusher (WebSocketService)");
+            }
+            UnitOfWork.Instance.ErrorRepository.Create(error);
         }
 
         /// <summary>
         /// Updates the Connected property when the connection state changes
         /// </summary>
         private static void ConnectionStateChanged(object sender, ConnectionState state) {
-            Connected = state == ConnectionState.Connected
-                || state == ConnectionState.Disconnecting;
+            if(state == ConnectionState.Disconnected && Online) {
+                DependencyService.Get<Toast>().Show("De socket verbinding wordt hersteld");
+                pusher.ConnectAsync();
+            }
+            else if(state == ConnectionState.Connected && !Online) {
+                DependencyService.Get<Toast>().Show("De socket verbinding wordt verbroken");
+                pusher.DisconnectAsync();
+            }
         }
         #endregion
 
+        private readonly string gameIdString;
+
         public delegate void SocketEvent();
-        public delegate void SocketEvent<T>(T data);
+        public delegate void SocketEvent<T>(T data) where T : EventData;
 
-        public event SocketEvent StartGame;
-        public event SocketEvent<JObject> PauseGame;
-        public event SocketEvent<JObject> ResumeGame;
-        public event SocketEvent<JObject> EndGame;
-        public event SocketEvent<JObject> IntervalEvent;
-        public event SocketEvent<JObject> ThiefCaught;
-        public event SocketEvent<JObject> ThiefReleased;
-        public event SocketEvent<JObject> PlayerJoined;
+        public event SocketEvent<EventData> StartGame;
+        public event SocketEvent<EventData> PauseGame;
+        public event SocketEvent<EventData> ResumeGame;
+        public event SocketEvent<EventData> NotificationEvent;
+        public event SocketEvent<EventData> EndGame;
+        public event SocketEvent<IntervalEventData> IntervalEvent;
+        public event SocketEvent<PlayerEventData> ThiefCaught;
+        public event SocketEvent<PlayerEventData> ThiefReleased;
+        public event SocketEvent<PlayerEventData> PlayerJoined;
+        public event SocketEvent<ScoreUpdatedEventData> ScoreUpdated;
+        public event SocketEvent<GadgetsUpdatedEventData> GadgetsUpdated;
+        public event SocketEvent<PlayerEventData> ThiefFakePoliceToggle;
 
-        public WebSocketService(int gameId) {
-            string gameIdStr = gameId.ToString();
-            string channelName = "game." + gameIdStr;
-            
-            var channel = pusher.GetChannel(channelName);
-            if(channel == null || !channel.IsSubscribed) {
-                pusher.SubscribeAsync(channelName);
+        public WebSocketService(string gameId) {
+            gameIdString = gameId;
+            string channelName = "game." + gameIdString;
+
+            if(!channelName.Equals(subscribedChannel)) {
+                subscribedChannel = channelName;
+                pusher.UnbindAll();
+                pusher.UnsubscribeAllAsync().ContinueWith(new Action<Task>(
+                    (task) => pusher.SubscribeAsync(channelName)
+                ));
             }
 
-            Bind("game.start", () => StartGame(), gameIdStr);
-            Bind<JObject>("game.pause", (data) => PauseGame(data), gameIdStr);
-            Bind<JObject>("game.resume", (data) => ResumeGame(data), gameIdStr);
-            Bind<JObject>("game.end", (data) => EndGame(data), gameIdStr);
-            Bind<JObject>("game.interval", (data) => IntervalEvent(data), gameIdStr);
-            Bind<JObject>("thief.caught", (data) => ThiefCaught(data), gameIdStr);
-            Bind<JObject>("thief.released", (data) => ThiefReleased(data), gameIdStr);
-            Bind<JObject>("player.joined", (data) => PlayerJoined(data), gameIdStr);
+            Bind("game.start", (json) => InvokeEvent(StartGame, new EventJsonService(), json));
+            Bind("game.pause", (json) => InvokeEvent(PauseGame, new EventJsonService(), json));
+            Bind("game.resume", (json) => InvokeEvent(ResumeGame, new EventJsonService(), json));
+            Bind("game.notification", (json) => InvokeEvent(NotificationEvent, new EventJsonService(), json));
+            Bind("game.end", (json) => InvokeEvent(EndGame, new EventJsonService(), json));
+            Bind("game.interval", (json) => InvokeEvent(IntervalEvent, new IntervalEventJsonService(), json));
+            Bind("thief.caught", (json) => InvokeEvent(ThiefCaught, new PlayerEventJsonService(), json));
+            Bind("thief.released", (json) => InvokeEvent(ThiefReleased, new PlayerEventJsonService(), json));
+            Bind("player.joined", (json) => InvokeEvent(PlayerJoined, new PlayerEventJsonService(), json));
+            Bind("score.updated", (json) => InvokeEvent(ScoreUpdated, new ScoreUpdatedEventJsonService(), json));
+            Bind("gadgets.update", (json) => InvokeEvent(GadgetsUpdated, new GadgetsUpdatedEventJsonService(), json));
+            Bind("thief.fakeAgent", (json) => InvokeEvent(ThiefFakePoliceToggle, new ThiefFakePoliceToggleEventJsonService(), json));
         }
 
-        private void Bind(string eventName, Action action, string gameIdStr) {
+        private void InvokeEvent<EventType, DataType>(SocketEvent<EventType> @event, JsonConversionService<EventType, DataType> converter, string json) 
+            where EventType : EventData 
+            where DataType : Model.Response.Json.JsonResponseData {
+            if(@event != null) {
+                @event(converter.ToObject(json));
+            }
+        }
+
+        private void Bind(string eventName, Action action) {
             pusher.Bind(eventName, (PusherEvent eventData) => {
-                if(eventData.ChannelName.EndsWith(gameIdStr)) {
+                if(eventData.ChannelName.EndsWith(gameIdString)) {
                     action();
                 }
             });
         }
 
-        private void Bind<T>(string eventName, Action<T> action, string gameIdStr) {
+        private void Bind(string eventName, Action<string> action) {
             pusher.Bind(eventName, (PusherEvent eventData) => {
-                try {
-                    if(eventData.ChannelName.EndsWith(gameIdStr)) {
-                        T data = JsonConvert.DeserializeObject<T>(eventData.Data);
-                        action(data);
-                    }
-                }
-                catch(Exception ex) {
-                    Console.WriteLine("An error occurred while deserializing event data: " + ex.StackTrace);
+                if(eventData.ChannelName.EndsWith(gameIdString)) {
+                    action(eventData.Data);
                 }
             });
         }
 
         public async Task Connect() {
+            Online = true;
             await pusher.ConnectAsync();
         }
 
         public async Task Disconnect() {
+            Online = false;
             await pusher.DisconnectAsync();
         }
     }

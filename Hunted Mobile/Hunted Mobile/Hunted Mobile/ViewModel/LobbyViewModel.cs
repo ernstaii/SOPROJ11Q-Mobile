@@ -1,14 +1,12 @@
 ﻿using Hunted_Mobile.Enum;
 using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
+using Hunted_Mobile.Model.Response;
 using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
-using Hunted_Mobile.View;
-
-using Newtonsoft.Json.Linq;
+using Hunted_Mobile.Service.Preference;
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,17 +15,13 @@ using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class LobbyViewModel : BaseViewModel {
-        private List<Player> users = new List<Player>();
+        private ObservableCollection<Player> users = new ObservableCollection<Player>();
         private Game gameModel = new Game();
         private readonly Player currentUser;
-        private readonly UserRepository userRepository = new UserRepository();
-        private readonly GameRepository gameRepository = new GameRepository(); 
-        private readonly InviteKeyRepository inviteKeyRepository = new InviteKeyRepository();
-        private readonly Lobby page;
         private readonly WebSocketService webSocketService;
-
+        private readonly GameSessionPreference gameSessionPreference;
         private bool isloading;
-        
+
         public Game GameModel {
             get => gameModel;
             set {
@@ -44,7 +38,7 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public List<Player> Users {
+        public ObservableCollection<Player> Users {
             get => users;
             set {
                 users = value;
@@ -61,59 +55,92 @@ namespace Hunted_Mobile.ViewModel {
             get => new ObservableCollection<Player>(Users.Where(user => user is Police).ToList());
         }
 
-        public LobbyViewModel(Lobby page, Player currentUser) {
-            this.page = page;
+        public LobbyViewModel(Player currentUser) {
             this.currentUser = currentUser;
             gameModel.Id = this.currentUser.InviteKey.GameId;
+            gameSessionPreference = new GameSessionPreference();
+            SaveCurrentGame();
 
-            webSocketService = new WebSocketService(gameModel.Id);
-            Task.Run(async () => await StartSocket());
+            webSocketService = new WebSocketService(gameModel.Id.ToString());
+
+            IsLoading = true;
+
+            RemovePreviousNavigation();
+
             Task.Run(async () => await LoadUsers());
-            Task.Run(async () => await CheckForStatus());
+            Task.Run(async () => {
+                await StartSocket();
+                
+                // The socket-event should be set first, then the status can be checked
+                await CheckForStatus();
+                IsLoading = false;
+            });
         }
 
         private async Task StartSocket() {
-            if(!WebSocketService.Connected) {
+            if(!WebSocketService.Online) {
                 await webSocketService.Connect();
             }
 
             webSocketService.StartGame += StartGame;
+            webSocketService.PlayerJoined += AddUser;
         }
 
-        private async void StartGame() {
-            GameModel = await gameRepository.GetGame(gameModel.Id);
+        private async Task LoadUsers() {
+            Users = new ObservableCollection<Player>(await UnitOfWork.Instance.UserRepository.GetAll(GameModel.Id));
+        }
+
+        private void AddUser(PlayerEventData data) {
+            Users.Add(data.PlayerBuilder.ToPlayer());
+        }
+
+        private async Task CheckForStatus() {
+            GameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
+
+            if(GameModel.Status == GameStatus.ONGOING || GameModel.Status == GameStatus.PAUSED || GameModel.Status == GameStatus.FINISHED) {
+                StartGameWithoutLoadingGame();
+            }
+        }
+
+        private void SaveCurrentGame() {
+            gameSessionPreference.SetGame(gameModel.Id);
+            gameSessionPreference.SetUser(currentUser.Id);
+        }
+
+        private async void StartGame(EventData data) {
+            GameModel = await UnitOfWork.Instance.GameRepository.GetGame(gameModel.Id);
+            NavigateToMapPage();
+        }
+
+        private void StartGameWithoutLoadingGame() {
             NavigateToMapPage();
         }
 
         // To manually navigate to a different page, the mainthread need to be approached
-        public void NavigateToMapPage() {
+        private void NavigateToMapPage() {
             try {
                 Map mapModel = new Map() {
                     PlayingUser = currentUser
                 };
 
-                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel, new Service.Gps.GpsService(), new LootRepository(), userRepository, gameRepository, inviteKeyRepository, new BorderMarkerRepository(), new ResourceRepository()));
+                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel));
 
                 Device.BeginInvokeOnMainThread(() => {
-                    Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
                     webSocketService.StartGame -= StartGame;
+                    webSocketService.PlayerJoined -= AddUser;
+                    Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
                 });
             }
-            catch(Exception ex) {
-                Console.WriteLine(ex.ToString());
+            catch(Exception e) {
+                DependencyService.Get<Toast>().Show("(#9) Er was een probleem met het navigeren naar het speelveld (LobbyViewModel)");
+                UnitOfWork.Instance.ErrorRepository.Create(e);
             }
         }
 
-        public async Task LoadUsers() {
-            IsLoading = true;
-            Users = await userRepository.GetAll(GameModel.Id);
-            IsLoading = false;
-        }
-
-        public async Task CheckForStatus() {
-            Game gameStatus = await gameRepository.GetGame(gameModel.Id);
-            if(gameStatus.Status == GameStatus.ONGOING || gameStatus.Status == GameStatus.PAUSED || gameStatus.Status == GameStatus.FINISHED) {
-                StartGame();
+        private void RemovePreviousNavigation() {
+            var navigation = Application.Current.MainPage.Navigation;
+            while(navigation.NavigationStack.Count > 1) {
+                navigation.RemovePage(navigation.NavigationStack.First());
             }
         }
     }

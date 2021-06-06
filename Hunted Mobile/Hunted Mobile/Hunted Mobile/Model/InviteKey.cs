@@ -5,7 +5,8 @@ using System.ComponentModel.DataAnnotations;
 namespace Hunted_Mobile.Model {
     public class InviteKey : CustomModelErrorMessages<InviteKey> {
         [Required(ErrorMessage = "De code is verplicht")]
-        [MinLength(3, ErrorMessage = "De code heeft een minimale lengte van 3 karaktes")]
+        [MinLength(4, ErrorMessage = "De code moet bestaan uit 4 karaktes")]
+        [MaxLength(4, ErrorMessage = "De code moet bestaan uit 4 karaktes")]
         public string Value { get; set; }
         public int GameId { get; set; }
         public int UserId { get; set; }
