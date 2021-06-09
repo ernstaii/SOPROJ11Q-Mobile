@@ -31,7 +31,7 @@ namespace Hunted_Mobile.Service.Map {
             drone = UnitOfWork.Instance.ResourceRepository.GetGuiImage("drone.png");
             thiefRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("thief.png");
             policeRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("police.png");
-            fakePoliceRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage(".png");
+            fakePoliceRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("fake_police.png");
 
             OnPropertyChanged(nameof(Chat));
             OnPropertyChanged(nameof(Menu));
@@ -88,6 +88,8 @@ namespace Hunted_Mobile.Service.Map {
                         return ThiefRole;
                     case PlayerRole.POLICE:
                         return PoliceRole;
+                    case "fakepolice":
+                        return FakePoliceRole;
                     default:
                         return null;
                 }

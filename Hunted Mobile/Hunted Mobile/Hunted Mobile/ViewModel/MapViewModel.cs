@@ -62,7 +62,7 @@ namespace Hunted_Mobile.ViewModel {
         private MapViewService mapViewService;
         private readonly DateTime dateTimeNow;
         private string logoImage;
-        private bool roleToggled = false;
+        private bool roleToggle = false;
 
         #region Properties
 #pragma warning disable IDE1006 // Naming Styles
@@ -200,9 +200,11 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public ICommand ToggleRole => new Xamarin.Forms.Command((e) => {
-
-
-            roleToggled = !roleToggled;
+            if(mapModel.PlayingUser is FakePolice) {
+                roleToggle = !roleToggle;
+                Icons.RoleName = roleToggle ? "police" : "fakepolice";
+                DisplayAllPins();
+            }
         });
 
         public ICommand NavigateToPlayersOverviewCommand => new Xamarin.Forms.Command((e) => NavigateToPlayersOverview());
@@ -410,7 +412,7 @@ namespace Hunted_Mobile.ViewModel {
 
             messageViewModel.ColourTheme = gameModel.ColourTheme;
             gadgetOverviewViewModel.ColourTheme = gameModel.ColourTheme;
-            Icons.RoleName = mapModel.PlayingUser.GetType().Name.ToUpper();
+            Icons.RoleName = mapModel.PlayingUser.GetType().Name;
 
             Task.Run(async () => {
                 await AddGameBoundary();
@@ -490,6 +492,7 @@ namespace Hunted_Mobile.ViewModel {
                 mapModel.Players.Add(updatingPlayer);
 
                 if(updatingPlayer.Id == mapModel.PlayingUser.Id) {
+                    roleToggle = false;
                     Location myLocation = mapModel.PlayingUser.Location;
                     mapModel.PlayingUser = updatingPlayer;
                     mapViewService.Player = updatingPlayer;
@@ -715,12 +718,30 @@ namespace Hunted_Mobile.ViewModel {
             Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(messagesView);
         }
 
+        private void PlayingUserToPolice() {
+            mapModel.PlayingUser = new Police(
+                mapModel.PlayingUser.Id,
+                mapModel.PlayingUser.UserName,
+                mapModel.PlayingUser.InviteKey,
+                mapModel.PlayingUser.Location,
+                mapModel.PlayingUser.Status,
+                mapModel.PlayingUser.Gadgets,
+                mapModel.PlayingUser.TriggeredAlarm
+            );
+        }
+
         /// <summary>
         /// Displays pins for all game objects with a location
         /// </summary>
         private void DisplayAllPins() {
+            Player player = mapModel.Players.Where((p) => p.Id == mapModel.PlayingUser.Id).FirstOrDefault();
+            if(roleToggle) {
+                PlayingUserToPolice();
+                mapViewService.Player = mapModel.PlayingUser;
+            }
             mapView.Pins.Clear();
             mapViewService.AddPlayerPin();
+            mapViewService.Player = player;
 
             foreach(var thief in mapModel.Thiefs) {
                 mapViewService.AddTeamMatePin(thief);
@@ -754,6 +775,10 @@ namespace Hunted_Mobile.ViewModel {
                         mapViewService.AddPolicePin(police.UserName, police.Location);
                     }
                 }
+            }
+
+            if(roleToggle) {
+                mapModel.PlayingUser = player;
             }
         }
 
