@@ -49,6 +49,7 @@ namespace Hunted_Mobile.ViewModel {
         private Loot selectedLoot = new Loot();
         private Game gameModel;
         private readonly View.Messages messagesView;
+        private readonly MessageViewModel messageViewModel;
         private PlayersOverviewPage playersOverview;
         private readonly GadgetsPage gadgetsOverview;
         private readonly GadgetOverviewViewModel gadgetOverviewViewModel;
@@ -61,6 +62,7 @@ namespace Hunted_Mobile.ViewModel {
         private MapViewService mapViewService;
         private readonly DateTime dateTimeNow;
         private string logoImage;
+        private bool roleToggled = false;
 
         #region Properties
 #pragma warning disable IDE1006 // Naming Styles
@@ -165,7 +167,7 @@ namespace Hunted_Mobile.ViewModel {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
             var gameIdStr = gameModel.Id.ToString();
-            var messageViewModel = new MessageViewModel(gameIdStr);
+            messageViewModel = new MessageViewModel(gameIdStr);
             messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameIdStr);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
@@ -196,6 +198,12 @@ namespace Hunted_Mobile.ViewModel {
                 OnThiefClicked(args.Pin.Position);
             }
         }
+
+        public ICommand ToggleRole => new Xamarin.Forms.Command((e) => {
+
+
+            roleToggled = !roleToggled;
+        });
 
         public ICommand NavigateToPlayersOverviewCommand => new Xamarin.Forms.Command((e) => NavigateToPlayersOverview());
 
@@ -399,6 +407,10 @@ namespace Hunted_Mobile.ViewModel {
 
         private void InitializeMap() {
             AddOsmLayerToMapView();
+
+            messageViewModel.ColourTheme = gameModel.ColourTheme;
+            gadgetOverviewViewModel.ColourTheme = gameModel.ColourTheme;
+            Icons.RoleName = mapModel.PlayingUser.GetType().Name.ToUpper();
 
             Task.Run(async () => {
                 await AddGameBoundary();

@@ -26,15 +26,15 @@
             <ImageButton Source="{Binding Icons.Role}"
                          Command="{Binding ToggleRole}"
                          CornerRadius="30" 
-                         BackgroundColor="{Binding GameModel.ColourTheme}"
+                         BackgroundColor="White"
                          BorderWidth="1"
                          BorderColor="{Binding GameModel.ColourTheme}"
                          AbsoluteLayout.LayoutFlags="PositionProportional"  
-                         AbsoluteLayout.LayoutBounds="0.01,.98,60,60" />
+                         AbsoluteLayout.LayoutBounds="0.01,0.01,60,60" />
 
 			<!-- Timer -->
 			<StackLayout HorizontalOptions="Center" VerticalOptions="Start" HeightRequest="35" WidthRequest="100" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
-                <Frame CornerRadius="10" OutlineColor="{Binding GameModel.ColourTheme}" BackgroundColor="{Binding GameModel.ColourTheme}"  Padding="2,2">
+                <Frame CornerRadius="10" OutlineColor="{Binding GameModel.ColourTheme}" BackgroundColor="White"  Padding="2,2">
 					<StackLayout Orientation="Horizontal" 
                                  Spacing="0"
                                  HorizontalOptions="Center"

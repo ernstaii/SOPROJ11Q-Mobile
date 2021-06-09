@@ -17,7 +17,7 @@
                     <!-- Custom layout of item -->
                     <DataTemplate>
                         <StackLayout Margin="0,5">
-                            <Frame CornerRadius="10" OutlineColor="Black" BackgroundColor="White" Padding="10,5">
+                            <Frame CornerRadius="10" OutlineColor="{Binding ColourTheme}" BackgroundColor="White" Padding="10,5">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="15" />

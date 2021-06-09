@@ -1,19 +1,26 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Service;
-using Hunted_Mobile.View;
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
 
 namespace Hunted_Mobile.ViewModel {
     public class MessageViewModel : BaseViewModel {
+        private string colourTheme;
+
         public ObservableCollection<GameMessage> ChatMessages { get; set; } = new ObservableCollection<GameMessage>();
         public CollectionView CollectionView { get; set; }
+
+        public string ColourTheme {
+            get => colourTheme;
+            set {
+                colourTheme = value;
+                OnPropertyChanged(nameof(ColourTheme));
+            }
+        }
 
         public MessageViewModel(string gameId) {
             WebSocketService socket = new WebSocketService(gameId.ToString());

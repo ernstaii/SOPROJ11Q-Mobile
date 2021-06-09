@@ -39,10 +39,11 @@ namespace Hunted_Mobile.ViewModel {
 
         private readonly WebSocketService socketService;
         private ObservableCollection<GadgetWithCommand> gadgets;
+        private string colourTheme;
         private readonly Map mapModel;
 
         public ObservableCollection<GadgetWithCommand> Gadgets {
-            get => gadgets; 
+            get => gadgets;
             set {
                 if(value == null) {
                     gadgets = new ObservableCollection<GadgetWithCommand>();
@@ -50,6 +51,14 @@ namespace Hunted_Mobile.ViewModel {
                 else gadgets = value;
 
                 OnPropertyChanged(nameof(Gadgets));
+            }
+        }
+
+        public string ColourTheme {
+            get => colourTheme;
+            set {
+                colourTheme = value;
+                OnPropertyChanged(nameof(ColourTheme));
             }
         }
 
