@@ -15,14 +15,14 @@ namespace Hunted_Mobile.ViewModel {
         public CollectionView CollectionView { get; set; }
 
         public string ColourTheme {
-            get => colourTheme;
-            set {
+            get => colourTheme; set {
                 colourTheme = value;
-                OnPropertyChanged(nameof(ColourTheme));
+                OnPropertyChanged(ColourTheme);
             }
         }
 
-        public MessageViewModel(string gameId) {
+        public MessageViewModel(string gameId, string colourTheme) {
+            ColourTheme = colourTheme;
             WebSocketService socket = new WebSocketService(gameId.ToString());
             AddMessage("Het spel is begonnen!");
             socket.PauseGame += (data) => AddMessage(data.Message);
@@ -41,7 +41,8 @@ namespace Hunted_Mobile.ViewModel {
             ChatMessages.Insert(0, new GameMessage() {
                 Message = message,
                 Time = DateTime.Now.ToString("HH:mm"),
-                UserName = "Spelleider"
+                UserName = "Spelleider",
+                FontColor = ColourTheme,
             });
 
             if(CollectionView != null) {

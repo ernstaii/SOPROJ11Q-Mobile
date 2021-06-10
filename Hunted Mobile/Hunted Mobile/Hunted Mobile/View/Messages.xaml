@@ -8,7 +8,7 @@
             <Label Text="ALGEMEEN"
                    Margin="0, 25" 
                    HorizontalTextAlignment="Center" 
-                   TextColor="RoyalBlue" 
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" 
                    FontAttributes="Bold"
                    FontSize="36"/>
 
@@ -28,7 +28,7 @@
                                         <ColumnDefinition Width="35" />
                                     </Grid.ColumnDefinitions>
 
-                                    <Label Text="{Binding UserName}" FontSize="12" FontAttributes="Bold" TextColor="Purple"/>
+                                    <Label Text="{Binding UserName}" FontSize="12" FontAttributes="Bold" TextColor="{Binding FontColor}"/>
                                     <Label Text="{Binding Time}" FontSize="12" FontAttributes="Italic" TextColor="LightSlateGray" Grid.Column="1"/>
                                     <Label Text="{Binding Message}" FontSize="15" TextColor="Black" Grid.Row="1" Grid.ColumnSpan="2"/>
                                 </Grid>
