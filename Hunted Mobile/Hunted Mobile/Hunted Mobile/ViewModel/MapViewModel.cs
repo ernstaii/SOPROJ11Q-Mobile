@@ -342,7 +342,7 @@ namespace Hunted_Mobile.ViewModel {
             OnPropertyChanged(nameof(LogoImage));
         }
 
-        private async Task ScoreUpdated(ScoreUpdatedEventData data) {
+        private async void ScoreUpdated(ScoreUpdatedEventData data) {
             gameModel.ThievesScore = data.ThiefScore;
             gameModel.PoliceScore = data.PoliceScore;
 
