@@ -130,7 +130,7 @@ namespace Hunted_Mobile.Service.Map {
             playerRadius = new Circle() {
                 FillColor = new Color(255, 0, 0, 0.2),
                 Center = new MapsuiPosition(Player.Location.Latitude, Player.Location.Longitude),
-                Radius = new Distance(10),
+                Radius = new Distance(20),
                 Quality = 360
             };
         }
