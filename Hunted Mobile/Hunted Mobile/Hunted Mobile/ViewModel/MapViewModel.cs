@@ -171,7 +171,7 @@ namespace Hunted_Mobile.ViewModel {
             messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameIdStr);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
-            gadgetOverviewViewModel = new GadgetOverviewViewModel(webSocketService, mapModel);
+            gadgetOverviewViewModel = new GadgetOverviewViewModel(webSocketService, mapModel, gameModel.ColourTheme);
             gadgetsOverview = new View.GadgetsPage(gadgetOverviewViewModel);
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
@@ -424,8 +424,6 @@ namespace Hunted_Mobile.ViewModel {
         private void InitializeMap() {
             AddOsmLayerToMapView();
 
-            messageViewModel.ColourTheme = gameModel.ColourTheme;
-            gadgetOverviewViewModel.ColourTheme = gameModel.ColourTheme;
             Icons.RoleName = mapModel.PlayingUser.GetType().Name;
 
             Task.Run(async () => {
