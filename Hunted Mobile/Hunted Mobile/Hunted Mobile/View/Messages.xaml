@@ -8,7 +8,7 @@
             <Label Text="ALGEMEEN"
                    Margin="0, 25" 
                    HorizontalTextAlignment="Center" 
-                   TextColor="{Binding ColourTheme}" 
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" 
                    FontAttributes="Bold"
                    FontSize="36"/>
 
