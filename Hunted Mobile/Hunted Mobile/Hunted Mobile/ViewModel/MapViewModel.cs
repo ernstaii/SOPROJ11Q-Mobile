@@ -342,12 +342,16 @@ namespace Hunted_Mobile.ViewModel {
             OnPropertyChanged(nameof(LogoImage));
         }
 
-        private void ScoreUpdated(ScoreUpdatedEventData data) {
+        private async Task ScoreUpdated(ScoreUpdatedEventData data) {
             gameModel.ThievesScore = data.ThiefScore;
             gameModel.PoliceScore = data.PoliceScore;
 
             OnPropertyChanged(nameof(PlayingUserScore));
             OnPropertyChanged(nameof(PlayingUserScoreDisplay));
+
+            await PollLoot();
+            await PollUsers();
+            DisplayAllPins();
         }
 
         private void IntervalOfGame(IntervalEventData data) {
@@ -358,7 +362,10 @@ namespace Hunted_Mobile.ViewModel {
             Location playingUserLocation = mapModel.PlayingUser.Location;
             var newPlayer = new List<Player>();
 
-            foreach(PlayerBuilder builder in data.PlayerBuilders) {
+            foreach(PlayerBuilder builder 
+                in mapModel.PlayingUser is Thief 
+                ? data.PlayerBuilders.Concat(data.SmokeScreenedPlayerBuilders)
+                : data.PlayerBuilders) {
                 var player = builder.ToPlayer();
                 if(player != null) {
                     var gadgets = mapModel.Players.Where(p => p.Id == player.Id).FirstOrDefault()?.Gadgets;
@@ -722,7 +729,10 @@ namespace Hunted_Mobile.ViewModel {
             if(mapModel.PlayingUser is Police) {
                 mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
                 foreach(Thief thief in mapModel.Thiefs) {
-                    if(thief.TriggeredAlarm || DroneActive) {
+                    if(thief is FakePolice) {
+                        mapViewService.AddPolicePin(thief.UserName, thief.Location);
+                    }
+                    else if(thief.TriggeredAlarm || DroneActive) {
                         mapViewService.AddThiefPin(thief.UserName, thief.Location);
                     }
                 }
