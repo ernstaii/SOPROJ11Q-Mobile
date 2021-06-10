@@ -739,7 +739,9 @@ namespace Hunted_Mobile.ViewModel {
                 }
                 if(!DroneActive && mapModel.Thiefs.Count > 0) {
                     var closestThief = GetClosestThief();
-                    mapViewService.AddThiefPin(closestThief.UserName, closestThief.Location);
+                    if(closestThief != null) {
+                        mapViewService.AddThiefPin(closestThief.UserName, closestThief.Location);
+                    }
                 }
             }
 
