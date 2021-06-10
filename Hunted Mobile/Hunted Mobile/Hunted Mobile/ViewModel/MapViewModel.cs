@@ -165,7 +165,7 @@ namespace Hunted_Mobile.ViewModel {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
             var gameIdStr = gameModel.Id.ToString();
-            var messageViewModel = new MessageViewModel(gameIdStr);
+            var messageViewModel = new MessageViewModel(gameIdStr, gameModel.ColourTheme);
             messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameIdStr);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));

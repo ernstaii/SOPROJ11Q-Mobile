@@ -14,8 +14,16 @@ namespace Hunted_Mobile.ViewModel {
     public class MessageViewModel : BaseViewModel {
         public ObservableCollection<GameMessage> ChatMessages { get; set; } = new ObservableCollection<GameMessage>();
         public CollectionView CollectionView { get; set; }
+        private string colourTheme;
+        public string ColourTheme {
+            get => colourTheme; set {
+                colourTheme = value;
+                OnPropertyChanged(ColourTheme);
+            }
+        }
 
-        public MessageViewModel(string gameId) {
+        public MessageViewModel(string gameId, string colourTheme) {
+            ColourTheme = colourTheme;
             WebSocketService socket = new WebSocketService(gameId.ToString());
             AddMessage("Het spel is begonnen!");
             socket.PauseGame += (data) => AddMessage(data.Message);
