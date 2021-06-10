@@ -42,7 +42,8 @@ namespace Hunted_Mobile.ViewModel {
             ChatMessages.Insert(0, new GameMessage() {
                 Message = message,
                 Time = DateTime.Now.ToString("HH:mm"),
-                UserName = "Spelleider"
+                UserName = "Spelleider",
+                FontColor = ColourTheme,
             });
 
             if(CollectionView != null) {

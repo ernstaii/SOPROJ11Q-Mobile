@@ -7,5 +7,6 @@ namespace Hunted_Mobile.Model {
         public string UserName { get; set; }
         public string Message { get; set; }
         public string Time { get; set; }
+        public string FontColor { get; set; }
     }
 }
