@@ -730,6 +730,7 @@ namespace Hunted_Mobile.ViewModel {
                 mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
                 foreach(Thief thief in mapModel.Thiefs) {
                     if(thief is FakePolice) {
+                        // See fake police as normal police
                         mapViewService.AddPolicePin(thief.UserName, thief.Location);
                     }
                     else if(thief.TriggeredAlarm || DroneActive) {
@@ -748,6 +749,7 @@ namespace Hunted_Mobile.ViewModel {
                 }
 
                 if(mapModel.PlayingUser is FakePolice) {
+                    // Show all police too
                     foreach(var police in mapModel.Police) {
                         mapViewService.AddPolicePin(police.UserName, police.Location);
                     }
@@ -759,11 +761,14 @@ namespace Hunted_Mobile.ViewModel {
             Player closestThief = null;
 
             foreach(var thief in mapModel.Thiefs) {
-                if(closestThief == null) {
-                    closestThief = thief;
-                }
-                else if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
-                    closestThief = thief;
+                // Fake police should not show up as thief
+                if(!(thief is FakePolice)) {
+                    if(closestThief == null) {
+                        closestThief = thief;
+                    }
+                    else if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
+                        closestThief = thief;
+                    }
                 }
             }
 
