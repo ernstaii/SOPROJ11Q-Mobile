@@ -165,7 +165,7 @@ namespace Hunted_Mobile.ViewModel {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
             var gameIdStr = gameModel.Id.ToString();
-            var messageViewModel = new MessageViewModel(gameIdStr);
+            var messageViewModel = new MessageViewModel(gameIdStr, gameModel.ColourTheme);
             messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameIdStr);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
@@ -187,13 +187,15 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void HandlePinClickedCommand(object sender, PinClickedEventArgs args) {
-            string tag = $"{args.Pin.Tag}";
+            string[] tagParts = $"{args.Pin?.Tag?.ToString() ?? ""}".Split('.');
 
-            if(tag == LOOT_TAG && mapModel.PlayingUser is Thief) {
-                OnLootClicked(args.Pin.Position);
-            }
-            else if(tag == THIEF_TAG && mapModel.PlayingUser is Police) {
-                OnThiefClicked(args.Pin.Position);
+            if(tagParts.Length == 2) {
+                if(tagParts[0] == LOOT_TAG && mapModel.PlayingUser is Thief) {
+                    OnLootClicked(args.Pin.Position);
+                }
+                else if(tagParts[0] == THIEF_TAG && mapModel.PlayingUser is Police) {
+                    OnThiefClicked(args.Pin.Position);
+                }
             }
         }
 
@@ -258,6 +260,11 @@ namespace Hunted_Mobile.ViewModel {
             holdingButtonTimer.Stop();
             holdingButtonTimer = null;
             MapDialogOption = MapDialogOptions.DISPLAY_PICKUP_LOOT_SUCCESFULLY;
+
+            if(SelectedLoot == null) {
+                DependencyService.Get<Toast>().Show("De buit is niet meer geselecteerd");
+                return;
+            }
             MapDialog.DisplayPickedUpLootSuccessfully(SelectedLoot.Name);
 
             Task.Run(async () => {
@@ -272,9 +279,16 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void SuccessfullyArrestThief(object sender, EventArgs e) {
+
             holdingButtonTimer.Stop();
             holdingButtonTimer = null;
             MapDialogOption = MapDialogOptions.DISPLAY_ARREST_THIEF_SUCCESFULLY;
+
+            if(SelectedThief == null) {
+                DependencyService.Get<Toast>().Show("De dief is niet meer geselecteerd");
+                return;
+            }
+
             MapDialog.DisplayArrestedThiefSuccessfully(SelectedThief.UserName);
 
             Task.Run(async () => {
@@ -462,7 +476,7 @@ namespace Hunted_Mobile.ViewModel {
 
         private void ThiefFakePoliceToggle(PlayerEventData data) {
             Thief updatingPlayer = mapModel.Thiefs.Where(player => player.Id == data.PlayerBuilder.Id).FirstOrDefault();
-            
+
             if(updatingPlayer == null) {
                 if(data.PlayerBuilder.Id == mapModel.PlayingUser.Id && mapModel.PlayingUser is Thief) {
                     updatingPlayer = mapModel.PlayingUser as Thief;
@@ -723,12 +737,12 @@ namespace Hunted_Mobile.ViewModel {
                 mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
                 foreach(Thief thief in mapModel.Thiefs) {
                     if(thief.TriggeredAlarm || DroneActive) {
-                        mapViewService.AddThiefPin(thief.UserName, thief.Location);
+                        mapViewService.AddThiefPin(thief);
                     }
                 }
                 if(!DroneActive && mapModel.Thiefs.Count > 0) {
                     var closestThief = GetClosestThief();
-                    mapViewService.AddThiefPin(closestThief.UserName, closestThief.Location);
+                    mapViewService.AddThiefPin(closestThief);
                 }
             }
 
