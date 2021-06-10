@@ -35,8 +35,8 @@ namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
         private const int LOOT_PICKUP_TIME_IN_SECONDES = 5,
             ARREST_THIEF_TIME_IN_SECONDES = 5,
-            LOOT_PICKUP_MAX_DISTANCE_IN_METERS = 10,
-            POLICE_ARREST_DISTANCE_IN_METERS = 10,
+            LOOT_PICKUP_MAX_DISTANCE_IN_METERS = 20,
+            POLICE_ARREST_DISTANCE_IN_METERS = 20,
             PICK_UP_LOOT_SCORE = 1,
             ARREST_THIEF_SCORE = 1;
 
