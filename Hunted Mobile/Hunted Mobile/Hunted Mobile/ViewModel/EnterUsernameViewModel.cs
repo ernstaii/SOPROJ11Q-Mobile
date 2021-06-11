@@ -43,33 +43,35 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         /// <summary>
-        /// Add new user to a game
-        /// </summary>
-        /// <returns></returns>
-        public async Task CreateUser() {
-            if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
-                UserModel = await UnitOfWork.Instance.UserRepository.Create(UserModel);
-            }
-        }
-
-        /// <summary>
         /// Button event will navigate to the lobby with a new user
         /// </summary>
-        public ICommand ButtonSelectedCommand => new Command(async (e) => {
+        public ICommand HandleEnterUserNameCommand => new Command(async (e) => {
             SubmitButtonIsEnable = false;
-            await CreateUser();
 
-            // Navigate when InviteKey is valid
-            if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
-                var navigation = Application.Current.MainPage.Navigation;
+            // First validation is for model validation
+            if(valid()) await createUser();
 
-                var previousPage = navigation.NavigationStack.LastOrDefault();
-                var view = new Lobby(new LobbyViewModel(UserModel));
-                await navigation.PushAsync(view, true);
-                navigation.RemovePage(previousPage);
-            }
+            // Second validation is for displaying ServerErrors
+            if(valid()) navigateToLobby();
 
             SubmitButtonIsEnable = true;
         });
+
+        private async Task createUser() {
+            UserModel = await UnitOfWork.Instance.UserRepository.Create(UserModel);
+        }
+
+        private bool valid() {
+            return IsValid = ValidationHelper.IsFormValid(UserModel, page);
+        }
+
+        private async Task navigateToLobby() {
+            var navigation = Application.Current.MainPage.Navigation;
+
+            var previousPage = navigation.NavigationStack.LastOrDefault();
+            var view = new Lobby(new LobbyViewModel(UserModel));
+            await navigation.PushAsync(view, true);
+            navigation.RemovePage(previousPage);
+        }
     }
 }
