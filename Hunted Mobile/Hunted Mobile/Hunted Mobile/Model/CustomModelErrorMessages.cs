@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Hunted_Mobile.Model {
     public abstract class CustomModelErrorMessages<T> : IValidatableObject {
         private Dictionary<string, string> errorMessages = new Dictionary<string, string>();
+        public string ValidationField { get; set; }
         public Dictionary<string, string> ErrorMessages {
             get => errorMessages; set {
                 if(value != null)
