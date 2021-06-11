@@ -19,6 +19,7 @@ namespace Hunted_Mobile.Service.Json {
                 Loot = new LootJsonService().ToObjects(data.loot),
                 Message = data.message,
                 PlayerBuilders = new PlayerJsonService().ToObjects(data.users),
+                SmokeScreenedPlayerBuilders = new PlayerJsonService().ToObjects(data.smokescreened_users),
                 TimeLeft = data.timeLeft,
                 DroneActive = data.drone_is_active,
             };

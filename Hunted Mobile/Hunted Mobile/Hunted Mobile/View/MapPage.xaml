@@ -17,15 +17,24 @@
             <ImageButton Source="{Binding Icons.Chat}"
                          Command="{Binding NavigateToMessagePageCommand}"
                          CornerRadius="30" 
-                         BackgroundColor="White"
+                         BackgroundColor="{Binding GameModel.ColourTheme}"
                          BorderWidth="1"
                          BorderColor="{Binding GameModel.ColourTheme}"
                          AbsoluteLayout.LayoutFlags="PositionProportional"  
                          AbsoluteLayout.LayoutBounds=".98,0.01,60,60" />
 
+            <ImageButton Source="{Binding Icons.Role}"
+                         Command="{Binding ToggleRole}"
+                         CornerRadius="30" 
+                         BackgroundColor="White"
+                         BorderWidth="1"
+                         BorderColor="{Binding GameModel.ColourTheme}"
+                         AbsoluteLayout.LayoutFlags="PositionProportional"  
+                         AbsoluteLayout.LayoutBounds="0.01,0.01,60,60" />
+
 			<!-- Timer -->
 			<StackLayout HorizontalOptions="Center" VerticalOptions="Start" HeightRequest="35" WidthRequest="100" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
-				<Frame CornerRadius="10" OutlineColor="RoyalBlue" BackgroundColor="White"  Padding="2,2">
+                <Frame CornerRadius="10" OutlineColor="{Binding GameModel.ColourTheme}" BackgroundColor="White"  Padding="2,2">
 					<StackLayout Orientation="Horizontal" 
                                  Spacing="0"
                                  HorizontalOptions="Center"
@@ -39,7 +48,7 @@
 			</StackLayout>
 			
             <!-- Different dialogs based on the user-input -->
-            <Frame CornerRadius="10" OutlineColor="Black" Margin="25,80" BackgroundColor="White" IsVisible="{Binding MapDialog.IsVisible}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
+            <Frame CornerRadius="10" OutlineColor="{Binding GameModel.ColourTheme}" Margin="25,80" BackgroundColor="White" IsVisible="{Binding MapDialog.IsVisible}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="15,5">
                 <StackLayout>
                     <Label Text="{Binding MapDialog.Title}"
                            Padding="5"
@@ -92,14 +101,14 @@
                          IsVisible="{Binding MainMapMenuButtonVisible}"
                          Command="{Binding OpenMainMapMenuCommand}"
                          CornerRadius="30" 
-                         BackgroundColor="White"
+                         BackgroundColor="{Binding GameModel.ColourTheme}"
                          BorderWidth="1"
                          BorderColor="{Binding GameModel.ColourTheme}"
                          AbsoluteLayout.LayoutFlags="PositionProportional"  
                          AbsoluteLayout.LayoutBounds=".5,0.98,60,60" />
 
             <!-- The Main Map menu -->
-            <Frame CornerRadius="10" OutlineColor="Black" BackgroundColor="White" IsVisible="{Binding OpenMainMapMenu}" AbsoluteLayout.LayoutBounds="0.5, 1, 1, 174" AbsoluteLayout.LayoutFlags="WidthProportional,PositionProportional" Padding="15">
+            <Frame CornerRadius="10" OutlineColor="{Binding GameModel.ColourTheme}" BackgroundColor="White" IsVisible="{Binding OpenMainMapMenu}" AbsoluteLayout.LayoutBounds="0.5, 1, 1, 174" AbsoluteLayout.LayoutFlags="WidthProportional,PositionProportional" Padding="15">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="15" />
@@ -123,7 +132,7 @@
                                 CornerRadius="30" 
                                 WidthRequest="60"
                                 HeightRequest="60"
-                                BackgroundColor="White"
+                                BackgroundColor="{Binding GameModel.ColourTheme}"
                                 BorderWidth="1"
                                 BorderColor="{Binding GameModel.ColourTheme}"
                                 Grid.Row="1"
@@ -134,7 +143,7 @@
                                 CornerRadius="30" 
                                 WidthRequest="60"
                                 HeightRequest="60"
-                                BackgroundColor="White"
+                                BackgroundColor="{Binding GameModel.ColourTheme}"
                                 BorderWidth="1"
                                 BorderColor="{Binding GameModel.ColourTheme}"
                                 Grid.Row="1"
@@ -158,7 +167,7 @@
                                 CornerRadius="30" 
                                 WidthRequest="60"
                                 HeightRequest="60"
-                                BackgroundColor="White"
+                                BackgroundColor="{Binding GameModel.ColourTheme}"
                                 BorderWidth="1"
                                 BorderColor="{Binding GameModel.ColourTheme}"
                                 Grid.Row="2"

@@ -29,7 +29,7 @@
                    Grid.Row="1"
                    Padding="5" 
                    HorizontalTextAlignment="Center" 
-                   TextColor="Black" 
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" 
                    FontAttributes="Bold" 
                    FontSize="20"/>
             <CollectionView Grid.Row="2" ItemsSource="{Binding Police}">
@@ -46,7 +46,7 @@
             <Label Text="Boeven" 
                    Padding="5" 
                    HorizontalTextAlignment="Center"
-                   TextColor="Black"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}"
                    FontAttributes="Bold" 
                    FontSize="20"
                    Grid.Column="1"
@@ -63,9 +63,9 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
-                            <Label Text="{Binding UserName}" HorizontalTextAlignment="Center" IsVisible="{Binding IsFree}" Grid.ColumnSpan="2"/>
+                            <Label Text="{Binding UserName}" HorizontalTextAlignment="Center" IsVisible="{Binding IsFree}" Grid.ColumnSpan="2" TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
 
-                            <Label Text="{Binding UserName}" HorizontalTextAlignment="End" IsVisible="{Binding IsCaught}"/>
+                            <Label Text="{Binding UserName}" HorizontalTextAlignment="End" IsVisible="{Binding IsCaught}" TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
                             <Label Text="Gepakt" TextColor="Red" IsVisible="{Binding IsCaught}" Grid.Column="1" Padding="5,0,0,0"/>
                         </Grid>
                     </DataTemplate>

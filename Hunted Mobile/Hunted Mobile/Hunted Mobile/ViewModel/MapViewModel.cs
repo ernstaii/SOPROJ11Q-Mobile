@@ -35,8 +35,8 @@ namespace Hunted_Mobile.ViewModel {
     public class MapViewModel : BaseViewModel {
         private const int LOOT_PICKUP_TIME_IN_SECONDES = 5,
             ARREST_THIEF_TIME_IN_SECONDES = 5,
-            LOOT_PICKUP_MAX_DISTANCE_IN_METERS = 10,
-            POLICE_ARREST_DISTANCE_IN_METERS = 10,
+            LOOT_PICKUP_MAX_DISTANCE_IN_METERS = 20,
+            POLICE_ARREST_DISTANCE_IN_METERS = 20,
             PICK_UP_LOOT_SCORE = 1,
             ARREST_THIEF_SCORE = 1;
 
@@ -49,6 +49,7 @@ namespace Hunted_Mobile.ViewModel {
         private Loot selectedLoot = new Loot();
         private Game gameModel;
         private readonly View.Messages messagesView;
+        private readonly MessageViewModel messageViewModel;
         private PlayersOverviewPage playersOverview;
         private readonly GadgetsPage gadgetsOverview;
         private readonly GadgetOverviewViewModel gadgetOverviewViewModel;
@@ -61,6 +62,7 @@ namespace Hunted_Mobile.ViewModel {
         private MapViewService mapViewService;
         private readonly DateTime dateTimeNow;
         private string logoImage;
+        private bool roleToggle = false;
 
         #region Properties
 #pragma warning disable IDE1006 // Naming Styles
@@ -165,11 +167,11 @@ namespace Hunted_Mobile.ViewModel {
             this.mapModel = mapModel;
             this.gameModel = gameModel;
             var gameIdStr = gameModel.Id.ToString();
-            var messageViewModel = new MessageViewModel(gameIdStr);
+            messageViewModel = new MessageViewModel(gameIdStr, gameModel.ColourTheme);
             messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameIdStr);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
-            gadgetOverviewViewModel = new GadgetOverviewViewModel(webSocketService, mapModel);
+            gadgetOverviewViewModel = new GadgetOverviewViewModel(webSocketService, mapModel, gameModel.ColourTheme);
             gadgetsOverview = new View.GadgetsPage(gadgetOverviewViewModel);
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
@@ -187,15 +189,25 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void HandlePinClickedCommand(object sender, PinClickedEventArgs args) {
-            string tag = $"{args.Pin.Tag}";
+            string[] tagParts = $"{args.Pin?.Tag?.ToString() ?? ""}".Split('.');
 
-            if(tag == LOOT_TAG && mapModel.PlayingUser is Thief) {
-                OnLootClicked(args.Pin.Position);
-            }
-            else if(tag == THIEF_TAG && mapModel.PlayingUser is Police) {
-                OnThiefClicked(args.Pin.Position);
+            if(tagParts.Length == 2) {
+                if(tagParts[0] == LOOT_TAG && mapModel.PlayingUser is Thief) {
+                    OnLootClicked(args.Pin.Position);
+                }
+                else if(tagParts[0] == THIEF_TAG && mapModel.PlayingUser is Police) {
+                    OnThiefClicked(args.Pin.Position);
+                }
             }
         }
+
+        public ICommand ToggleRole => new Xamarin.Forms.Command((e) => {
+            if(mapModel.PlayingUser is FakePolice) {
+                roleToggle = !roleToggle;
+                Icons.RoleName = roleToggle ? "police" : "fakepolice";
+                DisplayAllPins();
+            }
+        });
 
         public ICommand NavigateToPlayersOverviewCommand => new Xamarin.Forms.Command((e) => NavigateToPlayersOverview());
 
@@ -258,6 +270,11 @@ namespace Hunted_Mobile.ViewModel {
             holdingButtonTimer.Stop();
             holdingButtonTimer = null;
             MapDialogOption = MapDialogOptions.DISPLAY_PICKUP_LOOT_SUCCESFULLY;
+
+            if(SelectedLoot == null) {
+                DependencyService.Get<Toast>().Show("De buit is niet meer geselecteerd");
+                return;
+            }
             MapDialog.DisplayPickedUpLootSuccessfully(SelectedLoot.Name);
 
             Task.Run(async () => {
@@ -272,9 +289,16 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void SuccessfullyArrestThief(object sender, EventArgs e) {
+
             holdingButtonTimer.Stop();
             holdingButtonTimer = null;
             MapDialogOption = MapDialogOptions.DISPLAY_ARREST_THIEF_SUCCESFULLY;
+
+            if(SelectedThief == null) {
+                DependencyService.Get<Toast>().Show("De dief is niet meer geselecteerd");
+                return;
+            }
+
             MapDialog.DisplayArrestedThiefSuccessfully(SelectedThief.UserName);
 
             Task.Run(async () => {
@@ -342,12 +366,16 @@ namespace Hunted_Mobile.ViewModel {
             OnPropertyChanged(nameof(LogoImage));
         }
 
-        private void ScoreUpdated(ScoreUpdatedEventData data) {
+        private async void ScoreUpdated(ScoreUpdatedEventData data) {
             gameModel.ThievesScore = data.ThiefScore;
             gameModel.PoliceScore = data.PoliceScore;
 
             OnPropertyChanged(nameof(PlayingUserScore));
             OnPropertyChanged(nameof(PlayingUserScoreDisplay));
+
+            await PollLoot();
+            await PollUsers();
+            DisplayAllPins();
         }
 
         private void IntervalOfGame(IntervalEventData data) {
@@ -358,7 +386,10 @@ namespace Hunted_Mobile.ViewModel {
             Location playingUserLocation = mapModel.PlayingUser.Location;
             var newPlayer = new List<Player>();
 
-            foreach(PlayerBuilder builder in data.PlayerBuilders) {
+            foreach(PlayerBuilder builder 
+                in mapModel.PlayingUser is Thief 
+                ? data.PlayerBuilders.Concat(data.SmokeScreenedPlayerBuilders)
+                : data.PlayerBuilders) {
                 var player = builder.ToPlayer();
                 if(player != null) {
                     var gadgets = mapModel.Players.Where(p => p.Id == player.Id).FirstOrDefault()?.Gadgets;
@@ -399,6 +430,8 @@ namespace Hunted_Mobile.ViewModel {
 
         private void InitializeMap() {
             AddOsmLayerToMapView();
+
+            Icons.RoleName = mapModel.PlayingUser.GetType().Name;
 
             Task.Run(async () => {
                 await AddGameBoundary();
@@ -462,7 +495,7 @@ namespace Hunted_Mobile.ViewModel {
 
         private void ThiefFakePoliceToggle(PlayerEventData data) {
             Thief updatingPlayer = mapModel.Thiefs.Where(player => player.Id == data.PlayerBuilder.Id).FirstOrDefault();
-            
+
             if(updatingPlayer == null) {
                 if(data.PlayerBuilder.Id == mapModel.PlayingUser.Id && mapModel.PlayingUser is Thief) {
                     updatingPlayer = mapModel.PlayingUser as Thief;
@@ -478,6 +511,7 @@ namespace Hunted_Mobile.ViewModel {
                 mapModel.Players.Add(updatingPlayer);
 
                 if(updatingPlayer.Id == mapModel.PlayingUser.Id) {
+                    roleToggle = false;
                     Location myLocation = mapModel.PlayingUser.Location;
                     mapModel.PlayingUser = updatingPlayer;
                     mapViewService.Player = updatingPlayer;
@@ -703,12 +737,30 @@ namespace Hunted_Mobile.ViewModel {
             Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(messagesView);
         }
 
+        private void PlayingUserToPolice() {
+            mapModel.PlayingUser = new Police(
+                mapModel.PlayingUser.Id,
+                mapModel.PlayingUser.UserName,
+                mapModel.PlayingUser.InviteKey,
+                mapModel.PlayingUser.Location,
+                mapModel.PlayingUser.Status,
+                mapModel.PlayingUser.Gadgets,
+                mapModel.PlayingUser.TriggeredAlarm
+            );
+        }
+
         /// <summary>
         /// Displays pins for all game objects with a location
         /// </summary>
         private void DisplayAllPins() {
+            Player player = mapModel.Players.Where((p) => p.Id == mapModel.PlayingUser.Id).FirstOrDefault();
+            if(roleToggle) {
+                PlayingUserToPolice();
+                mapViewService.Player = mapModel.PlayingUser;
+            }
             mapView.Pins.Clear();
             mapViewService.AddPlayerPin();
+            mapViewService.Player = player;
 
             foreach(var thief in mapModel.Thiefs) {
                 mapViewService.AddTeamMatePin(thief);
@@ -722,13 +774,19 @@ namespace Hunted_Mobile.ViewModel {
             if(mapModel.PlayingUser is Police) {
                 mapViewService.AddPoliceStationPin(gameModel.PoliceStationLocation);
                 foreach(Thief thief in mapModel.Thiefs) {
-                    if(thief.TriggeredAlarm || DroneActive) {
-                        mapViewService.AddThiefPin(thief.UserName, thief.Location);
+                    if(thief is FakePolice) {
+                        // See fake police as normal police
+                        mapViewService.AddPolicePin(thief.UserName, thief.Location);
+                    }
+                    else if(thief.TriggeredAlarm || DroneActive) {
+                        mapViewService.AddThiefPin(thief);
                     }
                 }
                 if(!DroneActive && mapModel.Thiefs.Count > 0) {
                     var closestThief = GetClosestThief();
-                    mapViewService.AddThiefPin(closestThief.UserName, closestThief.Location);
+                    if(closestThief != null) {
+                        mapViewService.AddThiefPin(closestThief);
+                    }
                 }
             }
 
@@ -738,10 +796,15 @@ namespace Hunted_Mobile.ViewModel {
                 }
 
                 if(mapModel.PlayingUser is FakePolice) {
+                    // Show all police too
                     foreach(var police in mapModel.Police) {
                         mapViewService.AddPolicePin(police.UserName, police.Location);
                     }
                 }
+            }
+
+            if(roleToggle) {
+                mapModel.PlayingUser = player;
             }
         }
 
@@ -749,11 +812,14 @@ namespace Hunted_Mobile.ViewModel {
             Player closestThief = null;
 
             foreach(var thief in mapModel.Thiefs) {
-                if(closestThief == null) {
-                    closestThief = thief;
-                }
-                else if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
-                    closestThief = thief;
+                // Fake police should not show up as thief
+                if(!(thief is FakePolice)) {
+                    if(closestThief == null) {
+                        closestThief = thief;
+                    }
+                    else if(mapModel.PlayingUser.Location.DistanceToOtherInMeters(thief.Location) < mapModel.PlayingUser.Location.DistanceToOtherInMeters(closestThief.Location)) {
+                        closestThief = thief;
+                    }
                 }
             }
 
