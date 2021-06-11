@@ -11,6 +11,7 @@ namespace Hunted_Mobile.Model.Response.Json {
 
     public class IntervalEventData : EventData {
         public UserData[] users;
+        public UserData[] smokescreened_users;
         public LootData[] loot;
         public bool drone_is_active;
     }

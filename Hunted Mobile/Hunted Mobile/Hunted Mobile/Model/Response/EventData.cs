@@ -10,6 +10,7 @@ namespace Hunted_Mobile.Model.Response {
 
     public class IntervalEventData : EventData {
         public PlayerBuilder[] PlayerBuilders { get; set; }
+        public PlayerBuilder[] SmokeScreenedPlayerBuilders { get; set; }
         public Loot[] Loot { get; set; }
         public bool DroneActive { get; set; }
     }
