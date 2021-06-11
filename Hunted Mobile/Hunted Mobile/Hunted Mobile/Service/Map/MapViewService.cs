@@ -23,7 +23,6 @@ namespace Hunted_Mobile.Service.Map {
         private readonly Resource moneyBagIcon;
         private Player player;
         private Pin playerPin;
-        private Circle playerRadius;
 
         public Player Player { 
             get => player;
@@ -49,14 +48,12 @@ namespace Hunted_Mobile.Service.Map {
 
         public void UpdatePlayerPinLocation(Location location) {
             playerPin.Position = new MapsuiPosition(location.Latitude, location.Longitude);
-            playerRadius.Center = new MapsuiPosition(location.Latitude, location.Longitude);
             AddPlayerPin();
         }
 
         public void AddPlayerPin() {
             if(!MapView.Pins.Contains(playerPin)) {
                 MapView.Pins.Add(playerPin);
-                MapView.Drawables.Add(playerRadius);
             }
         }
 
@@ -125,13 +122,7 @@ namespace Hunted_Mobile.Service.Map {
         private void SetPlayerPin() {
             playerPin = new Pin(MapView) {
                 Label = Player.UserName,
-                Color = Player is Thief ? thiefPinColor : policePinColor,
-            };
-            playerRadius = new Circle() {
-                FillColor = new Color(255, 0, 0, 0.2),
-                Center = new MapsuiPosition(Player.Location.Latitude, Player.Location.Longitude),
-                Radius = new Distance(10),
-                Quality = 360
+                Color = Player is Thief ? (Player is FakePolice ? Xamarin.Forms.Color.Green : thiefPinColor) : policePinColor,
             };
         }
 
