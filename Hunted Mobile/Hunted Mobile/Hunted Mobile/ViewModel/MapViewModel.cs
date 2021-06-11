@@ -414,7 +414,7 @@ namespace Hunted_Mobile.ViewModel {
 
         public void SetMapView(MapView mapView) {
             bool initializedBefore = this.mapView != null;
-            mapViewService = new MapViewService(mapView, mapModel.PlayingUser);
+            mapViewService = new MapViewService(mapView, mapModel.PlayingUser, LOOT_PICKUP_MAX_DISTANCE_IN_METERS);
 
             if(!initializedBefore) {
                 InitializeMap();
