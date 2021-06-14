@@ -190,13 +190,15 @@ namespace Hunted_Mobile.ViewModel {
 
         private void HandlePinClickedCommand(object sender, PinClickedEventArgs args) {
             string[] tagParts = $"{args.Pin?.Tag?.ToString() ?? ""}".Split('.');
+            string tag = tagParts[0];
+            int.TryParse(tagParts[1], out int id);
 
             if(tagParts.Length == 2) {
                 if(tagParts[0] == LOOT_TAG && mapModel.PlayingUser is Thief) {
-                    OnLootClicked(args.Pin.Position);
+                    OnLootClicked(id);
                 }
                 else if(tagParts[0] == THIEF_TAG && mapModel.PlayingUser is Police) {
-                    OnThiefClicked(args.Pin.Position);
+                    OnThiefClicked(id);
                 }
             }
         }
@@ -386,8 +388,8 @@ namespace Hunted_Mobile.ViewModel {
             Location playingUserLocation = mapModel.PlayingUser.Location;
             var newPlayer = new List<Player>();
 
-            foreach(PlayerBuilder builder 
-                in mapModel.PlayingUser is Thief 
+            foreach(PlayerBuilder builder
+                in mapModel.PlayingUser is Thief
                 ? data.PlayerBuilders.Concat(data.SmokeScreenedPlayerBuilders)
                 : data.PlayerBuilders) {
                 var player = builder.ToPlayer();
@@ -826,14 +828,14 @@ namespace Hunted_Mobile.ViewModel {
             return closestThief;
         }
 
-        private void OnLootClicked(Position position) {
-            SelectedLoot = mapModel.FindLoot(new Location(position));
+        private void OnLootClicked(int lootId) {
+            SelectedLoot = mapModel.FindLoot(lootId);
             MapDialogOption = MapDialogOptions.DISPLAY_PICKUP_LOOT;
             MapDialog.DisplayPickingUpLoot(SelectedLoot.Name, IsCloseToSelectedLoot);
         }
 
-        private void OnThiefClicked(Position position) {
-            SelectedThief = mapModel.FindThief(new Location(position));
+        private void OnThiefClicked(int userId) {
+            SelectedThief = mapModel.FindThief(userId);
             MapDialogOption = MapDialogOptions.DISPLAY_ARREST_THIEF;
             MapDialog.DisplayArrestingThief(SelectedThief.UserName, IsCloseToSelectedThief);
         }
