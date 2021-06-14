@@ -294,13 +294,14 @@ namespace Hunted_Mobile.ViewModel {
 
             holdingButtonTimer.Stop();
             holdingButtonTimer = null;
-            MapDialogOption = MapDialogOptions.DISPLAY_ARREST_THIEF_SUCCESFULLY;
 
             if(SelectedThief == null) {
                 DependencyService.Get<Toast>().Show("De dief is niet meer geselecteerd");
+                MapDialogOption = MapDialogOptions.NONE;
                 return;
             }
 
+            MapDialogOption = MapDialogOptions.DISPLAY_ARREST_THIEF_SUCCESFULLY;
             MapDialog.DisplayArrestedThiefSuccessfully(SelectedThief.UserName);
 
             Task.Run(async () => {
