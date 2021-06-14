@@ -548,7 +548,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void ResumeGame(EventData data) {
-            MapDialogOption = MapDialogOptions.NONE;
+            DisplayCaughtScreenOrDisplayNone();
             StartCountdown(data.TimeLeft);
             StartIntervalTimer();
 
@@ -557,10 +557,32 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void ThiefStatusChanged(PlayerEventData data) {
+            CaughtPlayingUser(data);
+
             Task.Run(async () => {
                 await PollUsers();
                 DisplayAllPins();
             });
+        }
+
+        private void DisplayCaughtScreenOrDisplayNone() {
+            if(((Thief) mapModel.PlayingUser).IsCaught) {
+                MapDialogOption = MapDialogOptions.DISPLAY_ARRESTED_SCREEN;
+                MapDialog.DisplayArrestedScreen();
+            }
+            else {
+                MapDialogOption = MapDialogOptions.NONE;
+            }
+        }
+
+        private void CaughtPlayingUser(PlayerEventData data) {
+            if(mapModel.PlayingUser.Id != data.PlayerBuilder.Id) return;
+
+            mapModel.PlayingUser = data.PlayerBuilder
+                .SetFakePolice(mapModel.PlayingUser is FakePolice)
+                .ToThief();
+
+            DisplayCaughtScreenOrDisplayNone();
         }
 
         private bool WasWithinBoundary() {
@@ -614,7 +636,7 @@ namespace Hunted_Mobile.ViewModel {
                 MapDialog.DisplayBoundaryScreen();
             }
             else if(isWithinBoundary && MapDialogOption == MapDialogOptions.DISPLAY_BOUNDARY_SCREEN) {
-                MapDialogOption = MapDialogOptions.NONE;
+                DisplayCaughtScreenOrDisplayNone();
             }
 
             if(isWithinBoundary && !wasWithinBoundary) {
