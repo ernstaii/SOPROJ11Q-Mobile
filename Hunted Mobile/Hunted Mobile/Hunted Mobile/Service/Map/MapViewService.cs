@@ -56,6 +56,8 @@ namespace Hunted_Mobile.Service.Map {
         public void AddPlayerPin() {
             if(!MapView.Pins.Contains(playerPin)) {
                 MapView.Pins.Add(playerPin);
+            }
+            if(!MapView.Drawables.Contains(playerRadius)) {
                 MapView.Drawables.Add(playerRadius);
             }
         }
@@ -123,6 +125,9 @@ namespace Hunted_Mobile.Service.Map {
         }
 
         private void SetPlayerPin() {
+            MapView.Pins.Remove(playerPin);
+            MapView.Drawables.Remove(playerRadius);
+
             playerPin = new Pin(MapView) {
                 Label = Player.UserName,
                 Color = Player is Thief ? thiefPinColor : policePinColor,
