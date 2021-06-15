@@ -17,7 +17,7 @@ namespace Hunted_Mobile.ViewModel {
         public string ColourTheme {
             get => colourTheme; set {
                 colourTheme = value;
-                OnPropertyChanged(ColourTheme);
+                OnPropertyChanged(nameof(ColourTheme));
             }
         }
 

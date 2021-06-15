@@ -20,6 +20,7 @@ namespace Hunted_Mobile.ViewModel {
         private bool isloading;
         private ObservableCollection<InviteKey> inviteKeys = new ObservableCollection<InviteKey>();
         private readonly MainPage page;
+        private readonly AppViewModel appViewModel;
         private Game gameModel;
         private Player playingUser;
         private bool isOverlayVisible;
@@ -74,8 +75,9 @@ namespace Hunted_Mobile.ViewModel {
         public bool IsValid { get; set; }
         public InviteKey SelectedPreferenceGame { get; set; }
 
-        public MainPageViewModel(MainPage page) {
+        public MainPageViewModel(MainPage page, AppViewModel appViewModel) {
             this.page = page;
+            this.appViewModel = appViewModel;
             gameSessionPreference = new GameSessionPreference();
             AskPermission();
         }
@@ -134,7 +136,7 @@ namespace Hunted_Mobile.ViewModel {
         });
 
         public async Task NavigateToEnterUsernamePage() {
-            var viewModel = new EnterUsernameViewModel(inviteKeyModel);
+            var viewModel = new EnterUsernameViewModel(inviteKeyModel, appViewModel);
             var view = new EnterUsername(viewModel);
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(view);
         }
@@ -220,7 +222,7 @@ namespace Hunted_Mobile.ViewModel {
         private async Task NavigateToLobbyPage() {
             if(!PermissionService.HasGpsPermission) return;
 
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new Lobby(new LobbyViewModel(playingUser)), true);
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new Lobby(new LobbyViewModel(playingUser, appViewModel)), true);
         }
 
         private async Task NavigateToMapPage() {
@@ -229,7 +231,7 @@ namespace Hunted_Mobile.ViewModel {
                     PlayingUser = playingUser,
                 };
 
-                var mapPage = new MapPage(new MapViewModel(gameModel, mapModel));
+                var mapPage = new MapPage(new MapViewModel(gameModel, mapModel, appViewModel));
                 await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
             }
             catch(Exception ex) {
