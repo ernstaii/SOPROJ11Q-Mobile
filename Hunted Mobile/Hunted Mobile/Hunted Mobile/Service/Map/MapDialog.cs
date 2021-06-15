@@ -184,7 +184,7 @@ namespace Hunted_Mobile.Service.Map {
 
         public void DisplayArrestedScreen() {
             BeforeDisplayScreen();
-            SetContent("Gearesteerd!", "Je bent opgepakt en kan niet meer deelnemen aan het spel!");
+            SetContent("Gearresteerd!", "Je bent opgepakt en kan niet meer deelnemen aan het spel!");
             AfterDisplayScreen();
         }
 
