@@ -9,19 +9,19 @@ using Xamarin.Forms;
 namespace Hunted_Mobile.Service {
     public static class ValidationHelper {
         public static bool IsFormValid(object model, Page page) {
-            hideValidationFields(model, page);
+            HideValidationFields(model, page);
             var errors = new List<ValidationResult>();
             var context = new ValidationContext(model);
             bool isValid = Validator.TryValidateObject(model, context, errors, true);
             if(!isValid) {
-                showValidationFields(errors, model, page);
+                ShowValidationFields(errors, model, page);
             }
             return errors.Count() == 0;
         }
 
-        private static void hideValidationFields(object model, Page page, string validationLabelSuffix = "Error") {
+        private static void HideValidationFields(object model, Page page, string validationLabelSuffix = "Error") {
             if(model == null) return;
-            var properties = getValidatablePropertyNames(model);
+            var properties = GetValidatablePropertyNames(model);
 
             foreach(var propertyName in properties) {
                 var errorControlName = $"{propertyName.Replace(".", "_")}{validationLabelSuffix}";
@@ -29,11 +29,11 @@ namespace Hunted_Mobile.Service {
             }
         }
 
-        private static void showValidationFields(List<ValidationResult> errors, object model, Page page, string validationLabelSuffix = "Error") {
+        private static void ShowValidationFields(List<ValidationResult> errors, object model, Page page, string validationLabelSuffix = "Error") {
             if(model == null) return;
 
             foreach(var error in errors) {
-                var memberName = getMemberName(model, error);
+                var memberName = GetMemberName(model, error);
                 
                 var errorControlName = $"{memberName}{validationLabelSuffix}";
                 var control = page.FindByName<Label>(errorControlName);
@@ -44,9 +44,9 @@ namespace Hunted_Mobile.Service {
             }
         }
 
-        private static IEnumerable<string> getValidatablePropertyNames(object model) {
+        private static IEnumerable<string> GetValidatablePropertyNames(object model) {
             var validatableProperties = new List<string>();
-            var properties = getValidatableProperties(model);
+            var properties = GetValidatableProperties(model);
             foreach(var propertyInfo in properties) {
                 var errorControlName = $"{propertyInfo.DeclaringType.Name}.{propertyInfo.Name}";
                 validatableProperties.Add(errorControlName);
@@ -54,14 +54,14 @@ namespace Hunted_Mobile.Service {
             return validatableProperties;
         }
 
-        private static List<PropertyInfo> getValidatableProperties(object model) {
+        private static List<PropertyInfo> GetValidatableProperties(object model) {
             var properties = model.GetType().GetProperties().Where(prop => prop.CanRead
                 && prop.GetCustomAttributes(typeof(ValidationAttribute), true).Any()
                 && prop.GetIndexParameters().Length == 0).ToList();
             return properties;
         }
 
-        private static string getMemberName(object model, ValidationResult error) {
+        private static string GetMemberName(object model, ValidationResult error) {
             string typeName = "";
 
             try {

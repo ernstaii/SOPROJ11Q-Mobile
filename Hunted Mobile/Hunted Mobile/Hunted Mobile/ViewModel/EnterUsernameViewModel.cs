@@ -49,23 +49,23 @@ namespace Hunted_Mobile.ViewModel {
             SubmitButtonIsEnable = false;
 
             // First validation is for model validation
-            if(valid()) await createUser();
+            if(Valid()) await CreateUser();
 
             // Second validation is for displaying ServerErrors
-            if(valid()) navigateToLobby();
+            if(Valid()) await NavigateToLobby();
 
             SubmitButtonIsEnable = true;
         });
 
-        private async Task createUser() {
+        private async Task CreateUser() {
             UserModel = await UnitOfWork.Instance.UserRepository.Create(UserModel);
         }
 
-        private bool valid() {
+        private bool Valid() {
             return IsValid = ValidationHelper.IsFormValid(UserModel, page);
         }
 
-        private async Task navigateToLobby() {
+        private async Task NavigateToLobby() {
             var navigation = Application.Current.MainPage.Navigation;
 
             var previousPage = navigation.NavigationStack.LastOrDefault();
