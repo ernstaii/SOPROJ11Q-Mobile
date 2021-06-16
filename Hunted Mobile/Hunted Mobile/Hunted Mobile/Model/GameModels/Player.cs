@@ -49,6 +49,7 @@ namespace Hunted_Mobile.Model.GameModels {
             Status = status;
             TriggeredAlarm = triggeredAlarm;
             Gadgets = gadgets;
+            ValidationField = "Player";
         }
 
         public async Task<bool> Use(Gadget.Gadget gadget) {

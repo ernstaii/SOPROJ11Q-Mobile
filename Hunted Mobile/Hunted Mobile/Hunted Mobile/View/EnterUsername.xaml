@@ -18,14 +18,14 @@
         <StackLayout Padding="40">
             <!-- Enter here the UserName and submit with button -->
             <Entry Placeholder="Voer uw gebruikersnaam in"  Text="{Binding UserModel.UserName}" />
-            <Label TextColor="Red" x:Name="User_UserNameError"/>
+            <Label TextColor="Red" x:Name="Player_UserNameError"/>
 
             <!-- Submit UserName to join a game -->
             <Button Text="Bevestig"
                     CornerRadius="30" 
                     Margin="0, 20" 
                     IsEnabled="{Binding SubmitButtonIsEnable}"
-                    Command="{Binding ButtonSelectedCommand}"/>
+                    Command="{Binding HandleEnterUserNameCommand}"/>
         </StackLayout>
     </StackLayout>
 </ContentPage>
