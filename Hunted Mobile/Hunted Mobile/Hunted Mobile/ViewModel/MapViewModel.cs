@@ -549,7 +549,12 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void ResumeGame(EventData data) {
-            DisplayCaughtScreenOrDisplayNone();
+            try {
+                DisplayCaughtScreenOrDisplayNone();
+            }
+            catch(Exception e) {
+                DependencyService.Get<Toast>().Show("Er is iets misgegaan met de weergave van de boef die is opgepakt.");
+            }
             StartCountdown(data.TimeLeft);
             StartIntervalTimer();
 
@@ -567,7 +572,11 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void DisplayCaughtScreenOrDisplayNone() {
-            if(((Thief) mapModel.PlayingUser).IsCaught) {
+            if(mapModel.PlayingUser is Police) return;
+
+            var user = mapModel.PlayingUser is FakePolice ? mapModel.PlayingUser as FakePolice : mapModel.PlayingUser as Thief;
+
+            if(user.IsCaught) {
                 MapDialogOption = MapDialogOptions.DISPLAY_ARRESTED_SCREEN;
                 MapDialog.DisplayArrestedScreen();
             }
@@ -580,8 +589,7 @@ namespace Hunted_Mobile.ViewModel {
             if(mapModel.PlayingUser.Id != data.PlayerBuilder.Id) return;
 
             mapModel.PlayingUser = data.PlayerBuilder
-                .SetFakePolice(mapModel.PlayingUser is FakePolice)
-                .ToThief();
+                .ToPlayer();
 
             DisplayCaughtScreenOrDisplayNone();
         }

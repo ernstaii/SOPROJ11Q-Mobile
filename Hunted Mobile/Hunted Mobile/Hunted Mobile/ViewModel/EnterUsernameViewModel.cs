@@ -60,9 +60,7 @@ namespace Hunted_Mobile.ViewModel {
         });
 
         private async Task CreateUser() {
-            string userName = UserModel.UserName;
             UserModel = await UnitOfWork.Instance.UserRepository.Create(UserModel);
-            UserModel.UserName = userName;
         }
 
         private bool Valid() {
