@@ -92,8 +92,10 @@ namespace Hunted_Mobile.ViewModel {
 
         private void AddNewJoinedPlayer(PlayerEventData data) {
             var player = data.PlayerBuilder.ToPlayer();
+            var list = users;
+            list.Add(player);
 
-            Users.Add(player);
+            Users = new ObservableCollection<Player>(list);
         }
 
         private async Task CheckForStatus() {
