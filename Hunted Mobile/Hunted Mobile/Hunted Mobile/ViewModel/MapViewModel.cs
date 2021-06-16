@@ -574,7 +574,7 @@ namespace Hunted_Mobile.ViewModel {
         private void DisplayCaughtScreenOrDisplayNone() {
             if(mapModel.PlayingUser is Police) return;
 
-            var user = mapModel.PlayingUser is FakePolice ? mapModel.PlayingUser as FakePolice : mapModel.PlayingUser as Thief;
+            var user = mapModel.PlayingUser as Thief;
 
             if(user.IsCaught) {
                 MapDialogOption = MapDialogOptions.DISPLAY_ARRESTED_SCREEN;
@@ -586,12 +586,12 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void CaughtPlayingUser(PlayerEventData data) {
-            if(mapModel.PlayingUser.Id != data.PlayerBuilder.Id) return;
+            if(mapModel.PlayingUser.Id == data.PlayerBuilder.Id) {
+                mapModel.PlayingUser = data.PlayerBuilder
+                    .ToPlayer();
 
-            mapModel.PlayingUser = data.PlayerBuilder
-                .ToPlayer();
-
-            DisplayCaughtScreenOrDisplayNone();
+                DisplayCaughtScreenOrDisplayNone();
+            }
         }
 
         private bool WasWithinBoundary() {
