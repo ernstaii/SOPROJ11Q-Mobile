@@ -24,8 +24,9 @@ namespace Hunted_Mobile.Service.Map {
         private Player player;
         private Pin playerPin;
         private Circle playerRadius;
+        private readonly int lootPickUpDistanceInMeters;
 
-        public Player Player { 
+        public Player Player {
             get => player;
             set {
                 player = value;
@@ -35,7 +36,8 @@ namespace Hunted_Mobile.Service.Map {
         }
         public MapView MapView { get; set; }
 
-        public MapViewService(MapView mapView, Player player) {
+        public MapViewService(MapView mapView, Player player, int lootPickUpDistance) {
+            lootPickUpDistanceInMeters = lootPickUpDistance;
             MapView = mapView;
             Player = player;
             SetPlayerPin();
@@ -130,7 +132,7 @@ namespace Hunted_Mobile.Service.Map {
             playerRadius = new Circle() {
                 FillColor = new Color(255, 0, 0, 0.2),
                 Center = new MapsuiPosition(Player.Location.Latitude, Player.Location.Longitude),
-                Radius = new Distance(20),
+                Radius = new Distance(lootPickUpDistanceInMeters),
                 Quality = 360
             };
         }
