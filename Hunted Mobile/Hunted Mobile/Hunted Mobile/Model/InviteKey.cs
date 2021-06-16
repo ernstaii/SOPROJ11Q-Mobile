@@ -13,5 +13,9 @@ namespace Hunted_Mobile.Model {
         public string Role { get; set; }
 
         public string GameLabel => $"Spel {GameId}";
+
+        public InviteKey() {
+            ValidationField = this.GetType().Name;
+        }
     }
 }

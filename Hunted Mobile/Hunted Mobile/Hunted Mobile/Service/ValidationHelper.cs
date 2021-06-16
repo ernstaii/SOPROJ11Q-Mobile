@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 using Xamarin.Forms;
 
@@ -21,23 +20,21 @@ namespace Hunted_Mobile.Service {
         }
 
         private static void HideValidationFields(object model, Page page, string validationLabelSuffix = "Error") {
-            if(model == null) { return; }
+            if(model == null) return;
             var properties = GetValidatablePropertyNames(model);
+
             foreach(var propertyName in properties) {
-                var errorControlName =
-                $"{propertyName.Replace(".", "_")}{validationLabelSuffix}";
+                var errorControlName = $"{propertyName.Replace(".", "_")}{validationLabelSuffix}";
                 var control = page.FindByName<Label>(errorControlName);
-                /*if(control != null) {
-                    control.IsVisible = false;
-                }*/
             }
         }
 
         private static void ShowValidationFields(List<ValidationResult> errors, object model, Page page, string validationLabelSuffix = "Error") {
-            if(model == null) { return; }
+            if(model == null) return;
+
             foreach(var error in errors) {
-                var memberName = $"{model.GetType().Name}_{error.MemberNames.FirstOrDefault()}";
-                memberName = memberName.Replace(".", "_");
+                var memberName = GetMemberName(model, error);
+                
                 var errorControlName = $"{memberName}{validationLabelSuffix}";
                 var control = page.FindByName<Label>(errorControlName);
                 if(control != null) {
@@ -62,6 +59,24 @@ namespace Hunted_Mobile.Service {
                 && prop.GetCustomAttributes(typeof(ValidationAttribute), true).Any()
                 && prop.GetIndexParameters().Length == 0).ToList();
             return properties;
+        }
+
+        private static string GetMemberName(object model, ValidationResult error) {
+            string typeName = "";
+
+            try {
+                typeName = model
+                    .GetType()
+                    .GetProperties()
+                    .FirstOrDefault(o => o.Name == "ValidationField")
+                    .GetValue(model, null)
+                    ?.ToString();
+            }
+            catch(Exception e) {
+            }
+
+            var memberName = $"{typeName ?? model.GetType().Name}_{error.MemberNames.FirstOrDefault()}";
+            return memberName.Replace(".", "_");
         }
     }
 }

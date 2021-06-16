@@ -17,7 +17,7 @@ using Hunted_Mobile.Model.GameModels;
 namespace Hunted_Mobile.ViewModel {
     public class MainPageViewModel : BaseViewModel {
         private InviteKey inviteKeyModel = new InviteKey();
-        private bool isloading;
+        private bool isEnabled;
         private ObservableCollection<InviteKey> inviteKeys = new ObservableCollection<InviteKey>();
         private readonly MainPage page;
         private readonly AppViewModel appViewModel;
@@ -33,15 +33,24 @@ namespace Hunted_Mobile.ViewModel {
             get => inviteKeyModel;
             set {
                 inviteKeyModel = value;
-                OnPropertyChanged("InviteKeyModel");
+                OnPropertyChanged(nameof(InviteKeyModel));
             }
         }
 
         public bool SubmitButtonIsEnable {
-            get => isloading;
+            get => isEnabled;
             set {
-                isloading = !isLocked && value;
-                OnPropertyChanged("SubmitButtonIsEnable");
+                isEnabled = !IsLocked && value;
+                OnPropertyChanged(nameof(SubmitButtonIsEnable));
+            }
+        }
+
+        public bool IsLocked {
+            get => isLocked;
+            set {
+                isLocked = value;
+                OnPropertyChanged(nameof(IsLocked));
+                OnPropertyChanged(nameof(SubmitButtonIsEnable));
             }
         }
 
@@ -60,7 +69,7 @@ namespace Hunted_Mobile.ViewModel {
             get => isOverlayVisible;
             set {
                 isOverlayVisible = value;
-                OnPropertyChanged("IsOverlayVisible");
+                OnPropertyChanged(nameof(IsOverlayVisible));
             }
         }
 
@@ -68,7 +77,7 @@ namespace Hunted_Mobile.ViewModel {
             get { return inviteKeys; }
             set {
                 inviteKeys = value;
-                OnPropertyChanged("InviteKeys");
+                OnPropertyChanged(nameof(InviteKeys));
             }
         }
 
@@ -146,18 +155,16 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public void AskPermission() {
-            bool isEnableState = SubmitButtonIsEnable;
-
-            SubmitButtonIsEnable = false;
+            IsLocked = true;
             PermissionService.AskPermissionForLocation()
                 .ContinueWith(x => {
                     PermissionService.CheckPermissionLocation();
 
                     if(PermissionService.HasGpsPermission) {
-                        SubmitButtonIsEnable = isEnableState;
+                        IsLocked = false;
+                        SubmitButtonIsEnable = true;
                     } else {
-                        isLocked = true;
-                        OnPropertyChanged(nameof(SubmitButtonIsEnable));
+                        IsLocked = true;
                     }
                 });
         }
