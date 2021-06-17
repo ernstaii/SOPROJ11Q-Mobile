@@ -136,9 +136,22 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Other functionality -->
+                    <Label Text="INFO" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" HorizontalTextAlignment="Center"/>
                     <Label Text="SPELERS" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" Grid.Column="1" HorizontalTextAlignment="Center"/>
                     <Label Text="GADGETS" FontSize="12" FontAttributes="Bold" TextColor="{Binding GameModel.ColourTheme}" Grid.Column="2" HorizontalTextAlignment="Center"/>
 
+                    <!-- Navigation to gadgets overview -->
+                    <ImageButton Source="{Binding Icons.Information}"
+                                Command="{Binding NavigateToInformationPageCommand}"
+                                HorizontalOptions="Center"
+                                CornerRadius="30" 
+                                WidthRequest="60"
+                                HeightRequest="60"
+                                BackgroundColor="{Binding GameModel.ColourTheme}"
+                                BorderWidth="1"
+                                BorderColor="{Binding GameModel.ColourTheme}"
+                                Grid.Row="1"/>
+                    
                     <!-- Navigation to players overview -->
                     <ImageButton Source="{Binding Icons.Users}"
                                 Command="{Binding NavigateToPlayersOverviewCommand}"
@@ -151,6 +164,7 @@
                                 BorderColor="{Binding GameModel.ColourTheme}"
                                 Grid.Row="1"
                                 Grid.Column="1"/>
+                    
                     <!-- Navigation to gadgets overview -->
                     <ImageButton Source="{Binding Icons.Gadgets}"
                                 Command="{Binding NavigateToGadgetsOverviewCommand}"
@@ -164,7 +178,6 @@
                                 Grid.Row="1"
                                 Grid.Column="2"/>
 
-                    <!-- colour_theme -->
                     <!-- Close menu functionality -->
                     <ImageButton Source="{Binding Icons.Close}"
                                 Command="{Binding CloseMainMapMenuCommand}"
