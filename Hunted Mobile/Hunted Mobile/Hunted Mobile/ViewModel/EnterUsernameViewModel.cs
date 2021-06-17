@@ -17,6 +17,7 @@ namespace Hunted_Mobile.ViewModel {
         private Player userModel;
         private bool isloading = false;
         private EnterUsername page;
+        private readonly AppViewModel appViewModel;
 
         public bool IsValid { get; set; }
 
@@ -38,8 +39,9 @@ namespace Hunted_Mobile.ViewModel {
 
         public EnterUsername View { set => page = value; }
 
-        public EnterUsernameViewModel(InviteKey key) {
+        public EnterUsernameViewModel(InviteKey key, AppViewModel appViewModel) {
             userModel = new PlayerBuilder().SetInviteKey(key).ToPlayer();
+            this.appViewModel = appViewModel;
         }
 
         /// <summary>
@@ -71,7 +73,7 @@ namespace Hunted_Mobile.ViewModel {
             var navigation = Application.Current.MainPage.Navigation;
 
             var previousPage = navigation.NavigationStack.LastOrDefault();
-            var view = new Lobby(new LobbyViewModel(UserModel));
+            var view = new Lobby(new LobbyViewModel(UserModel, appViewModel));
             await navigation.PushAsync(view, true);
             navigation.RemovePage(previousPage);
         }

@@ -21,7 +21,7 @@ namespace Hunted_Mobile.iOS {
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options) {
             global::Xamarin.Forms.Forms.Init();
-            LoadApplication(new App());
+            LoadApplication(new App(new ViewModel.AppViewModel()));
 
             return base.FinishedLaunching(app, options);
         }
