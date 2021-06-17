@@ -1,7 +1,5 @@
-﻿
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 using Hunted_Mobile.ViewModel;
-using System;
 
 namespace Hunted_Mobile.View {
     public partial class MainPage : ContentPage {
