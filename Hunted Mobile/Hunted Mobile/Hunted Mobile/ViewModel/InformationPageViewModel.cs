@@ -111,8 +111,10 @@ namespace Hunted_Mobile.ViewModel {
             PrepareIcon("Rookbom", "beschrijving", iconService.Smoke);
             PrepareIcon("Drone", "beschrijving", iconService.Drone);
 
-            // pin
-            // politiebureau
+            PrepareIcon("Politie station", "beschrijving", iconService.PoliceBadge);
+            PrepareIcon("Buit", "beschrijving", iconService.MoneyBag);
+            PrepareIcon("Boef pin", "beschrijving", iconService.BluePin);
+            PrepareIcon("Politie pin", "beschrijving", iconService.BluePin);
 
             Icons = new ObservableCollection<IconInformation>(iconList);
         }

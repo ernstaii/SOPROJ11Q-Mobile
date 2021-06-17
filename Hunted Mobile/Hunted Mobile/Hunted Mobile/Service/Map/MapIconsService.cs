@@ -18,7 +18,11 @@ namespace Hunted_Mobile.Service.Map {
             information,
             thiefRole,
             policeRole,
-            fakePoliceRole;
+            fakePoliceRole,
+            policeBadge,
+            moneyBag,
+            blackPin,
+            bluePin;
         private string roleName;
 
         public MapIconsService() {
@@ -34,6 +38,10 @@ namespace Hunted_Mobile.Service.Map {
             thiefRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("thief.png");
             policeRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("police.png");
             fakePoliceRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("fake_police.png");
+            policeBadge = UnitOfWork.Instance.ResourceRepository.GetMapImage("police-badge.png");
+            moneyBag = UnitOfWork.Instance.ResourceRepository.GetMapImage("money-bag.png");
+            blackPin = UnitOfWork.Instance.ResourceRepository.GetMapImage("black_pin.png");
+            bluePin = UnitOfWork.Instance.ResourceRepository.GetMapImage("blue_pin.png");
 
             OnPropertyChanged(nameof(Chat));
             OnPropertyChanged(nameof(Menu));
@@ -46,6 +54,10 @@ namespace Hunted_Mobile.Service.Map {
             OnPropertyChanged(nameof(ThiefRole));
             OnPropertyChanged(nameof(PoliceRole));
             OnPropertyChanged(nameof(FakePoliceRole));
+            OnPropertyChanged(nameof(PoliceBadge));
+            OnPropertyChanged(nameof(MoneyBag));
+            OnPropertyChanged(nameof(BlackPin));
+            OnPropertyChanged(nameof(BluePin));
         }
 
         public string RoleName {
@@ -79,6 +91,14 @@ namespace Hunted_Mobile.Service.Map {
         public UriImageSource PoliceRole => GetUriImageSource(policeRole);
 
         public UriImageSource FakePoliceRole => GetUriImageSource(fakePoliceRole);
+
+        public UriImageSource PoliceBadge => GetUriImageSource(policeBadge);
+
+        public UriImageSource MoneyBag => GetUriImageSource(moneyBag);
+
+        public UriImageSource BlackPin => GetUriImageSource(blackPin);
+
+        public UriImageSource BluePin => GetUriImageSource(bluePin);
 
         public UriImageSource Role {
             get {
