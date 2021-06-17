@@ -97,9 +97,12 @@ namespace Hunted_Mobile.ViewModel {
             get => gameModel;
             set {
                 gameModel = value;
+                appViewModel.ColourTheme = gameModel.ColourTheme;
                 OnPropertyChanged("GameModel");
             }
         }
+
+        private readonly AppViewModel appViewModel;
 
         public bool OpenMainMapMenu {
             get => openMainMapMenu;
@@ -163,9 +166,10 @@ namespace Hunted_Mobile.ViewModel {
         public bool DroneActive { get; private set; }
         #endregion
 
-        public MapViewModel(Game gameModel, Model.Map mapModel) {
+        public MapViewModel(Game gameModel, Model.Map mapModel, AppViewModel appViewModel) {
             this.mapModel = mapModel;
-            this.gameModel = gameModel;
+            this.appViewModel = appViewModel;
+            GameModel = gameModel;
             var gameIdStr = gameModel.Id.ToString();
             messageViewModel = new MessageViewModel(gameIdStr, gameModel.ColourTheme);
             messagesView = new View.Messages(messageViewModel);
@@ -844,7 +848,8 @@ namespace Hunted_Mobile.ViewModel {
 
         private async void ExitGame() {
             GameSessionPreference.ClearUserAndGame();
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MainPage());
+            appViewModel.ResetColor();
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new MainPage(appViewModel));
             RemovePreviousNavigation();
             await webSocketService.Disconnect();
         }
