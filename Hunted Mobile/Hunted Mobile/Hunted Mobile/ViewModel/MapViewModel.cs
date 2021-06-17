@@ -265,6 +265,7 @@ namespace Hunted_Mobile.ViewModel {
 
         private async void PreIntervalUpdate(object sender = null, ElapsedEventArgs args = null) {
             StopIntervalTimer();
+            StartWarnForLateIntervalTimer(15);
 
             // Send the current user's location to the database
             await UpdatePlayerLocation();
@@ -286,8 +287,6 @@ namespace Hunted_Mobile.ViewModel {
                 bool deleted = await UnitOfWork.Instance.LootRepository.Delete(SelectedLoot.Id);
                 if(deleted) {
                     await UnitOfWork.Instance.GameRepository.UpdateThievesScore(gameModel.Id, PICK_UP_LOOT_SCORE);
-                    await PollLoot();
-                    DisplayAllPins();
                 }
             });
         }
@@ -383,6 +382,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void IntervalOfGame(IntervalEventData data) {
+            StopIntervalTimer();
             StartIntervalTimer();
 
             DroneActive = data.DroneActive;
@@ -473,6 +473,20 @@ namespace Hunted_Mobile.ViewModel {
             intervalUpdateTimer = new Timer((gameModel.Interval - secondsBeforeGameInterval) * 1000);
             intervalUpdateTimer.Elapsed += PreIntervalUpdate;
             intervalUpdateTimer.Start();
+        }
+
+        private void StartWarnForLateIntervalTimer(float secondsToAwait) {
+            if(intervalUpdateTimer == null) {
+                intervalUpdateTimer = new Timer();
+                intervalUpdateTimer.AutoReset = true;
+            }
+            intervalUpdateTimer.Interval = secondsToAwait * 1000;
+            intervalUpdateTimer.Elapsed += (object sender, ElapsedEventArgs args) => {
+                DependencyService.Get<Toast>().Show("Het verwachte spel interval was niet aangekomen");
+            };
+            if(!intervalUpdateTimer.Enabled) {
+                intervalUpdateTimer.Start();
+            }
         }
 
         private async Task StartSocket() {
