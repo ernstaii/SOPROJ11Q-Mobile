@@ -19,10 +19,12 @@ namespace Hunted_Mobile.Service.Map {
             thiefRole,
             policeRole,
             fakePoliceRole,
-            policeBadge,
-            moneyBag,
             blackPin,
             bluePin;
+#pragma warning disable IDE1006 // Naming Styles
+        public readonly Resource PoliceBadgeResource,
+            MoneyBagResource;
+#pragma warning restore IDE1006 // Naming Styles
         private string roleName;
 
         public MapIconsService() {
@@ -38,8 +40,8 @@ namespace Hunted_Mobile.Service.Map {
             thiefRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("thief.png");
             policeRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("police.png");
             fakePoliceRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("fake_police.png");
-            policeBadge = UnitOfWork.Instance.ResourceRepository.GetMapImage("police-badge.png");
-            moneyBag = UnitOfWork.Instance.ResourceRepository.GetMapImage("money-bag.png");
+            PoliceBadgeResource = UnitOfWork.Instance.ResourceRepository.GetMapImage("police-badge.png");
+            MoneyBagResource = UnitOfWork.Instance.ResourceRepository.GetMapImage("money-bag.png");
             blackPin = UnitOfWork.Instance.ResourceRepository.GetGuiImage("black_pin.png");
             bluePin = UnitOfWork.Instance.ResourceRepository.GetGuiImage("blue_pin.png");
 
@@ -92,9 +94,9 @@ namespace Hunted_Mobile.Service.Map {
 
         public UriImageSource FakePoliceRole => GetUriImageSource(fakePoliceRole);
 
-        public UriImageSource PoliceBadge => GetUriImageSource(policeBadge);
+        public UriImageSource PoliceBadge => GetUriImageSource(PoliceBadgeResource);
 
-        public UriImageSource MoneyBag => GetUriImageSource(moneyBag);
+        public UriImageSource MoneyBag => GetUriImageSource(MoneyBagResource);
 
         public UriImageSource BlackPin => GetUriImageSource(blackPin);
 

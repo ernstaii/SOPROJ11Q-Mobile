@@ -19,11 +19,10 @@ namespace Hunted_Mobile.Service.Map {
 
         private readonly Color policePinColor = Xamarin.Forms.Color.FromRgb(39, 96, 203),
             thiefPinColor = Xamarin.Forms.Color.Black;
-        private readonly Resource policeBadgeIcon;
-        private readonly Resource moneyBagIcon;
         private Player player;
         private Pin playerPin;
         private Circle playerRadius;
+        private MapIconsService iconService;
         private readonly int lootPickUpDistanceInMeters;
 
         public Player Player {
@@ -36,7 +35,8 @@ namespace Hunted_Mobile.Service.Map {
         }
         public MapView MapView { get; set; }
 
-        public MapViewService(MapView mapView, Player player, int lootPickUpDistance) {
+        public MapViewService(MapView mapView, Player player, int lootPickUpDistance, MapIconsService iconsService) {
+            iconService = iconsService;
             lootPickUpDistanceInMeters = lootPickUpDistance;
             MapView = mapView;
             Player = player;
@@ -44,9 +44,6 @@ namespace Hunted_Mobile.Service.Map {
 
             // Enableling this buttons is something for a different PR
             DisableDefaultMapViewOptions();
-
-            policeBadgeIcon = UnitOfWork.Instance.ResourceRepository.GetMapImage("police-badge.png");
-            moneyBagIcon = UnitOfWork.Instance.ResourceRepository.GetMapImage("money-bag.png");
         }
 
         public void UpdatePlayerPinLocation(Location location) {
@@ -109,7 +106,7 @@ namespace Hunted_Mobile.Service.Map {
                 Position = new MapsuiPosition(loot.Location.Latitude, loot.Location.Longitude),
                 Scale = 1.0f,
                 Tag = $"{LOOT_TAG}.{loot.Id}",
-                Icon = moneyBagIcon.Data,
+                Icon = iconService.MoneyBagResource.Data,
                 Type = PinType.Icon,
             });
         }
@@ -120,7 +117,7 @@ namespace Hunted_Mobile.Service.Map {
                     Label = "Politie station",
                     Position = new MapsuiPosition(policeStationLocation.Latitude, policeStationLocation.Longitude),
                     Scale = 1.0f,
-                    Icon = policeBadgeIcon.Data,
+                    Icon = iconService.PoliceBadgeResource.Data,
                     Type = PinType.Icon,
                 });
             }
