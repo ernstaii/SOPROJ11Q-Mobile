@@ -15,6 +15,7 @@ namespace Hunted_Mobile.Service.Map {
             alarm,
             smoke,
             drone,
+            information,
             thiefRole,
             policeRole,
             fakePoliceRole;
@@ -29,6 +30,7 @@ namespace Hunted_Mobile.Service.Map {
             alarm = UnitOfWork.Instance.ResourceRepository.GetGuiImage("alarm.png");
             smoke = UnitOfWork.Instance.ResourceRepository.GetGuiImage("smoke.png");
             drone = UnitOfWork.Instance.ResourceRepository.GetGuiImage("drone.png");
+            information = UnitOfWork.Instance.ResourceRepository.GetGuiImage("information.png");
             thiefRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("thief.png");
             policeRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("police.png");
             fakePoliceRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("fake_police.png");
@@ -40,15 +42,10 @@ namespace Hunted_Mobile.Service.Map {
             OnPropertyChanged(nameof(Alarm));
             OnPropertyChanged(nameof(Smoke));
             OnPropertyChanged(nameof(Drone));
+            OnPropertyChanged(nameof(Information));
             OnPropertyChanged(nameof(ThiefRole));
             OnPropertyChanged(nameof(PoliceRole));
             OnPropertyChanged(nameof(FakePoliceRole));
-
-            // Gadgets icons:
-            // police, thief
-
-            // Roles icons:
-            // police, thief
         }
 
         public string RoleName {
@@ -72,6 +69,8 @@ namespace Hunted_Mobile.Service.Map {
         public UriImageSource Smoke => GetUriImageSource(smoke);
 
         public UriImageSource Drone => GetUriImageSource(drone);
+
+        public UriImageSource Information => GetUriImageSource(information);
 
         public UriImageSource Close => GetUriImageSource(close);
 
