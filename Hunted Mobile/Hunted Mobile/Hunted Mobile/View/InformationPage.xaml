@@ -6,7 +6,7 @@
     <!-- Main layout -->
     <StackLayout Margin="5">
         <!-- Hunted title -->
-        <Label Text="Informatie" 
+        <Label Text="Uitleg" 
                    Padding="5" 
                    HorizontalTextAlignment="Center" 
                    TextColor="{AppThemeBinding Light=Black, Dark=White}" 

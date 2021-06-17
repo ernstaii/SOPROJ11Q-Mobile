@@ -1,4 +1,6 @@
-﻿using Xamarin.Essentials;
+﻿using System;
+
+using Xamarin.Essentials;
 
 namespace Hunted_Mobile.Service {
     public abstract class PreferenceService {
@@ -7,7 +9,13 @@ namespace Hunted_Mobile.Service {
         }
 
         protected string Get(string key) {
-            return Preferences.Get(key, "");
+            string value = "";
+            try {
+                value = Preferences.Get(key, "");
+            }
+            catch(Exception e) { }
+
+            return value;
         }
 
         protected int GetInt(string key) {
