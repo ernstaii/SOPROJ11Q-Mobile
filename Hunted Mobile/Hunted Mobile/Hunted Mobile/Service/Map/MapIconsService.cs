@@ -40,8 +40,8 @@ namespace Hunted_Mobile.Service.Map {
             fakePoliceRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("fake_police.png");
             policeBadge = UnitOfWork.Instance.ResourceRepository.GetMapImage("police-badge.png");
             moneyBag = UnitOfWork.Instance.ResourceRepository.GetMapImage("money-bag.png");
-            blackPin = UnitOfWork.Instance.ResourceRepository.GetMapImage("black_pin.png");
-            bluePin = UnitOfWork.Instance.ResourceRepository.GetMapImage("blue_pin.png");
+            blackPin = UnitOfWork.Instance.ResourceRepository.GetGuiImage("black_pin.png");
+            bluePin = UnitOfWork.Instance.ResourceRepository.GetGuiImage("blue_pin.png");
 
             OnPropertyChanged(nameof(Chat));
             OnPropertyChanged(nameof(Menu));
