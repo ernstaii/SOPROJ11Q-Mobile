@@ -97,24 +97,24 @@ namespace Hunted_Mobile.ViewModel {
         private void LoadAllIcons(MapIconsService iconService) {
             iconList = new List<IconInformation>();
 
-            PrepareIcon("Informatie", "beschrijving", iconService.Information);
-            PrepareIcon("Menu", "beschrijving", iconService.Menu);
-            PrepareIcon("Spelers", "beschrijving", iconService.Users);
-            PrepareIcon("Gadgets", "beschrijving", iconService.Gadgets);
-            PrepareIcon("Sluiten", "beschrijving", iconService.Close);
+            PrepareIcon("Informatie", "Op deze pagina staat informatie over het spel.", iconService.Information);
+            PrepareIcon("Menu", "Met deze knop wordt het menu geopend.", iconService.Menu);
+            PrepareIcon("Spelers", "Met deze knop wordt het speleroverzicht geopend.", iconService.Users);
+            PrepareIcon("Gadgets", "Met deze knop wordt het gadgetsoverzicht geopend.", iconService.Gadgets);
+            PrepareIcon("Sluiten", "Met deze knop wordt het menu gesloten.", iconService.Close);
 
-            PrepareIcon("Politie", "beschrijving", iconService.PoliceRole, "#FFFFFF");
-            PrepareIcon("Boef", "beschrijving", iconService.ThiefRole, "#FFFFFF");
-            PrepareIcon("Nep agent", "beschrijving", iconService.FakePoliceRole, "#FFFFFF");
+            PrepareIcon("Agent", "Dit is een indicatie van uw rol als agent.", iconService.PoliceRole, "#FFFFFF");
+            PrepareIcon("Boef", "Dit is een indicatie van uw rol als boef.", iconService.ThiefRole, "#FFFFFF");
+            PrepareIcon("Nep agent", "Dit is een indicatie van uw rol als nep agent. Met deze rol zijn alle agenten zichtbaar en bij het klikken op de knop wordt de weergave aangepast. Hierdoor wordt u minder snel herkent door de andere agenten.", iconService.FakePoliceRole, "#FFFFFF");
 
-            PrepareIcon("Alarm", "beschrijving", iconService.Alarm);
-            PrepareIcon("Rookbom", "beschrijving", iconService.Smoke);
-            PrepareIcon("Drone", "beschrijving", iconService.Drone);
+            PrepareIcon("Alarm", "Met deze gadget worden tijdelijk alle boeven zichtbaar in een gebied.", iconService.Alarm);
+            PrepareIcon("Rookbom", "Met deze gadget kan een boef verdwijnen op de kaart van een politie.", iconService.Smoke);
+            PrepareIcon("Drone", "Met deze gadget worden tijdelijk alle boeven zichtbaar.", iconService.Drone);
 
-            PrepareIcon("Politie station", "beschrijving", iconService.PoliceBadge, "#FFFFFF");
-            PrepareIcon("Buit", "beschrijving", iconService.MoneyBag, "#FFFFFF");
-            PrepareIcon("Boef pin", "beschrijving", iconService.BlackPin, "#FFFFFF");
-            PrepareIcon("Politie pin", "beschrijving", iconService.BluePin, "#FFFFFF");
+            PrepareIcon("Politie station", "Dit is een indicatie van waar het politiebureau is gelokaliseerd.", iconService.PoliceBadge, "#FFFFFF");
+            PrepareIcon("Buit", "Dit is een indicatie van een buit.", iconService.MoneyBag, "#FFFFFF");
+            PrepareIcon("Boef pin", "Dit is een indicatie waar een boef loopt.", iconService.BlackPin, "#FFFFFF");
+            PrepareIcon("Politie pin", "Dit is een indicatie waar een agent loopt.", iconService.BluePin, "#FFFFFF");
 
             Icons = new ObservableCollection<IconInformation>(iconList);
         }
