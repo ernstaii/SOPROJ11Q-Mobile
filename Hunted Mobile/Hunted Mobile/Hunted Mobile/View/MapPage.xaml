@@ -3,8 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:mapsui="clr-namespace:Mapsui.UI.Forms;assembly=Mapsui.UI.Forms" 
              xmlns:local="clr-namespace:Xamarin.Forms.BehaviorsPack;assembly=Xamarin.Forms.BehaviorsPack"
-             x:Class="Hunted_Mobile.MapPage"
-             Title="{Binding PlayingUserScoreDisplay}">
+             x:Class="Hunted_Mobile.MapPage">
+    <NavigationPage.TitleView>
+        <StackLayout Orientation="Horizontal">
+            <Label Text="{Binding PlayingUserScoreDisplay}" FontSize="24" TextColor="White" VerticalTextAlignment="Center" HorizontalOptions="StartAndExpand"></Label>
+            <Image
+            WidthRequest="50" 
+            HeightRequest="50"
+            HorizontalOptions="End"
+            VerticalOptions="Center"
+            Margin="0,0,10,0">
+                <Image.Source>
+                    <UriImageSource Uri="{Binding LogoImage}" />
+                </Image.Source>
+            </Image>
+        </StackLayout>
+    </NavigationPage.TitleView>
     <ContentPage.Content>
         <AbsoluteLayout HorizontalOptions="FillAndExpand">
             <StackLayout AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
@@ -137,6 +151,7 @@
                                 BorderColor="{Binding GameModel.ColourTheme}"
                                 Grid.Row="1"
                                 Grid.Column="1"/>
+                    <!-- Navigation to gadgets overview -->
                     <ImageButton Source="{Binding Icons.Gadgets}"
                                 Command="{Binding NavigateToGadgetsOverviewCommand}"
                                 HorizontalOptions="Center"
@@ -148,16 +163,6 @@
                                 BorderColor="{Binding GameModel.ColourTheme}"
                                 Grid.Row="1"
                                 Grid.Column="2"/>
-
-                    <Image Grid.Row="1"
-                           WidthRequest="60" 
-                           HeightRequest="60"
-                           HorizontalOptions="Center" 
-                           VerticalOptions="Center">
-                        <Image.Source>
-                            <UriImageSource Uri="{Binding LogoImage}" />
-                        </Image.Source>
-                    </Image>
 
                     <!-- colour_theme -->
                     <!-- Close menu functionality -->
