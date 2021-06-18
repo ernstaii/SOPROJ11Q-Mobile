@@ -9,13 +9,7 @@ namespace Hunted_Mobile.Service {
         }
 
         protected string Get(string key) {
-            string value = "";
-            try {
-                value = Preferences.Get(key, "");
-            }
-            catch(Exception e) { }
-
-            return value;
+            return Preferences.Get(key, "");
         }
 
         protected int GetInt(string key) {
