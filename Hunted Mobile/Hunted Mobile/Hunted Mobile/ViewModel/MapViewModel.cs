@@ -193,15 +193,16 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void HandlePinClickedCommand(object sender, PinClickedEventArgs args) {
-            string[] tagParts = $"{args.Pin?.Tag?.ToString() ?? ""}".Split('.');
-            string tag = tagParts[0];
-            int.TryParse(tagParts[1], out int id);
+            var pinTag = args.Pin?.Tag?.ToString() ?? "";
+            bool containsId = pinTag.Contains(".");
 
-            if(tagParts.Length == 2) {
-                if(tagParts[0] == LOOT_TAG && mapModel.PlayingUser is Thief) {
+            if(containsId && pinTag.Contains(LOOT_TAG) || containsId && pinTag.Contains(THIEF_TAG)) {
+                int.TryParse(pinTag.Split('.')[1], out int id);
+
+                if(pinTag.Contains(LOOT_TAG) && mapModel.PlayingUser is Thief) {
                     OnLootClicked(id);
                 }
-                else if(tagParts[0] == THIEF_TAG && mapModel.PlayingUser is Police) {
+                else if(pinTag.Contains(THIEF_TAG) && mapModel.PlayingUser is Police) {
                     OnThiefClicked(id);
                 }
             }
