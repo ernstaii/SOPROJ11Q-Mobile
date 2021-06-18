@@ -431,7 +431,9 @@ namespace Hunted_Mobile.ViewModel {
                 InitializeMap();
             }
 
-            DisplayCaughtScreenOrDisplayNone();
+            if(MapDialogOption != MapDialogOptions.DISPLAY_PAUSE && MapDialogOption != MapDialogOptions.DISPLAY_END_GAME) {
+                DisplayCaughtScreenOrDisplayNone();
+            }
         }
 
         private void RemovePreviousNavigation() {
