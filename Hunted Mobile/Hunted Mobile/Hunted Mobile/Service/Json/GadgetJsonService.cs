@@ -12,7 +12,7 @@ namespace Hunted_Mobile.Service.Json {
         }
 
         public override IEnumerable<Gadget> ToObject(GadgetData data) {
-            Location location = new LocationJsonService().ToObject(data.pivot.location);
+            Location location = new LocationJsonService().ToObjectFromCsv(data.pivot.location);
             var gadgets = new List<Gadget>();
             var gadgetFactory = new GadgetFactory();
             for(int i = 0; i < data.pivot.amount; i++) {

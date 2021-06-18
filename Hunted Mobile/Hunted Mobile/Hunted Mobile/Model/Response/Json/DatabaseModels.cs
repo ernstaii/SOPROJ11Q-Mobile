@@ -77,7 +77,7 @@ namespace Hunted_Mobile.Model.Response.Json {
         public int user_id;
         public int gadget_id;
         public int amount;
-        public LocationData location;
+        public string location;
         public bool in_use;
         public DateTime activated_at;
     }
