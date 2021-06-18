@@ -15,6 +15,7 @@ using Hunted_Mobile.Service.Preference;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Service.Map;
 using System.Threading;
+using Xamarin.Essentials;
 
 namespace Hunted_Mobile.ViewModel {
     public class MainPageViewModel : BaseViewModel {
@@ -30,6 +31,7 @@ namespace Hunted_Mobile.ViewModel {
         private bool checkIfUserCanJoinAGame;
         private bool displayJoinGameButton;
         private bool isLocked = false;
+        private bool hasSeenInformationScreen = false;
         private readonly GameSessionPreference gameSessionPreference;
 
         public InviteKey InviteKeyModel {
@@ -166,7 +168,6 @@ namespace Hunted_Mobile.ViewModel {
                     if(PermissionService.HasGpsPermission) {
                         IsLocked = false;
                         SubmitButtonIsEnable = true;
-                        ShowInformationPage();
                     }
                     else {
                         IsLocked = true;
@@ -240,7 +241,7 @@ namespace Hunted_Mobile.ViewModel {
 
         private async Task NavigateToMapPage() {
             try {
-                Map mapModel = new Map() {
+                Model.Map mapModel = new Model.Map() {
                     PlayingUser = playingUser,
                 };
 
@@ -252,17 +253,19 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        private void ShowInformationPage() {
-            bool hasSeen = gameSessionPreference.HasSeenInformation();
+        public void ShowInformationPage() {
+            hasSeenInformationScreen = gameSessionPreference.HasSeenInformation();
 
-            if(!hasSeen) {
+            if(!hasSeenInformationScreen) {
                 var viewModel = new InformationPageViewModel(Color.RoyalBlue.ToHex(), new MapIconsService());
 
                 Task.Factory.StartNew(async () => {
                     await Task.Delay(2000);
-                    await Application.Current.MainPage.Navigation.PushModalAsync(new InformationPage(viewModel));
-
-                    gameSessionPreference.ToggleInformationState();
+                    
+                    MainThread.BeginInvokeOnMainThread(async () => {
+                        await Application.Current.MainPage.Navigation.PushModalAsync(new InformationPage(viewModel));
+                        gameSessionPreference.ToggleInformationState();
+                    });
                 });
             }
         }

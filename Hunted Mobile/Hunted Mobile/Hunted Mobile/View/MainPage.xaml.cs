@@ -13,6 +13,7 @@ namespace Hunted_Mobile.View {
         protected override void OnAppearing() {
             mainPageViewModel.ResetInviteKey();
             mainPageViewModel.LoadPreviousGame();
+            mainPageViewModel.ShowInformationPage();
 
             base.OnAppearing();
         }
