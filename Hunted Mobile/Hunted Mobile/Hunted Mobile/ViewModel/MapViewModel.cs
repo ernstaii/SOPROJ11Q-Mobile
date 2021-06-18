@@ -69,13 +69,15 @@ namespace Hunted_Mobile.ViewModel {
         private MapView mapView {
             get => mapViewService?.MapView;
             set {
-                mapViewService.MapView = value;
+                if(mapViewService != null) {
+                    mapViewService.MapView = value;
+                }
             }
         }
 #pragma warning restore IDE1006 // Naming Styles
 
         public string CounterDisplay => countdown.RemainTime.ToString(@"hh\:mm\:ss");
-        public MapDialog MapDialog { get; private set; } = new MapDialog();
+        public MapDialog MapDialog { get; private set; }
         public MapIconsService Icons { get; } = new MapIconsService();
 
         public MapDialogOptions MapDialogOption {
@@ -167,6 +169,7 @@ namespace Hunted_Mobile.ViewModel {
         #endregion
 
         public MapViewModel(Game gameModel, Model.Map mapModel, AppViewModel appViewModel) {
+            MapDialog = new MapDialog();
             this.mapModel = mapModel;
             this.appViewModel = appViewModel;
             GameModel = gameModel;
@@ -427,6 +430,8 @@ namespace Hunted_Mobile.ViewModel {
             if(!initializedBefore) {
                 InitializeMap();
             }
+
+            DisplayCaughtScreenOrDisplayNone();
         }
 
         private void RemovePreviousNavigation() {
@@ -568,12 +573,8 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void ResumeGame(EventData data) {
-            try {
-                DisplayCaughtScreenOrDisplayNone();
-            }
-            catch(Exception e) {
-                DependencyService.Get<Toast>().Show("Er is iets misgegaan met de weergave van de boef die is opgepakt.");
-            }
+            DisplayCaughtScreenOrDisplayNone();
+
             StartCountdown(data.TimeLeft);
             StartIntervalTimer();
 
@@ -591,16 +592,21 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void DisplayCaughtScreenOrDisplayNone() {
-            if(mapModel.PlayingUser is Police) return;
+            try {
+                if(mapModel.PlayingUser is Police) return;
 
-            var user = mapModel.PlayingUser as Thief;
+                var user = mapModel.PlayingUser as Thief;
 
-            if(user.IsCaught) {
-                MapDialogOption = MapDialogOptions.DISPLAY_ARRESTED_SCREEN;
-                MapDialog.DisplayArrestedScreen();
+                if(user.IsCaught) {
+                    MapDialogOption = MapDialogOptions.DISPLAY_ARRESTED_SCREEN;
+                    MapDialog.DisplayArrestedScreen();
+                }
+                else {
+                    MapDialogOption = MapDialogOptions.NONE;
+                }
             }
-            else {
-                MapDialogOption = MapDialogOptions.NONE;
+            catch(Exception e) {
+                DependencyService.Get<Toast>().Show("Er is iets misgegaan met de weergave van de boef die is opgepakt.");
             }
         }
 
@@ -891,7 +897,9 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void ToggleEnableStatusOnMapView() {
-            mapView.Content.IsEnabled = MapDialogOption == MapDialogOptions.NONE;
+            if(mapView != null) {
+                mapView.Content.IsEnabled = MapDialogOption == MapDialogOptions.NONE;
+            }
         }
 
         private async void ExitGame() {
