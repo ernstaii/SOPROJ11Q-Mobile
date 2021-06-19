@@ -17,29 +17,40 @@ using Hunted_Mobile.Model.GameModels;
 namespace Hunted_Mobile.ViewModel {
     public class MainPageViewModel : BaseViewModel {
         private InviteKey inviteKeyModel = new InviteKey();
-        private bool isloading;
+        private bool isEnabled;
         private ObservableCollection<InviteKey> inviteKeys = new ObservableCollection<InviteKey>();
         private readonly MainPage page;
+        private readonly AppViewModel appViewModel;
         private Game gameModel;
         private Player playingUser;
         private bool isOverlayVisible;
         private bool checkIfUserCanJoinAGame;
         private bool displayJoinGameButton;
+        private bool isLocked = false;
         private readonly GameSessionPreference gameSessionPreference;
 
         public InviteKey InviteKeyModel {
             get => inviteKeyModel;
             set {
                 inviteKeyModel = value;
-                OnPropertyChanged("InviteKeyModel");
+                OnPropertyChanged(nameof(InviteKeyModel));
             }
         }
 
         public bool SubmitButtonIsEnable {
-            get => isloading;
+            get => isEnabled;
             set {
-                isloading = value;
-                OnPropertyChanged("SubmitButtonIsEnable");
+                isEnabled = !IsLocked && value;
+                OnPropertyChanged(nameof(SubmitButtonIsEnable));
+            }
+        }
+
+        public bool IsLocked {
+            get => isLocked;
+            set {
+                isLocked = value;
+                OnPropertyChanged(nameof(IsLocked));
+                OnPropertyChanged(nameof(SubmitButtonIsEnable));
             }
         }
 
@@ -58,7 +69,7 @@ namespace Hunted_Mobile.ViewModel {
             get => isOverlayVisible;
             set {
                 isOverlayVisible = value;
-                OnPropertyChanged("IsOverlayVisible");
+                OnPropertyChanged(nameof(IsOverlayVisible));
             }
         }
 
@@ -66,16 +77,18 @@ namespace Hunted_Mobile.ViewModel {
             get { return inviteKeys; }
             set {
                 inviteKeys = value;
-                OnPropertyChanged("InviteKeys");
+                OnPropertyChanged(nameof(InviteKeys));
             }
         }
 
         public bool IsValid { get; set; }
         public InviteKey SelectedPreferenceGame { get; set; }
 
-        public MainPageViewModel(MainPage page) {
+        public MainPageViewModel(MainPage page, AppViewModel appViewModel) {
             this.page = page;
+            this.appViewModel = appViewModel;
             gameSessionPreference = new GameSessionPreference();
+            AskPermission();
         }
 
         /// <summary>
@@ -132,13 +145,28 @@ namespace Hunted_Mobile.ViewModel {
         });
 
         public async Task NavigateToEnterUsernamePage() {
-            var viewModel = new EnterUsernameViewModel(inviteKeyModel);
+            var viewModel = new EnterUsernameViewModel(inviteKeyModel, appViewModel);
             var view = new EnterUsername(viewModel);
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(view);
         }
 
         public void ResetInviteKey() {
             InviteKeyModel = new InviteKey();
+        }
+
+        public void AskPermission() {
+            IsLocked = true;
+            PermissionService.AskPermissionForLocation()
+                .ContinueWith(x => {
+                    PermissionService.CheckPermissionLocation();
+
+                    if(PermissionService.HasGpsPermission) {
+                        IsLocked = false;
+                        SubmitButtonIsEnable = true;
+                    } else {
+                        IsLocked = true;
+                    }
+                });
         }
 
         public async void LoadPreviousGame() {
@@ -182,6 +210,8 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private async Task NavigateToExistingGame() {
+            if(!PermissionService.HasGpsPermission) return;
+
             SubmitButtonIsEnable = false;
 
             await UnitOfWork.Instance.UserRepository.Update(playingUser.Id, playingUser.Location);
@@ -197,7 +227,9 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private async Task NavigateToLobbyPage() {
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new Lobby(new LobbyViewModel(playingUser)), true);
+            if(!PermissionService.HasGpsPermission) return;
+
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new Lobby(new LobbyViewModel(playingUser, appViewModel)), true);
         }
 
         private async Task NavigateToMapPage() {
@@ -206,7 +238,7 @@ namespace Hunted_Mobile.ViewModel {
                     PlayingUser = playingUser,
                 };
 
-                var mapPage = new MapPage(new MapViewModel(gameModel, mapModel));
+                var mapPage = new MapPage(new MapViewModel(gameModel, mapModel, appViewModel));
                 await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
             }
             catch(Exception ex) {

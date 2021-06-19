@@ -14,6 +14,7 @@ namespace Hunted_Mobile.ViewModel {
     public class GadgetOverviewViewModel : BaseViewModel {
         public class GadgetWithCommand : BaseViewModel {
             private bool used = false;
+            private string colourTheme;
 
             public Player PlayingUser { get; set; }
             public Gadget Gadget { get; set; }
@@ -26,10 +27,19 @@ namespace Hunted_Mobile.ViewModel {
             });
             public bool Available => !Gadget.InUse && !used;
 
-            public GadgetWithCommand(Gadget gadget, Player playingUser, ObservableCollection<GadgetWithCommand> gadgetCollection) {
+            public string ColourTheme {
+                get => colourTheme;
+                set {
+                    colourTheme = value;
+                    OnPropertyChanged(nameof(ColourTheme));
+                }
+            }
+
+            public GadgetWithCommand(Gadget gadget, Player playingUser, ObservableCollection<GadgetWithCommand> gadgetCollection, string colourTheme) {
                 Gadget = gadget;
                 PlayingUser = playingUser;
                 GadgetCollection = gadgetCollection;
+                ColourTheme = colourTheme;
             }
 
             public void Update() {
@@ -39,10 +49,11 @@ namespace Hunted_Mobile.ViewModel {
 
         private readonly WebSocketService socketService;
         private ObservableCollection<GadgetWithCommand> gadgets;
+        private readonly string colourTheme;
         private readonly Map mapModel;
 
         public ObservableCollection<GadgetWithCommand> Gadgets {
-            get => gadgets; 
+            get => gadgets;
             set {
                 if(value == null) {
                     gadgets = new ObservableCollection<GadgetWithCommand>();
@@ -53,9 +64,10 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public GadgetOverviewViewModel(WebSocketService webSocketService, Map mapModel) {
+        public GadgetOverviewViewModel(WebSocketService webSocketService, Map mapModel, string colourTheme) {
             Gadgets = new ObservableCollection<GadgetWithCommand>();
             this.mapModel = mapModel;
+            this.colourTheme = colourTheme;
             socketService = webSocketService;
 
             socketService.GadgetsUpdated += GadgetsUpdate;
@@ -77,7 +89,7 @@ namespace Hunted_Mobile.ViewModel {
             if(gadgets != null) {
                 Gadgets.Clear();
                 foreach(var gadget in gadgets) {
-                    Gadgets.Add(new GadgetWithCommand(gadget, mapModel.PlayingUser, Gadgets));
+                    Gadgets.Add(new GadgetWithCommand(gadget, mapModel.PlayingUser, Gadgets, colourTheme));
                 }
             }
         }

@@ -23,8 +23,10 @@ namespace Hunted_Mobile.Service.Map {
         private readonly Resource moneyBagIcon;
         private Player player;
         private Pin playerPin;
+        private Circle playerRadius;
+        private readonly int lootPickUpDistanceInMeters;
 
-        public Player Player { 
+        public Player Player {
             get => player;
             set {
                 player = value;
@@ -34,7 +36,8 @@ namespace Hunted_Mobile.Service.Map {
         }
         public MapView MapView { get; set; }
 
-        public MapViewService(MapView mapView, Player player) {
+        public MapViewService(MapView mapView, Player player, int lootPickUpDistance) {
+            lootPickUpDistanceInMeters = lootPickUpDistance;
             MapView = mapView;
             Player = player;
             SetPlayerPin();
@@ -48,12 +51,16 @@ namespace Hunted_Mobile.Service.Map {
 
         public void UpdatePlayerPinLocation(Location location) {
             playerPin.Position = new MapsuiPosition(location.Latitude, location.Longitude);
+            playerRadius.Center = new MapsuiPosition(location.Latitude, location.Longitude);
             AddPlayerPin();
         }
 
         public void AddPlayerPin() {
             if(!MapView.Pins.Contains(playerPin)) {
                 MapView.Pins.Add(playerPin);
+            }
+            if(!MapView.Drawables.Contains(playerRadius)) {
+                MapView.Drawables.Add(playerRadius);
             }
         }
 
@@ -69,19 +76,19 @@ namespace Hunted_Mobile.Service.Map {
         public void AddTeamMatePin(Player player) {
             if(Player.Id != player.Id && AreSameTeam(Player, player)) {
                 if(player is Thief) {
-                    AddThiefPin(player.UserName, player.Location);
+                    AddThiefPin(player);
                 }
                 else AddPolicePin(player.UserName, player.Location);
             }
         }
 
-        public void AddThiefPin(string username, Location location) {
+        public void AddThiefPin(Player player) {
             MapView.Pins.Add(new Pin(MapView) {
-                Label = username,
+                Label = player.UserName,
                 Color = thiefPinColor,
-                Position = new MapsuiPosition(location.Latitude, location.Longitude),
+                Position = new MapsuiPosition(player.Location.Latitude, player.Location.Longitude),
                 Scale = 0.666f,
-                Tag = THIEF_TAG,
+                Tag = $"{THIEF_TAG}.{player.Id}",
                 Transparency = 0.25f,
             });
         }
@@ -101,7 +108,7 @@ namespace Hunted_Mobile.Service.Map {
                 Label = loot.Name,
                 Position = new MapsuiPosition(loot.Location.Latitude, loot.Location.Longitude),
                 Scale = 1.0f,
-                Tag = LOOT_TAG,
+                Tag = $"{LOOT_TAG}.{loot.Id}",
                 Icon = moneyBagIcon.Data,
                 Type = PinType.Icon,
             });
@@ -120,9 +127,18 @@ namespace Hunted_Mobile.Service.Map {
         }
 
         private void SetPlayerPin() {
+            MapView.Pins.Remove(playerPin);
+            MapView.Drawables.Remove(playerRadius);
+
             playerPin = new Pin(MapView) {
                 Label = Player.UserName,
-                Color = Player is Thief ? (Player is FakePolice ? Xamarin.Forms.Color.Green : thiefPinColor) : policePinColor,
+                Color = Player is Thief ? thiefPinColor : policePinColor,
+            };
+            playerRadius = new Circle() {
+                FillColor = new Color(255, 0, 0, 0.2),
+                Center = new MapsuiPosition(Player.Location.Latitude, Player.Location.Longitude),
+                Radius = new Distance(lootPickUpDistanceInMeters),
+                Quality = 360
             };
         }
 

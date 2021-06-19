@@ -17,6 +17,7 @@ namespace Hunted_Mobile.ViewModel {
         private Player userModel;
         private bool isloading = false;
         private EnterUsername page;
+        private readonly AppViewModel appViewModel;
 
         public bool IsValid { get; set; }
 
@@ -38,38 +39,41 @@ namespace Hunted_Mobile.ViewModel {
 
         public EnterUsername View { set => page = value; }
 
-        public EnterUsernameViewModel(InviteKey key) {
+        public EnterUsernameViewModel(InviteKey key, AppViewModel appViewModel) {
             userModel = new PlayerBuilder().SetInviteKey(key).ToPlayer();
-        }
-
-        /// <summary>
-        /// Add new user to a game
-        /// </summary>
-        /// <returns></returns>
-        public async Task CreateUser() {
-            if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
-                UserModel = await UnitOfWork.Instance.UserRepository.Create(UserModel);
-            }
+            this.appViewModel = appViewModel;
         }
 
         /// <summary>
         /// Button event will navigate to the lobby with a new user
         /// </summary>
-        public ICommand ButtonSelectedCommand => new Command(async (e) => {
+        public ICommand HandleEnterUserNameCommand => new Command(async (e) => {
             SubmitButtonIsEnable = false;
-            await CreateUser();
 
-            // Navigate when InviteKey is valid
-            if(IsValid = ValidationHelper.IsFormValid(UserModel, page)) {
-                var navigation = Application.Current.MainPage.Navigation;
+            // First validation is for model validation
+            if(Valid()) await CreateUser();
 
-                var previousPage = navigation.NavigationStack.LastOrDefault();
-                var view = new Lobby(new LobbyViewModel(UserModel));
-                await navigation.PushAsync(view, true);
-                navigation.RemovePage(previousPage);
-            }
+            // Second validation is for displaying ServerErrors
+            if(Valid()) await NavigateToLobby();
 
             SubmitButtonIsEnable = true;
         });
+
+        private async Task CreateUser() {
+            UserModel = await UnitOfWork.Instance.UserRepository.Create(UserModel);
+        }
+
+        private bool Valid() {
+            return IsValid = ValidationHelper.IsFormValid(UserModel, page);
+        }
+
+        private async Task NavigateToLobby() {
+            var navigation = Application.Current.MainPage.Navigation;
+
+            var previousPage = navigation.NavigationStack.LastOrDefault();
+            var view = new Lobby(new LobbyViewModel(UserModel, appViewModel));
+            await navigation.PushAsync(view, true);
+            navigation.RemovePage(previousPage);
+        }
     }
 }

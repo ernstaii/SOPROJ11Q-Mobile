@@ -21,11 +21,13 @@ namespace Hunted_Mobile.ViewModel {
         private readonly WebSocketService webSocketService;
         private readonly GameSessionPreference gameSessionPreference;
         private bool isloading;
+        private readonly AppViewModel appViewModel;
 
         public Game GameModel {
             get => gameModel;
             set {
                 gameModel = value;
+                appViewModel.ColourTheme = gameModel.ColourTheme;
                 OnPropertyChanged("GameModel");
             }
         }
@@ -55,7 +57,8 @@ namespace Hunted_Mobile.ViewModel {
             get => new ObservableCollection<Player>(Users.Where(user => user is Police).ToList());
         }
 
-        public LobbyViewModel(Player currentUser) {
+        public LobbyViewModel(Player currentUser, AppViewModel appViewModel) {
+            this.appViewModel = appViewModel;
             this.currentUser = currentUser;
             gameModel.Id = this.currentUser.InviteKey.GameId;
             gameSessionPreference = new GameSessionPreference();
@@ -123,7 +126,7 @@ namespace Hunted_Mobile.ViewModel {
                     PlayingUser = currentUser
                 };
 
-                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel));
+                var mapPage = new MapPage(new MapViewModel(GameModel, mapModel, appViewModel));
 
                 Device.BeginInvokeOnMainThread(() => {
                     webSocketService.StartGame -= StartGame;

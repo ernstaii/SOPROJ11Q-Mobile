@@ -18,7 +18,7 @@
                 <!-- Custom layout of item -->
                 <DataTemplate>
                     <StackLayout Margin="0,5">
-                        <Frame CornerRadius="5" OutlineColor="Black" BackgroundColor="White" Padding="10,5">
+                        <Frame CornerRadius="5" OutlineColor="{Binding ColourTheme}" BackgroundColor="White" Padding="10,5">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="25" />
@@ -34,7 +34,8 @@
                                 HorizontalOptions="Center"
                                 WidthRequest="60"
                                 HeightRequest="60"
-                                BackgroundColor="White"
+                                BackgroundColor="{Binding ColourTheme}"
+                                VerticalOptions="Center"
                                 Grid.RowSpan="2"/>
                                 <Label Text="{Binding Gadget.Name}" FontSize="20" FontAttributes="Bold" TextColor="Black" Grid.Column="1"/>
                                 <Label Text="{Binding Gadget.Description}" FontSize="15" TextColor="Black" Grid.Column="1" Grid.Row="1" />

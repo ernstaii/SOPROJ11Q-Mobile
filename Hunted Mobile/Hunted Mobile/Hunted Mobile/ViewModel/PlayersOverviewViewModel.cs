@@ -66,6 +66,9 @@ namespace Hunted_Mobile.ViewModel {
             foreach(var builder in data.PlayerBuilders) {
                 Users.Add(builder.ToPlayer());
             }
+            foreach(var builder in data.SmokeScreenedPlayerBuilders) {
+                Users.Add(builder.ToPlayer());
+            }
         }
 
         private void UpdateUserState(PlayerEventData data) {
