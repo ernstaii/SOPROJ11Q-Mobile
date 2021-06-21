@@ -13,6 +13,9 @@ using System.Linq;
 using Hunted_Mobile.Enum;
 using Hunted_Mobile.Service.Preference;
 using Hunted_Mobile.Model.GameModels;
+using Hunted_Mobile.Service.Map;
+using System.Threading;
+using Xamarin.Essentials;
 
 namespace Hunted_Mobile.ViewModel {
     public class MainPageViewModel : BaseViewModel {
@@ -21,12 +24,14 @@ namespace Hunted_Mobile.ViewModel {
         private ObservableCollection<InviteKey> inviteKeys = new ObservableCollection<InviteKey>();
         private readonly MainPage page;
         private readonly AppViewModel appViewModel;
+        private InformationPage informationPage = null;
         private Game gameModel;
         private Player playingUser;
         private bool isOverlayVisible;
         private bool checkIfUserCanJoinAGame;
         private bool displayJoinGameButton;
         private bool isLocked = false;
+        private bool hasSeenInformationScreen = false;
         private readonly GameSessionPreference gameSessionPreference;
 
         public InviteKey InviteKeyModel {
@@ -163,7 +168,8 @@ namespace Hunted_Mobile.ViewModel {
                     if(PermissionService.HasGpsPermission) {
                         IsLocked = false;
                         SubmitButtonIsEnable = true;
-                    } else {
+                    }
+                    else {
                         IsLocked = true;
                     }
                 });
@@ -181,7 +187,8 @@ namespace Hunted_Mobile.ViewModel {
 
                     if(playingUser == null) {
                         GameSessionPreference.ClearUserAndGame();
-                    } else {
+                    }
+                    else {
                         DisplayJoinGameButton = true;
                     }
                 }
@@ -229,20 +236,37 @@ namespace Hunted_Mobile.ViewModel {
         private async Task NavigateToLobbyPage() {
             if(!PermissionService.HasGpsPermission) return;
 
-            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(new Lobby(new LobbyViewModel(playingUser, appViewModel)), true);
+            await Application.Current.MainPage.Navigation.PushAsync(new Lobby(new LobbyViewModel(playingUser, appViewModel)), true);
         }
 
         private async Task NavigateToMapPage() {
             try {
-                Map mapModel = new Map() {
+                Model.Map mapModel = new Model.Map() {
                     PlayingUser = playingUser,
                 };
 
                 var mapPage = new MapPage(new MapViewModel(gameModel, mapModel, appViewModel));
-                await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
+                await Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
             }
             catch(Exception ex) {
                 Console.WriteLine(ex.ToString());
+            }
+        }
+
+        public void ShowInformationPage() {
+            hasSeenInformationScreen = gameSessionPreference.HasSeenInformation();
+
+            if(!hasSeenInformationScreen) {
+                var viewModel = new InformationPageViewModel(Color.RoyalBlue.ToHex(), new MapIconsService());
+
+                Task.Factory.StartNew(async () => {
+                    await Task.Delay(2000);
+                    
+                    MainThread.BeginInvokeOnMainThread(async () => {
+                        await Application.Current.MainPage.Navigation.PushModalAsync(new InformationPage(viewModel));
+                        gameSessionPreference.ToggleInformationState();
+                    });
+                });
             }
         }
     }

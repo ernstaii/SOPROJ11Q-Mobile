@@ -51,6 +51,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly View.Messages messagesView;
         private readonly MessageViewModel messageViewModel;
         private PlayersOverviewPage playersOverview;
+        private InformationPage informationPage;
         private readonly GadgetsPage gadgetsOverview;
         private readonly GadgetOverviewViewModel gadgetOverviewViewModel;
         private Timer intervalUpdateTimer;
@@ -178,6 +179,7 @@ namespace Hunted_Mobile.ViewModel {
             messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameIdStr);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
+            informationPage = new InformationPage(new InformationPageViewModel(gameModel.ColourTheme, Icons));
             gadgetOverviewViewModel = new GadgetOverviewViewModel(webSocketService, mapModel, gameModel.ColourTheme);
             gadgetsOverview = new View.GadgetsPage(gadgetOverviewViewModel);
             countdown = new Countdown();
@@ -222,6 +224,7 @@ namespace Hunted_Mobile.ViewModel {
         public ICommand NavigateToPlayersOverviewCommand => new Xamarin.Forms.Command((e) => NavigateToPlayersOverview());
 
         public ICommand NavigateToGadgetsOverviewCommand => new Xamarin.Forms.Command((e) => NavigateToGadgetsOverview());
+        public ICommand NavigateToInformationPageCommand => new Xamarin.Forms.Command((e) => NavigateToInformationPage());
 
         public ICommand NavigateToMessagePageCommand => new Command((e) => NavigateToMessagePage());
 
@@ -425,7 +428,7 @@ namespace Hunted_Mobile.ViewModel {
 
         public void SetMapView(MapView mapView) {
             bool initializedBefore = this.mapView != null;
-            mapViewService = new MapViewService(mapView, mapModel.PlayingUser, LOOT_PICKUP_MAX_DISTANCE_IN_METERS);
+            mapViewService = new MapViewService(mapView, mapModel.PlayingUser, LOOT_PICKUP_MAX_DISTANCE_IN_METERS, Icons);
 
             if(!initializedBefore) {
                 InitializeMap();
@@ -791,6 +794,10 @@ namespace Hunted_Mobile.ViewModel {
         private async void NavigateToGadgetsOverview() {
             await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(gadgetsOverview);
             gadgetOverviewViewModel.Update();
+        }
+
+        private async void NavigateToInformationPage() {
+            await Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(informationPage);
         }
 
         private void NavigateToMessagePage() {

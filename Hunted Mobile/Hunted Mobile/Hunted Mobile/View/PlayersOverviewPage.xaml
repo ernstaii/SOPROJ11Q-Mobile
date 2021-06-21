@@ -7,7 +7,7 @@
         <!-- Main layout -->
         <Grid x:Name="mainLayout">
             <Grid.RowDefinitions>
-                <RowDefinition Height="90" />
+                <RowDefinition Height="95" />
                 <RowDefinition Height="40" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
@@ -19,8 +19,8 @@
             <Label Text="SPELERS"
                    Grid.ColumnSpan="2"
                    Margin="0, 25" 
-                   HorizontalTextAlignment="Center" 
-                   TextColor="RoyalBlue" 
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" 
                    FontAttributes="Bold"
                    FontSize="36"/>
 
