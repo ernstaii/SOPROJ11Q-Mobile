@@ -15,9 +15,16 @@ namespace Hunted_Mobile.Service.Map {
             alarm,
             smoke,
             drone,
+            information,
             thiefRole,
             policeRole,
-            fakePoliceRole;
+            fakePoliceRole,
+            blackPin,
+            bluePin;
+#pragma warning disable IDE1006 // Naming Styles
+        public readonly Resource PoliceBadgeResource,
+            MoneyBagResource;
+#pragma warning restore IDE1006 // Naming Styles
         private string roleName;
 
         public MapIconsService() {
@@ -29,9 +36,14 @@ namespace Hunted_Mobile.Service.Map {
             alarm = UnitOfWork.Instance.ResourceRepository.GetGuiImage("alarm.png");
             smoke = UnitOfWork.Instance.ResourceRepository.GetGuiImage("smoke.png");
             drone = UnitOfWork.Instance.ResourceRepository.GetGuiImage("drone.png");
+            information = UnitOfWork.Instance.ResourceRepository.GetGuiImage("information.png");
             thiefRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("thief.png");
             policeRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("police.png");
             fakePoliceRole = UnitOfWork.Instance.ResourceRepository.GetGuiImage("fake_police.png");
+            PoliceBadgeResource = UnitOfWork.Instance.ResourceRepository.GetMapImage("police-badge.png");
+            MoneyBagResource = UnitOfWork.Instance.ResourceRepository.GetMapImage("money-bag.png");
+            blackPin = UnitOfWork.Instance.ResourceRepository.GetGuiImage("black_pin.png");
+            bluePin = UnitOfWork.Instance.ResourceRepository.GetGuiImage("blue_pin.png");
 
             OnPropertyChanged(nameof(Chat));
             OnPropertyChanged(nameof(Menu));
@@ -40,15 +52,14 @@ namespace Hunted_Mobile.Service.Map {
             OnPropertyChanged(nameof(Alarm));
             OnPropertyChanged(nameof(Smoke));
             OnPropertyChanged(nameof(Drone));
+            OnPropertyChanged(nameof(Information));
             OnPropertyChanged(nameof(ThiefRole));
             OnPropertyChanged(nameof(PoliceRole));
             OnPropertyChanged(nameof(FakePoliceRole));
-
-            // Gadgets icons:
-            // police, thief
-
-            // Roles icons:
-            // police, thief
+            OnPropertyChanged(nameof(PoliceBadge));
+            OnPropertyChanged(nameof(MoneyBag));
+            OnPropertyChanged(nameof(BlackPin));
+            OnPropertyChanged(nameof(BluePin));
         }
 
         public string RoleName {
@@ -73,6 +84,8 @@ namespace Hunted_Mobile.Service.Map {
 
         public UriImageSource Drone => GetUriImageSource(drone);
 
+        public UriImageSource Information => GetUriImageSource(information);
+
         public UriImageSource Close => GetUriImageSource(close);
 
         public UriImageSource ThiefRole => GetUriImageSource(thiefRole);
@@ -80,6 +93,14 @@ namespace Hunted_Mobile.Service.Map {
         public UriImageSource PoliceRole => GetUriImageSource(policeRole);
 
         public UriImageSource FakePoliceRole => GetUriImageSource(fakePoliceRole);
+
+        public UriImageSource PoliceBadge => GetUriImageSource(PoliceBadgeResource);
+
+        public UriImageSource MoneyBag => GetUriImageSource(MoneyBagResource);
+
+        public UriImageSource BlackPin => GetUriImageSource(blackPin);
+
+        public UriImageSource BluePin => GetUriImageSource(bluePin);
 
         public UriImageSource Role {
             get {

@@ -1,5 +1,4 @@
-﻿
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 using Hunted_Mobile.ViewModel;
 
 namespace Hunted_Mobile.View {
@@ -14,6 +13,7 @@ namespace Hunted_Mobile.View {
         protected override void OnAppearing() {
             mainPageViewModel.ResetInviteKey();
             mainPageViewModel.LoadPreviousGame();
+            mainPageViewModel.ShowInformationPage();
 
             base.OnAppearing();
         }

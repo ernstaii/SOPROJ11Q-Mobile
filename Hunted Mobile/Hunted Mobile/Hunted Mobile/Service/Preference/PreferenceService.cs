@@ -1,4 +1,6 @@
-﻿using Xamarin.Essentials;
+﻿using System;
+
+using Xamarin.Essentials;
 
 namespace Hunted_Mobile.Service {
     public abstract class PreferenceService {
