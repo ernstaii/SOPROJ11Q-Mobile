@@ -70,13 +70,15 @@ namespace Hunted_Mobile.ViewModel {
         private MapView mapView {
             get => mapViewService?.MapView;
             set {
-                mapViewService.MapView = value;
+                if(mapViewService != null) {
+                    mapViewService.MapView = value;
+                }
             }
         }
 #pragma warning restore IDE1006 // Naming Styles
 
         public string CounterDisplay => countdown.RemainTime.ToString(@"hh\:mm\:ss");
-        public MapDialog MapDialog { get; private set; } = new MapDialog();
+        public MapDialog MapDialog { get; private set; }
         public MapIconsService Icons { get; } = new MapIconsService();
 
         public MapDialogOptions MapDialogOption {
@@ -168,6 +170,7 @@ namespace Hunted_Mobile.ViewModel {
         #endregion
 
         public MapViewModel(Game gameModel, Model.Map mapModel, AppViewModel appViewModel) {
+            MapDialog = new MapDialog();
             this.mapModel = mapModel;
             this.appViewModel = appViewModel;
             GameModel = gameModel;
@@ -195,14 +198,17 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void HandlePinClickedCommand(object sender, PinClickedEventArgs args) {
-            string[] tagParts = $"{args.Pin?.Tag?.ToString() ?? ""}".Split('.');
+            var pinTag = args.Pin?.Tag?.ToString() ?? "";
+            bool containsId = pinTag.Contains(".");
 
-            if(tagParts.Length == 2) {
-                if(tagParts[0] == LOOT_TAG && mapModel.PlayingUser is Thief) {
-                    OnLootClicked(args.Pin.Position);
+            if(containsId && pinTag.Contains(LOOT_TAG) || containsId && pinTag.Contains(THIEF_TAG)) {
+                int.TryParse(pinTag.Split('.')[1], out int id);
+
+                if(pinTag.Contains(LOOT_TAG) && mapModel.PlayingUser is Thief) {
+                    OnLootClicked(id);
                 }
-                else if(tagParts[0] == THIEF_TAG && mapModel.PlayingUser is Police) {
-                    OnThiefClicked(args.Pin.Position);
+                else if(pinTag.Contains(THIEF_TAG) && mapModel.PlayingUser is Police) {
+                    OnThiefClicked(id);
                 }
             }
         }
@@ -298,13 +304,14 @@ namespace Hunted_Mobile.ViewModel {
 
             holdingButtonTimer.Stop();
             holdingButtonTimer = null;
-            MapDialogOption = MapDialogOptions.DISPLAY_ARREST_THIEF_SUCCESFULLY;
 
             if(SelectedThief == null) {
                 DependencyService.Get<Toast>().Show("De dief is niet meer geselecteerd");
+                MapDialogOption = MapDialogOptions.NONE;
                 return;
             }
 
+            MapDialogOption = MapDialogOptions.DISPLAY_ARREST_THIEF_SUCCESFULLY;
             MapDialog.DisplayArrestedThiefSuccessfully(SelectedThief.UserName);
 
             Task.Run(async () => {
@@ -393,8 +400,8 @@ namespace Hunted_Mobile.ViewModel {
             Location playingUserLocation = mapModel.PlayingUser.Location;
             var newPlayer = new List<Player>();
 
-            foreach(PlayerBuilder builder 
-                in mapModel.PlayingUser is Thief 
+            foreach(PlayerBuilder builder
+                in mapModel.PlayingUser is Thief
                 ? data.PlayerBuilders.Concat(data.SmokeScreenedPlayerBuilders)
                 : data.PlayerBuilders) {
                 var player = builder.ToPlayer();
@@ -425,6 +432,10 @@ namespace Hunted_Mobile.ViewModel {
 
             if(!initializedBefore) {
                 InitializeMap();
+            }
+
+            if(MapDialogOption != MapDialogOptions.DISPLAY_PAUSE && MapDialogOption != MapDialogOptions.DISPLAY_END_GAME) {
+                DisplayCaughtScreenOrDisplayNone();
             }
         }
 
@@ -567,7 +578,8 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void ResumeGame(EventData data) {
-            MapDialogOption = MapDialogOptions.NONE;
+            DisplayCaughtScreenOrDisplayNone();
+
             StartCountdown(data.TimeLeft);
             StartIntervalTimer();
 
@@ -576,10 +588,43 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         private void ThiefStatusChanged(PlayerEventData data) {
+            CaughtPlayingUser(data);
+
             Task.Run(async () => {
                 await PollUsers();
                 DisplayAllPins();
             });
+        }
+
+        private void DisplayCaughtScreenOrDisplayNone() {
+            try {
+                if(mapModel.PlayingUser is Police) {
+                    MapDialogOption = MapDialogOptions.NONE;
+                    return;
+                }
+
+                var user = mapModel.PlayingUser as Thief;
+
+                if(user.IsCaught) {
+                    MapDialogOption = MapDialogOptions.DISPLAY_ARRESTED_SCREEN;
+                    MapDialog.DisplayArrestedScreen();
+                }
+                else {
+                    MapDialogOption = MapDialogOptions.NONE;
+                }
+            }
+            catch(Exception e) {
+                DependencyService.Get<Toast>().Show("Er is iets misgegaan met de weergave van de boef die is opgepakt.");
+            }
+        }
+
+        private void CaughtPlayingUser(PlayerEventData data) {
+            if(mapModel.PlayingUser.Id == data.PlayerBuilder.Id) {
+                mapModel.PlayingUser = data.PlayerBuilder
+                    .ToPlayer();
+
+                DisplayCaughtScreenOrDisplayNone();
+            }
         }
 
         private bool WasWithinBoundary() {
@@ -633,7 +678,7 @@ namespace Hunted_Mobile.ViewModel {
                 MapDialog.DisplayBoundaryScreen();
             }
             else if(isWithinBoundary && MapDialogOption == MapDialogOptions.DISPLAY_BOUNDARY_SCREEN) {
-                MapDialogOption = MapDialogOptions.NONE;
+                DisplayCaughtScreenOrDisplayNone();
             }
 
             if(isWithinBoundary && !wasWithinBoundary) {
@@ -851,20 +896,22 @@ namespace Hunted_Mobile.ViewModel {
             return closestThief;
         }
 
-        private void OnLootClicked(Position position) {
-            SelectedLoot = mapModel.FindLoot(new Location(position));
+        private void OnLootClicked(int lootId) {
+            SelectedLoot = mapModel.FindLoot(lootId);
             MapDialogOption = MapDialogOptions.DISPLAY_PICKUP_LOOT;
             MapDialog.DisplayPickingUpLoot(SelectedLoot.Name, IsCloseToSelectedLoot);
         }
 
-        private void OnThiefClicked(Position position) {
-            SelectedThief = mapModel.FindThief(new Location(position));
+        private void OnThiefClicked(int userId) {
+            SelectedThief = mapModel.FindThief(userId);
             MapDialogOption = MapDialogOptions.DISPLAY_ARREST_THIEF;
             MapDialog.DisplayArrestingThief(SelectedThief.UserName, IsCloseToSelectedThief);
         }
 
         private void ToggleEnableStatusOnMapView() {
-            mapView.Content.IsEnabled = MapDialogOption == MapDialogOptions.NONE;
+            if(mapView != null) {
+                mapView.Content.IsEnabled = MapDialogOption == MapDialogOptions.NONE;
+            }
         }
 
         private async void ExitGame() {

@@ -86,15 +86,19 @@ namespace Hunted_Mobile.ViewModel {
             }
 
             webSocketService.StartGame += StartGame;
-            webSocketService.PlayerJoined += AddUser;
+            webSocketService.PlayerJoined += AddNewJoinedPlayer;
         }
 
         private async Task LoadUsers() {
             Users = new ObservableCollection<Player>(await UnitOfWork.Instance.UserRepository.GetAll(GameModel.Id));
         }
 
-        private void AddUser(PlayerEventData data) {
-            Users.Add(data.PlayerBuilder.ToPlayer());
+        private void AddNewJoinedPlayer(PlayerEventData data) {
+            var player = data.PlayerBuilder.ToPlayer();
+            var list = users;
+            list.Add(player);
+
+            Users = new ObservableCollection<Player>(list);
         }
 
         private async Task CheckForStatus() {
@@ -130,7 +134,7 @@ namespace Hunted_Mobile.ViewModel {
 
                 Device.BeginInvokeOnMainThread(() => {
                     webSocketService.StartGame -= StartGame;
-                    webSocketService.PlayerJoined -= AddUser;
+                    webSocketService.PlayerJoined -= AddNewJoinedPlayer;
                     Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(mapPage, true);
                 });
             }

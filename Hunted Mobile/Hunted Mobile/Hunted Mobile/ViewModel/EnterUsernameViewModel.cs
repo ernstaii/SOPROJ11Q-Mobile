@@ -51,10 +51,12 @@ namespace Hunted_Mobile.ViewModel {
             SubmitButtonIsEnable = false;
 
             // First validation is for model validation
-            if(Valid()) await CreateUser();
+            if(Valid()) {
+                await CreateUser();
 
-            // Second validation is for displaying ServerErrors
-            if(Valid()) await NavigateToLobby();
+                // Second validation is for displaying ServerErrors
+                if(Valid()) await NavigateToLobby();
+            }
 
             SubmitButtonIsEnable = true;
         });

@@ -70,12 +70,12 @@ namespace Hunted_Mobile.Model {
             }
         }
 
-        public Loot FindLoot(Location location) {
-            return Loot.FirstOrDefault(loot => loot.Location.Equals(location));
+        public Loot FindLoot(int id) {
+            return Loot.FirstOrDefault(loot => loot.Id.Equals(id));
         }
 
-        internal Thief FindThief(Location location) {
-            return Thiefs.FirstOrDefault(thief => thief.Location.Equals(location));
+        public Thief FindThief(int id) {
+            return Thiefs.FirstOrDefault(thief => thief.Id.Equals(id));
         }
     }
 }
