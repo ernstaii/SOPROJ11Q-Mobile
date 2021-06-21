@@ -598,7 +598,10 @@ namespace Hunted_Mobile.ViewModel {
 
         private void DisplayCaughtScreenOrDisplayNone() {
             try {
-                if(mapModel.PlayingUser is Police) return;
+                if(mapModel.PlayingUser is Police) {
+                    MapDialogOption = MapDialogOptions.NONE;
+                    return;
+                }
 
                 var user = mapModel.PlayingUser as Thief;
 
