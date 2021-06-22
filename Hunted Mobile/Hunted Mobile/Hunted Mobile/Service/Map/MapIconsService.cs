@@ -120,7 +120,8 @@ namespace Hunted_Mobile.Service.Map {
         private UriImageSource GetUriImageSource(Resource resource) {
             return new UriImageSource() {
                 Uri = resource.Uri,
-                CachingEnabled = false
+                CachingEnabled = true,
+                CacheValidity = new System.TimeSpan(2, 0, 0)
             };
         }
     }

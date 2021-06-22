@@ -1,6 +1,7 @@
 ﻿using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
 using Hunted_Mobile.Model.GameModels.Gadget;
+using Hunted_Mobile.Repository;
 using Hunted_Mobile.Service;
 
 using System;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Hunted_Mobile.ViewModel {
@@ -64,7 +66,7 @@ namespace Hunted_Mobile.ViewModel {
             }
         }
 
-        public GadgetOverviewViewModel(WebSocketService webSocketService, Map mapModel, string colourTheme) {
+        public GadgetOverviewViewModel(WebSocketService webSocketService, Map mapModel, string colourTheme, int gameId) {
             Gadgets = new ObservableCollection<GadgetWithCommand>();
             this.mapModel = mapModel;
             this.colourTheme = colourTheme;
@@ -72,6 +74,14 @@ namespace Hunted_Mobile.ViewModel {
 
             socketService.GadgetsUpdated += GadgetsUpdate;
             socketService.IntervalEvent += IntervalEvent;
+
+            ReloadGadgets(gameId);
+        }
+
+        private async void ReloadGadgets(int gameId) {
+            var playersWithGadgets = await UnitOfWork.Instance.GadgetRepository.GetAll(gameId);
+            var gadgets = playersWithGadgets.Where(p => p.Id == mapModel.PlayingUser.Id).FirstOrDefault()?.Gadgets;
+            UpdateGadgets(gadgets);
         }
 
         private void IntervalEvent(Model.Response.IntervalEventData data) {

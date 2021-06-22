@@ -22,7 +22,7 @@ namespace Hunted_Mobile.Service.Map {
         private Player player;
         private Pin playerPin;
         private Circle playerRadius;
-        private MapIconsService iconService;
+        private readonly MapIconsService iconService;
         private readonly int lootPickUpDistanceInMeters;
 
         public Player Player {
@@ -75,29 +75,33 @@ namespace Hunted_Mobile.Service.Map {
                 if(player is Thief) {
                     AddThiefPin(player);
                 }
-                else AddPolicePin(player.UserName, player.Location);
+                else AddPolicePin(player);
             }
         }
 
         public void AddThiefPin(Player player) {
-            MapView.Pins.Add(new Pin(MapView) {
-                Label = player.UserName,
-                Color = thiefPinColor,
-                Position = new MapsuiPosition(player.Location.Latitude, player.Location.Longitude),
-                Scale = 0.666f,
-                Tag = $"{THIEF_TAG}.{player.Id}",
-                Transparency = 0.25f,
-            });
+            if(player.Id != Player.Id) {
+                MapView.Pins.Add(new Pin(MapView) {
+                    Label = player.UserName,
+                    Color = thiefPinColor,
+                    Position = new MapsuiPosition(player.Location.Latitude, player.Location.Longitude),
+                    Scale = 0.666f,
+                    Tag = $"{THIEF_TAG}.{player.Id}",
+                    Transparency = 0.25f,
+                });
+            }
         }
 
-        public void AddPolicePin(string username, Location location) {
-            MapView.Pins.Add(new Pin(MapView) {
-                Label = username,
-                Color = policePinColor,
-                Position = new MapsuiPosition(location.Latitude, location.Longitude),
-                Scale = 0.666f,
-                Transparency = 0.25f,
-            });
+        public void AddPolicePin(Player player) {
+            if(player.Id != Player.Id) {
+                MapView.Pins.Add(new Pin(MapView) {
+                    Label = player.UserName,
+                    Color = policePinColor,
+                    Position = new MapsuiPosition(player.Location.Latitude, player.Location.Longitude),
+                    Scale = 0.666f,
+                    Transparency = 0.25f,
+                });
+            }
         }
 
         public void AddLootPin(Loot loot) {

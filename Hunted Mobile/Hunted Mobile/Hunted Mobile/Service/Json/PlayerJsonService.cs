@@ -1,30 +1,26 @@
 ﻿using Hunted_Mobile.Enum;
 using Hunted_Mobile.Model;
 using Hunted_Mobile.Model.GameModels;
+using Hunted_Mobile.Model.GameModels.Gadget;
 using Hunted_Mobile.Model.Response.Json;
 using Hunted_Mobile.Service.Builder;
 
 using System;
+using System.Collections.Generic;
 
 namespace Hunted_Mobile.Service.Json {
     public class PlayerJsonService : JsonConversionService<PlayerBuilder, UserData> {
         public PlayerJsonService() {
         }
 
-        public override string ToJson(PlayerBuilder builder) {
-            return ConvertToJson(new UserData {
-                id = builder.Id,
-                username = builder.UserName,
-                location = builder.Location.ToCsvString(),
-                status = builder.Status,
-                caught_at = builder.CaughtAt,
-                role = builder.InviteKey.Role,
-                triggered_alarm = builder.TriggeredAlarm,
-                is_fake_agent = builder.FakePolice
-            });
-        }
-
         public override PlayerBuilder ToObject(UserData data) {
+            var allGadgets = new List<Gadget>();
+            foreach(var gadgets in new GadgetJsonService().ToObjects(data.gadgets?.ToString())) {
+                foreach(var gadget in gadgets) {
+                    allGadgets.Add(gadget);
+                }
+            }
+
             return new PlayerBuilder()
                 .SetId(data.id)
                 .SetInviteKey(new InviteKey() {
@@ -36,7 +32,8 @@ namespace Hunted_Mobile.Service.Json {
                 .SetUsername(data.username)
                 .SetTriggeredAlarm(data.triggered_alarm)
                 .SetCaughtAt(data.caught_at)
-                .SetFakePolice(data.is_fake_agent);
+                .SetFakePolice(data.is_fake_agent)
+                .SetGadgets(allGadgets);
         }
 
         public PlayerBuilder ToObject(string json, InviteKey inviteKey) {
