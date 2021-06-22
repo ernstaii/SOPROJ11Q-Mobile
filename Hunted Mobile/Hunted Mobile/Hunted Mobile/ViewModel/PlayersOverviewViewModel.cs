@@ -11,6 +11,7 @@ namespace Hunted_Mobile.ViewModel {
     public class PlayersOverviewViewModel : BaseViewModel {
         private ObservableCollection<Player> users = new ObservableCollection<Player>();
         private readonly WebSocketService socketService;
+        public Player PlayingUser { get; set; }
 
         public ObservableCollection<Player> Users {
             get => users;
@@ -26,11 +27,12 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public IReadOnlyCollection<Player> Police {
-            get => Users.Where(user => user is Police).ToList();
+            get => Users.Where(user => user is Police || PlayingUser is Police && user is FakePolice).ToList();
         }
 
-        public PlayersOverviewViewModel(IReadOnlyList<Player> users, WebSocketService socketService) {
-            Users = new ObservableCollection<Player>(users);
+        public PlayersOverviewViewModel(Player playingUser, WebSocketService socketService) {
+            PlayingUser = playingUser;
+            Users = new ObservableCollection<Player>(new List<Player>() { PlayingUser });
             Users.CollectionChanged += Users_CollectionChanged;
             this.socketService = socketService;
 

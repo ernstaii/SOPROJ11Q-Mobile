@@ -178,7 +178,7 @@ namespace Hunted_Mobile.ViewModel {
             messageViewModel = new MessageViewModel(gameIdStr, gameModel.ColourTheme);
             messagesView = new View.Messages(messageViewModel);
             webSocketService = new WebSocketService(gameIdStr);
-            playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
+            playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(mapModel.PlayingUser, webSocketService));
             informationPage = new InformationPage(new InformationPageViewModel(gameModel.ColourTheme, Icons));
             gadgetOverviewViewModel = new GadgetOverviewViewModel(webSocketService, mapModel, gameModel.ColourTheme, gameModel.Id);
             gadgetsOverview = new View.GadgetsPage(gadgetOverviewViewModel);
@@ -338,10 +338,7 @@ namespace Hunted_Mobile.ViewModel {
             mapModel.Players = userList;
 
             playersOverview = new PlayersOverviewPage(
-                new PlayersOverviewViewModel(
-                    new List<Player>(userList) { mapModel.PlayingUser },
-                    webSocketService
-                )
+                new PlayersOverviewViewModel(mapModel.PlayingUser, webSocketService)
             );
         }
 
@@ -465,7 +462,7 @@ namespace Hunted_Mobile.ViewModel {
 
                 await StartSocket();
                 StartIntervalTimer();
-                
+
                 await ReloadGadgets();
                 RemovePreviousNavigation();
             });
