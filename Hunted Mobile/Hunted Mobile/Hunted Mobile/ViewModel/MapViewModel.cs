@@ -286,7 +286,7 @@ namespace Hunted_Mobile.ViewModel {
             MapDialogOption = MapDialogOptions.DISPLAY_PICKUP_LOOT_SUCCESFULLY;
 
             if(SelectedLoot == null) {
-                DependencyService.Get<Toast>().Show("De buit is niet meer geselecteerd");
+                DependencyService.Get<Toast>().Show("(#12) De buit is niet meer geselecteerd");
                 return;
             }
             MapDialog.DisplayPickedUpLootSuccessfully(SelectedLoot.Name);
@@ -297,6 +297,9 @@ namespace Hunted_Mobile.ViewModel {
                 if(deleted) {
                     await UnitOfWork.Instance.GameRepository.UpdateThievesScore(gameModel.Id, PICK_UP_LOOT_SCORE);
                 }
+                else {
+                    DependencyService.Get<Toast>().Show("(#13) Er is iets misgegaan bij het oppakken van een buit");
+                }
             });
         }
 
@@ -306,7 +309,7 @@ namespace Hunted_Mobile.ViewModel {
             holdingButtonTimer = null;
 
             if(SelectedThief == null) {
-                DependencyService.Get<Toast>().Show("De dief is niet meer geselecteerd");
+                DependencyService.Get<Toast>().Show("(#12) De boef is niet meer geselecteerd");
                 MapDialogOption = MapDialogOptions.NONE;
                 return;
             }
@@ -318,6 +321,9 @@ namespace Hunted_Mobile.ViewModel {
                 bool isCaught = await UnitOfWork.Instance.UserRepository.CatchThief(SelectedThief.Id);
                 if(isCaught) {
                     await UnitOfWork.Instance.GameRepository.UpdatePoliceScore(gameModel.Id, ARREST_THIEF_SCORE);
+                }
+                else {
+                    DependencyService.Get<Toast>().Show("(#13) Er is iets misgegaan bij het arresteren van een boef");
                 }
             });
         }
@@ -630,7 +636,7 @@ namespace Hunted_Mobile.ViewModel {
                 }
             }
             catch(Exception e) {
-                DependencyService.Get<Toast>().Show("Er is iets misgegaan met de weergave van de boef die is opgepakt.");
+                DependencyService.Get<Toast>().Show("(#15) Er is iets misgegaan met het scherm bijwerken");
             }
         }
 

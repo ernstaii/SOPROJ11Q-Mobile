@@ -142,7 +142,7 @@ namespace Hunted_Mobile.Service.Map {
 
         public void DisplayArrestingThief(string title, bool isCloseToSelectedThief = false) {
             BeforeDisplayScreen();
-            string description = isCloseToSelectedThief ? "Houd de knop 5 seconden ingedrukt om de dief op te pakken." : "Je bent te ver weg om deze dief op te pakken.";
+            string description = isCloseToSelectedThief ? "Houd de knop 5 seconden ingedrukt om de boef op te pakken." : "Je bent te ver weg om deze boef op te pakken.";
 
             HandleButtonHasHoldEvent = true;
             HandleButtonText = "Arresteren";
@@ -154,7 +154,7 @@ namespace Hunted_Mobile.Service.Map {
 
         public void DisplayArrestedThiefSuccessfully(string title) {
             BeforeDisplayScreen();
-            SetContent(title, "✔ Klaar! Opgepakt! De dief is gearresteerd!");
+            SetContent(title, "✔ Klaar! Opgepakt! De boef is gearresteerd!");
             FinishSuccessfullyAction();
             AfterDisplayScreen();
         }
