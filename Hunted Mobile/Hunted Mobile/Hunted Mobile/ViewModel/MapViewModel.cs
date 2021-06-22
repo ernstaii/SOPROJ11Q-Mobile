@@ -842,13 +842,13 @@ namespace Hunted_Mobile.ViewModel {
         /// Displays pins for all game objects with a location
         /// </summary>
         private void DisplayAllPins() {
+            mapView.Pins.Clear();
+
             Player player = mapModel.Players.Where((p) => p.Id == mapModel.PlayingUser.Id).FirstOrDefault();
             if(roleToggle) {
                 PlayingUserToPolice();
-                mapViewService.Player = mapModel.PlayingUser;
             }
-            mapView.Pins.Clear();
-            mapViewService.AddPlayerPin();
+            mapViewService.Player = mapModel.PlayingUser;
 
             foreach(var thief in mapModel.Thiefs) {
                 mapViewService.AddTeamMatePin(thief);
@@ -864,7 +864,7 @@ namespace Hunted_Mobile.ViewModel {
                 foreach(Thief thief in mapModel.Thiefs) {
                     if(thief is FakePolice) {
                         // See fake police as normal police
-                        mapViewService.AddPolicePin(thief.UserName, thief.Location);
+                        mapViewService.AddPolicePin(thief);
                     }
                     else if(thief.TriggeredAlarm || DroneActive) {
                         mapViewService.AddThiefPin(thief);
@@ -884,10 +884,7 @@ namespace Hunted_Mobile.ViewModel {
                 }
             }
 
-            if(roleToggle) {
-                mapModel.PlayingUser = player;
-                mapViewService.Player = player;
-            }
+            mapModel.PlayingUser = player;
         }
 
         private Player GetClosestThief() {
