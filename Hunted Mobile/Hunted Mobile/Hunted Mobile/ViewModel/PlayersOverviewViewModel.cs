@@ -23,7 +23,7 @@ namespace Hunted_Mobile.ViewModel {
         }
 
         public IReadOnlyCollection<Player> Thieves {
-            get => Users.Where(user => user is Thief).ToList();
+            get => Users.Where(user => user is Thief && !(user is FakePolice) || user is FakePolice && !(PlayingUser is Police)).ToList();
         }
 
         public IReadOnlyCollection<Player> Police {
