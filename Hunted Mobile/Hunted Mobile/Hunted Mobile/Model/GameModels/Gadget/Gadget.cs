@@ -18,8 +18,7 @@ namespace Hunted_Mobile.Model.GameModels.Gadget {
         protected UriImageSource GetUriImageSource(Model.Resource.Resource resource) {
             return new UriImageSource() {
                 Uri = resource.Uri,
-                CachingEnabled = true,
-                CacheValidity = new System.TimeSpan(2, 0, 0)
+                CachingEnabled = false
             };
         }
     }
