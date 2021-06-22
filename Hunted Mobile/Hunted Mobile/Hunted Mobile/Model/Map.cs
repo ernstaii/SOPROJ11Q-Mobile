@@ -42,8 +42,8 @@ namespace Hunted_Mobile.Model {
             get => playingUser; 
             set {
                 players.Remove(PlayingUser);
-                playingUser = value;
                 players.Add(value);
+                playingUser = value;
             }
         }
         public Boundary GameBoundary { get; set; }

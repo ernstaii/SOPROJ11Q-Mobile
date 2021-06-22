@@ -22,7 +22,7 @@ namespace Hunted_Mobile.Service.Map {
         private Player player;
         private Pin playerPin;
         private Circle playerRadius;
-        private MapIconsService iconService;
+        private readonly MapIconsService iconService;
         private readonly int lootPickUpDistanceInMeters;
 
         public Player Player {

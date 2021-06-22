@@ -51,7 +51,7 @@ namespace Hunted_Mobile.ViewModel {
         private readonly View.Messages messagesView;
         private readonly MessageViewModel messageViewModel;
         private PlayersOverviewPage playersOverview;
-        private InformationPage informationPage;
+        private readonly InformationPage informationPage;
         private readonly GadgetsPage gadgetsOverview;
         private readonly GadgetOverviewViewModel gadgetOverviewViewModel;
         private Timer intervalUpdateTimer;
@@ -180,7 +180,7 @@ namespace Hunted_Mobile.ViewModel {
             webSocketService = new WebSocketService(gameIdStr);
             playersOverview = new View.PlayersOverviewPage(new PlayersOverviewViewModel(new List<Player>() { mapModel.PlayingUser }, webSocketService));
             informationPage = new InformationPage(new InformationPageViewModel(gameModel.ColourTheme, Icons));
-            gadgetOverviewViewModel = new GadgetOverviewViewModel(webSocketService, mapModel, gameModel.ColourTheme);
+            gadgetOverviewViewModel = new GadgetOverviewViewModel(webSocketService, mapModel, gameModel.ColourTheme, gameModel.Id);
             gadgetsOverview = new View.GadgetsPage(gadgetOverviewViewModel);
             countdown = new Countdown();
             dateTimeNow = DateTime.Now;
@@ -465,8 +465,26 @@ namespace Hunted_Mobile.ViewModel {
 
                 await StartSocket();
                 StartIntervalTimer();
+                
+                await ReloadGadgets();
                 RemovePreviousNavigation();
             });
+        }
+
+        private async Task ReloadGadgets() {
+            var playersWithGadgets = await UnitOfWork.Instance.GadgetRepository.GetAll(gameModel.Id);
+            if(playersWithGadgets != null && playersWithGadgets.Count > 0) {
+                mapModel.Players.Clear();
+                foreach(PlayerBuilder playerWithGadgets in playersWithGadgets) {
+                    if(playerWithGadgets.Id == mapModel.PlayingUser.Id) {
+                        mapModel.PlayingUser = playerWithGadgets.ToPlayer();
+                    }
+                    else {
+                        mapModel.Players.Add(playerWithGadgets.ToPlayer());
+                    }
+                }
+                DisplayAllPins();
+            }
         }
 
         private void BeforeStartCountdown() {
@@ -549,6 +567,7 @@ namespace Hunted_Mobile.ViewModel {
                     mapViewService.Player = updatingPlayer;
                     mapViewService.UpdatePlayerPinLocation(myLocation);
                     DisplayAllPins();
+                    Icons.RoleName = updatingPlayer is FakePolice ? "fakepolice" : "thief";
                 }
             }
         }
@@ -830,7 +849,6 @@ namespace Hunted_Mobile.ViewModel {
             }
             mapView.Pins.Clear();
             mapViewService.AddPlayerPin();
-            mapViewService.Player = player;
 
             foreach(var thief in mapModel.Thiefs) {
                 mapViewService.AddTeamMatePin(thief);
@@ -859,22 +877,16 @@ namespace Hunted_Mobile.ViewModel {
                     }
                 }
             }
-
-            if(mapModel.PlayingUser is Thief) {
+            // If current user has role as Thief
+            else {
                 foreach(var loot in mapModel.Loot) {
                     mapViewService.AddLootPin(loot);
-                }
-
-                if(mapModel.PlayingUser is FakePolice) {
-                    // Show all police too
-                    foreach(var police in mapModel.Police) {
-                        mapViewService.AddPolicePin(police.UserName, police.Location);
-                    }
                 }
             }
 
             if(roleToggle) {
                 mapModel.PlayingUser = player;
+                mapViewService.Player = player;
             }
         }
 

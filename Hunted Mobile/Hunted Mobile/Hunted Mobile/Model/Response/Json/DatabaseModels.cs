@@ -14,6 +14,7 @@ namespace Hunted_Mobile.Model.Response.Json {
         public bool is_fake_agent;
         public string created_at;
         public string updated_at;
+        public object gadgets;
     }
 
     public struct LootData : JsonResponseData {
