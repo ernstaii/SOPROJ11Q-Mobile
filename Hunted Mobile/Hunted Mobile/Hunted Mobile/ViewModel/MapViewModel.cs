@@ -402,11 +402,18 @@ namespace Hunted_Mobile.ViewModel {
 
             Location playingUserLocation = mapModel.PlayingUser.Location;
             var newPlayer = new List<Player>();
+            var intervalPlayerBuilders = mapModel.PlayingUser is Police
+                ? data.PlayerBuilders.Where((player) => {
+                    foreach(var builder in data.SmokeScreenedPlayerBuilders) {
+                        if(builder.Id == player.Id) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                : data.PlayerBuilders;
 
-            foreach(PlayerBuilder builder
-                in mapModel.PlayingUser is Thief
-                ? data.PlayerBuilders.Concat(data.SmokeScreenedPlayerBuilders)
-                : data.PlayerBuilders) {
+            foreach(PlayerBuilder builder in intervalPlayerBuilders) {
                 var player = builder.ToPlayer();
                 if(player != null) {
                     var gadgets = mapModel.Players.Where(p => p.Id == player.Id).FirstOrDefault()?.Gadgets;
