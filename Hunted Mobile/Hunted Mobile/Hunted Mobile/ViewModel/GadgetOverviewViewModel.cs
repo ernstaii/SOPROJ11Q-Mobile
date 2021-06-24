@@ -26,6 +26,7 @@ namespace Hunted_Mobile.ViewModel {
                 OnPropertyChanged(nameof(Available));
                 used = await PlayingUser.Use(Gadget);
                 OnPropertyChanged(nameof(Available));
+                GadgetCollection.Remove(this);
             });
             public bool Available => !Gadget.InUse && !used;
 

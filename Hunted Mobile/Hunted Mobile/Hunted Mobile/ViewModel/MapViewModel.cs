@@ -517,7 +517,7 @@ namespace Hunted_Mobile.ViewModel {
             }
             intervalUpdateTimer.Interval = secondsToAwait * 1000;
             intervalUpdateTimer.Elapsed += (object sender, ElapsedEventArgs args) => {
-                DependencyService.Get<Toast>().Show("Het verwachte spel interval was niet aangekomen");
+                DependencyService.Get<Toast>().Show("Het verwachte spel interval was niet aangekomen. Probeer de app te herstarten.");
             };
             if(!intervalUpdateTimer.Enabled) {
                 intervalUpdateTimer.Start();
